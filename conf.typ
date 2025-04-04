@@ -109,7 +109,7 @@
     counter(page).update(1)
     set page(
         numbering: "1",
-        margin: (left: 32mm, top: 20mm, bottom: 20mm, right: 20mm),
+        margin: (left: 35mm, top: 20mm, bottom: 20mm, right: 35mm),
         footer: context if is-chapter-page() {
             align(center)[
                 #counter(page).display("1")
@@ -143,9 +143,9 @@
         pagebreak()
         v(3.5cm)
         block(text("Chapter ", size: 22pt) + text(number, size: 22pt))
-        v(1.5cm)
+        v(1.0cm)
         block(text(it.body, size: 25pt))
-        v(10mm)
+        v(14mm)
     }
     show heading.where(level: 2): it => {
         let number = if it.numbering != none {
