@@ -1,7 +1,4 @@
 #import "macros.typ": *
 #import "conf.typ": *
 
-= Preparing Quantum Thermal States
-
-Testing.
-== intro
+#heading("Preparing Thermal Quantum States", level: 1, supplement: "Chapter") <ch:thermal_state_prep>

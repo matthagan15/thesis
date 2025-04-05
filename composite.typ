@@ -14,7 +14,8 @@
 #show: thmrules.with(qed-symbol: $square$)
 #import "conf.typ": *
 
-= Composite Simulations <ch:composite_simulations>
+// = Composite Simulations <ch:composite_simulations>
+#heading("Composite Simulations", level: 1, supplement: "Chapter") <ch:composite_simulations>
 
 The simulation of time-independent Hamiltonian dynamics is a fundamental primitive in quantum computing. To start, the computational problem of approximating the time dynamics of even $k$-local Hamiltonians (where $k$ is a small constant) is BQP-Complete. This means that any computational problem that can be solved efficiently on a quantum computer can be efficiently reduced to a simulation problem.
 
