@@ -2,7 +2,6 @@
 #let ket(psi) = $lr(|#psi angle.r)$
 #let bra(psi) = $lr(angle.l #psi|)$
 #let ketbra(a, b) = $|#a angle.r angle.l #b|$
-
 #let tp = $times.circle$
 #let id = $bb(1)$
 
@@ -81,6 +80,26 @@ We now show how to implement basic product formulas, namely Trotter-Suzuki or ju
 
     where for consistency we use the calligraphic $cal(U)^((2k))$ to represent the applied channels.
 ] <def:trotter_suzuki>
+
+We now give a bound on the error to leading order in $t$, we will let @childs2021theory provide an explicit error bound for both first and higher order Trotter expressions. Moreover, these error bounds are the only known simulation methods that contain commutator structure.
+
+what is the automorphism group of a polynomial when encoded in a larger dimensional space? For example, what representations allow for a phase angle $theta_i$, $1 <= i <= d$ with associated polynomial $f$. and then what happens if you allow for an extra monomial $f' = f + f_(d+1) x^(d+1)$ ? I need a group $G$ and a map $h: G -> "Aut"(CC[x]/(x^d))$? This is close but not quite correct.
+
+
+test
+numbering("I – 1", 12, 2)
+numbering("I - 1")
+// #set math.equation(numbering: "(A)", number-align: top)
+$
+    T_(2, 1) := &bra(e_2) T(ketbra(e_1, e_1) )ket(e_2) \
+    &= sum_(i = 0)^(dim_S - 1) e^(- beta lambda_S (i)) / (cal(Z) ) sum_(j = 0)^(dim_S - 1) bra(j\, e_2) T(ketbra(i\, e_1, i\, e_1)) ket(j\, e_2) \
+    &= .
+$
+
+#let multiline(..eqs) = (..eqs) => {
+    block()
+}
+
 
 == First Order Composite Channels <sec:composite_first_order>
 

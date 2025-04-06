@@ -155,5 +155,6 @@
         block(text(number + h(0.2cm) + it.body, size: 16pt))
         v(0.25cm)
     }
+    set math.equation(numbering: "(1)")
     body
 }
