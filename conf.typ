@@ -1,6 +1,5 @@
 // University of Toronto Thesis Typst Template
 #import "@preview/hydra:0.6.1": hydra
-#set text(font: "New Computer Modern")
 
 /// returns bool
 #let is-chapter-page() = {
@@ -12,10 +11,10 @@
 
 /// Main Document Structure
 #let ut-thesis(
-    title: "Thesis Title",
-    author: "Author Name",
+    title: "[Thesis Title]",
+    author: "[Author Name]",
     degree: "Doctor of Philosophy",
-    department: "Graduate Department",
+    department: none,
     graduation-year: datetime.today().year(),
     body,
 ) = {
@@ -24,12 +23,17 @@
         paper: "us-letter",
         margin: (left: 32mm, top: 20mm, bottom: 20mm, right: 20mm),
     )
-    set text(font: "New Computer Modern")
+    set text(
+        font: "New Computer Modern",
+        top-edge: 0.7em,
+        bottom-edge: -0.3em,
+        size: 11pt,
+    )
 
     // Title Page (no numbering, centered)
     page(
-        // Approximate positioning based on guidelines
-
+        margin: (bottom: 0cm),
+        footer: none,
         align(center)[
             #v(30mm)
             #text(size: 12pt)[#smallcaps[#title]]
@@ -42,12 +46,15 @@
 
             #v(5cm)
             A thesis submitted in conformity with the requirements \
-            for the degree of Doctor of Philosophy\
-            Department of Physics \
+            for the degree of #degree\
+            // Department of Physics \
+            Department of #department \
             University of Toronto
 
             #v(3cm)
-            © Copyright by #author #graduation-year
+            // #box(width: 1cm, height: 0.3977cm, fill: aqua)[test] \
+            © Copyright by #author #graduation-year \
+            // #box(fill: rgb("#ff6b6b"), width: 1cm, height: 3cm)
         ],
     )
 
@@ -125,12 +132,7 @@
         },
     )
     // set page(number-align: top + right)
-    set text(
-        top-edge: 0.7em,
-        bottom-edge: -0.3em,
-        font: "New Computer Modern",
-        size: 11pt,
-    )
+    set text()
     set par(leading: 1em, justify: true, first-line-indent: 7mm)
 
     // Render the body of the document

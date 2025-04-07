@@ -14,7 +14,7 @@
 #import "conf.typ": *
 
 // = Composite Simulations <ch:composite_simulations>
-#heading("Composite Simulations", level: 1, supplement: "Chapter") <ch:composite_simulations>
+#heading("Composite Simulations", level: 1, supplement: [Chapter]) <ch:composite_simulations>
 
 The simulation of time-independent Hamiltonian dynamics is a fundamental primitive in quantum computing. To start, the computational problem of approximating the time dynamics of even $k$-local Hamiltonians (where $k$ is a small constant) is BQP-Complete. This means that any computational problem that can be solved efficiently on a quantum computer can be efficiently reduced to a simulation problem.
 
@@ -48,7 +48,7 @@ into three parts in which we find the gate cost for an arbitrary partition, we t
 namely we find the cost of an arbitrary partition, we give a method for producing a partition efficiently, and then we analyze when one could see
 improvements over the constituent channels. Finally, in @sec:composite_discussion we discuss extensions to this model that allow a flexible interpolation between various types of product formulas that could be leveraged numerically.
 
-=== Main Results <sec:composite_main_results>
+== Main Results <sec:composite_main_results>
 
 == Preliminaries <sec:composite_prelim>
 

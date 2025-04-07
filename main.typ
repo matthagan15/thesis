@@ -11,9 +11,6 @@
     department: "Physics",
 )
 
-// #import "@preview/ctheorems:1.1.3": *
-// #show: thmrules
-// #show: thmrules.with(qed-symbol: $square$)
 
 #include "intro.typ"
 #include "composite.typ"
