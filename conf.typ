@@ -126,7 +126,7 @@
             []
         } else {
             align(right)[
-                CHAPTER #upper(hydra(1)) #h(1fr) #counter(page).display("1")
+                #smallcaps([Chapter ] + hydra(1)) #h(1fr) #counter(page).display("1")
                 // CHAPTER #hydra(1, display: (hydra_ctx, hydra_content) => hydra_content) #h(1fr) #counter(page).display("1")
             ]
         },
@@ -157,6 +157,16 @@
         block(text(number + h(0.2cm) + it.body, size: 16pt))
         v(0.25cm)
     }
-    set math.equation(numbering: "(1)")
+    // set math.equation(numbering: "(1.1)")
+    set math.equation(
+        numbering: it => {
+            let count = counter(heading.where(level: 1)).at(here()).first()
+            if count > 0 {
+                numbering("(1.1)", count, it)
+            } else {
+                numbering("(1)", it)
+            }
+        },
+    )
     body
 }

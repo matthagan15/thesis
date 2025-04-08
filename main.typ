@@ -17,4 +17,4 @@
 #include "thermal_state.typ"
 #include "appendix.typ"
 
-#bibliography("references.bib")
+#bibliography("references.bib", style: "american-physics-society")

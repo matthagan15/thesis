@@ -9,11 +9,13 @@
 #import "@preview/ctheorems:1.1.3": *
 #let lemma = thmplain("lemma", "Lemma", inset: (x: 0cm, top: 0cm))
 #let proof = thmproof("proof", "Proof")
-#let definition = thmplain("definition", "Definition")
+#let theorem = thmbox("theorem", "Theorem", stroke: 1pt, fill: rgb(0, 255, 0, 50))
+#let definition = thmbox("definition", "Definition", stroke: 1pt, fill: rgb(0, 0, 255, 30))
+#let todo = x => { text([TODO: #x], fill: red, weight: "bold") }
+
 #show: thmrules.with(qed-symbol: $square$)
 #import "conf.typ": *
 
-// = Composite Simulations <ch:composite_simulations>
 #heading("Composite Simulations", level: 1, supplement: [Chapter]) <ch:composite_simulations>
 
 The simulation of time-independent Hamiltonian dynamics is a fundamental primitive in quantum computing. To start, the computational problem of approximating the time dynamics of even $k$-local Hamiltonians (where $k$ is a small constant) is BQP-Complete. This means that any computational problem that can be solved efficiently on a quantum computer can be efficiently reduced to a simulation problem.
@@ -80,28 +82,78 @@ We now show how to implement basic product formulas, namely Trotter-Suzuki or ju
 
     where for consistency we use the calligraphic $cal(U)^((2k))$ to represent the applied channels.
 ] <def:trotter_suzuki>
-
-We now give a bound on the error to leading order in $t$, we will let @childs2021theory provide an explicit error bound for both first and higher order Trotter expressions. Moreover, these error bounds are the only known simulation methods that contain commutator structure.
-
-what is the automorphism group of a polynomial when encoded in a larger dimensional space? For example, what representations allow for a phase angle $theta_i$, $1 <= i <= d$ with associated polynomial $f$. and then what happens if you allow for an extra monomial $f' = f + f_(d+1) x^(d+1)$ ? I need a group $G$ and a map $h: G -> "Aut"(CC[x]/(x^d))$? This is close but not quite correct.
-
-
-test
-numbering("I – 1", 12, 2)
-numbering("I - 1")
-// #set math.equation(numbering: "(A)", number-align: top)
+Despite their simplicity, Trotter-Suzuki formulas are fiendishly difficult to analyze. For decades the only error analysis that existed was worst-case analysis that often drastically overestimated the actual error. It was known that the first order expression depended on the commutator structure among the terms, but this was not generalized until 2021 in @childs2021theory, 25 years after Lloyd's original work @lloyd1996universal. We will follow @childs2021theory and denote the expression that captures this commutator scaling as $alpha_"comm"$ (in @childs2021theory $tilde(alpha)_"comm"$ is used) which is defined as
 $
-    T_(2, 1) := &bra(e_2) T(ketbra(e_1, e_1) )ket(e_2) \
-    &= sum_(i = 0)^(dim_S - 1) e^(- beta lambda_S (i)) / (cal(Z) ) sum_(j = 0)^(dim_S - 1) bra(j\, e_2) T(ketbra(i\, e_1, i\, e_1)) ket(j\, e_2) \
-    &= .
+    alpha_"comm" (H, 2k) := sum_(gamma_i in {1, ..., L}) (product h_(gamma_i)) norm([H_(gamma_(2k + 1)), [H_(gamma_(2k)), [ ...,[H_(gamma_2), H_(gamma_1)] ... ]]])_oo .
+$ <eq:alpha_comm_def>
+We will also make heavy use of the restriction of $alpha_"comm"$ to subsets of the total Hamiltonian $H$. For example, if $H = A + B$ then we define the commutator structure over $A$ as
+$
+    alpha_"comm" (A, 2k) := sum_(gamma_i in {1, ..., L_A}) (product a_(gamma_i)) norm([A_(gamma_(2k + 1)), [A_(gamma_(2k)), [ ...,[A_(gamma_2),A_(gamma_1)] ... ]]])_oo .
+$
+This then allows us to decompose the total commutator structure into 3 pieces: commutators that contain only terms from $A$, commutators that contain only terms from $B$, and commutators that contain _at least_ one term from both $A$ and $B$
+$
+    alpha_"comm" (H, 2k) = alpha_"comm" (A, 2k) + alpha_"comm" (B, 2k) + alpha_"comm" ({A, B}, 2k).
 $
 
-#let multiline(..eqs) = (..eqs) => {
-    block()
-}
+This allows us to give the error associated with a a Trotter-Suzuki formula in the following theorem.
+#theorem([Trotter-Suzuki Error @childs2021theory])[
+    Let $U_"TS"^((2k))$ be the Trotter-Suzuki unitary as given in @def:trotter_suzuki for the Hamiltonian $H = sum_(i =1)^L h_i H_i$. Then the spectral norm of the difference between the $U_"TS"^((2k))(t/r)$ and the ideal evolution $U(t/r)$ is given by
+    $
+        norm(U(t\/r) - U_"TS"^((2k))(t\/r))_oo <= #math.cases(
+        $(2 ( (Upsilon t )/ r)^(2k + 1) )/ (2k + 1)  alpha_"comm" (H, 2k) #h(9.5mm) " if " 2k > 1$,
+        $t^2 / (2 r^2) " " alpha_"comm" (H,1) #h(20mm)" if " 2k = 1$
+      )
+    $
+]
+The complete proof of the above theorem is very nontrivial and beyond the scope of this thesis. See @childs2021theory for complete details, the proof of the higher order bounds can be found in Appendix E and the first order expression is found in Proposition 9 in Section V. Instead, we provide a heuristic proof for the first order error for completeness.
 
+#proof("Heuristic First Order")[
+    Compute a Taylor Series for the Trotter formula and the ideal evolution. First the ideal evolution:
+    $
+        U(t\/r) &= e^(i H t / r) = id + (i t) / r H + O((t\/r)^2).
+    $
+    Then the Trotter terms:
+    $
+        product_(i = 1)^L e^(i h_i H_i t') = product_(i = 1)^L (id + i h_i t' H_i + O(t'^2)) = id + i t' sum_(i = 1)^L h_i H_i + O(t'^2 ).
+    $
+    Pretty clear to see that in the difference $U(t/r) - U_"TS"^((1))(t/r)$ the zeroth and first order terms vanish, leaving only the second order.
+]
+
+=== Randomized Product Formulas
+We now introduce QDrift @qdriftCampbell, one of the first randomized compilers for quantum simulation. The main idea that led to the development of QDrift is that instead of iterating through each term in the Hamiltonian to construct a product formula, or even a random ordering of terms as in @childs2019faster, each exponential is chosen randomly from the list of terms in $H$. Each term is selected with probability proportional to it's spectral weight, the probability of choosing $H_i$ is $h_i / (sum_j h_j) =: h_i / norm(h)$, and then simulated for a time $tau = norm(h) t$. This is the protocol for a single sample. As we will denote the portion of the Hamiltonian that we simulate with QDrift in later sections as $B$ we let $N_B$ denote the number of samples used.
+#definition("QDrift Channel")[
+    Let $N_B$ denote the number of samples, $norm(h) = sum_(i = 1)^L h_i$, and $tau := (norm(h) t)/ N_B$. The QDrift channel for a single sample is given as
+    $
+        cal(U)_"QD" (t; 1) := rho |-> sum_(i = 1)^L h_i / norm(h) e^(- i H_i norm(h) t) " " rho " " e^(+ i H_i norm(h) t),
+    $
+    and the QDrift channel for $N_B$ samples is
+    $
+        cal(U)_"QD" (t; N_B) := cal(U)_"QD" (t \/ N_B; 1)^(circle N_B).
+    $
+] <def:qdrift>
+#h(1cm) Once we have the channel defined we can then state the main results of @qdriftCampbell.
+#theorem("QDrift")[
+    Given a Hamiltonian $H$, time $t$, and error bound $epsilon$, the ideal time evolution channel $cal(U)(t)$ can be approximated using $N_B = (4 t^2 norm(h)^2) / epsilon$ samples of a QDrift channel. This approximation is given by the diamond distance
+    $
+        norm(cal(U)(t) - cal(U)_"QD" (t; N_B))_diamond <= epsilon.
+    $
+    The number of operator exponentials is then given as
+    $
+        C_"QD" (H, t, epsilon) <= (4 t^2 norm(h)^2) / epsilon.
+    $
+]
 
 == First Order Composite Channels <sec:composite_first_order>
+We now turn towards combining the two product formulas given in @sec:composite_prelim in a Composite channel. We first will assume that the Hamiltonian has already been partitioned into two pieces $H = A + B$, where $A$ will be simulated with a first order Trotter formula and $B$ with QDrift. Given a fixed partitioning allows for us to compute the diamond distance error in the resulting channel, which then allows us to bound the number of operator exponentials needed to implement the channel. The resulting cost function will then be parametrized by the partitioning, which we can then use to determine an optimal partitioning algorithm. Finally, we give a specific instance in which a Composite channel can offer asymptotic improvements in query complexity over either a purely Trotter or QDrift channel.
+
+=== Query Complexity <sec:composite_first_order_query_complexity>
+To analyze the error of our Composite channel we need to first reduce the overall time evolution channel $rho |-> e^(-i H t) rho e^(+i H t)$ into the simpler pieces that we can analyze with our Trotter and QDrift results. Assuming a partitioning $H = A + B$, where $A$ consists of terms that we would like to simulate with Trotter and $B$ has the terms we would like to sample from with QDrift. We now introduce the "outer-loop" error $E_({A,B})$ induced by this partitioning, which is as follows
+$
+    E_({A,B})(t) := e^(-i H t) rho e^(+i H t) - e^(-i B t) e^(-i A t) rho e^(+i A t) e^(+i B t) .
+$
+We use the phrase "outer-loop" as this decomposition is done before any simulation channels are implemented.
+
+
 
 == Higher Order Composite Channels <sec:composite_higher_order>
 
