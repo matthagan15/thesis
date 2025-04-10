@@ -6,6 +6,7 @@
 #let id = $bb(1)$
 #let dmd = $diamond.medium$
 
+#set math.equation(number-align: bottom)
 
 #import "@preview/ctheorems:1.1.3": *
 #let lemma_og = thmbox("lemma", "Lemma", stroke: 1pt, bodyfmt: x => text(x, style: "italic"))
@@ -13,9 +14,9 @@
 #let theorem_og = thmbox("theorem", "Theorem", stroke: 1pt, bodyfmt: x => text(x, style: "italic"))
 #let definition_og = thmbox("definition", "Definition", stroke: 1pt, bodyfmt: x => text(x, style: "italic"))
 
-#import "@preview/theorion:0.3.3": *
-#import cosmos.simple
-#show: show-theorion
+// #import "@preview/theorion:0.3.3": *
+// #import cosmos.simple
+// #show: show-theorion
 
 // #let theorem = thmbox("theorem", "Theorem", stroke: 1pt, fill: rgb(0, 255, 0, 50))
 // #let definition = thmbox("definition", "Definition", stroke: 1pt, fill: rgb(0, 0, 255, 30))
@@ -321,17 +322,16 @@ In order to determine the number of queries needed for a Composite channel to ap
     where $u_l$ and the number of stages $Upsilon$ are the same as in @def:trotter_suzuki. We will typically ignore the distinction between inner and outer loops and use $cal(C)^((2k)) = cal(C)^((2k, 2k))$.
 ]
 
-With this definition we can proceed to compute the error accrued by a higher order Composite channel. We will need the following intermediary result.
-$
-    norm(cal(C)^((2k)) - S^((2k))({A,B})) <= Upsilon max_(t_i) (norm(cal(U)_A (t_i) - cal(S)_A^((2k))(t_i))_dmd + norm(cal(U)_B (t_i) - cal(Q)_B (t_i))_dmd)
-$
-Maybe prove this inductively:
-- Base Case: $ &norm(cal(C)^((2,2))(t) - cal(S)^((2k))({A, B})(t))_dmd \
-  =& norm( cal(Q)_B (t\/2) compose cal(S)_A^((2))(t\/2) compose cal(S)_A^((2))(t\/2) compose cal(Q)_B (t\/2) - cal(U)_B (t\/2) compose cal(U)_A (t\/2) compose cal(U)_A (t\/2) compose cal(U)_B ( t\/ 2) )_dmd \
-  <=& 2 norm(cal(U)_A (t\/2) - S_A^((2)) (t\/2))_dmd + 2 norm(cal(U)_B (t\/2) - cal(Q)_B (t\/2))_dmd $
-- Inductive Step: $ &norm(cal(C)^((2k, 2k)) - cal(S)^((2k))({A, B}) )_dmd \  =& $
 #lemma_og("Higher-Order Composite Error")[
-    We stay winning.
+    The diamond distance of a single higher-order Composite channel to the ideal time evolution channel is upper bounded as
+    $
+        norm(cal(U)(t) - cal(C)^((2k))(t))_dmd <= 2 (Upsilon t)^(2k + 1) / (k + 1 \/ 2) (alpha_"C" ({A, B}, 2k) + Upsilon alpha_"C" (A, 2k)) + Upsilon (4 norm(h_B)^2 t^2) / N_B.
+    $
+    We will use the following definitions for brevity
+    $
+        P(t) &:= t^(2k + 1) (2 Upsilon^(2k + 1)) / (k + 1\/2) (alpha_"comm" ({A, B}, 2k) + alpha_"comm" (A, 2k)) \
+        Q(t) &:= t^2 (4 Upsilon norm(h_B)^2) / N_B.
+    $ <eq_composite_p_n_q_def>
 ] <lem_composite_higher_order_error>
 #proof_og([of @lem_composite_higher_order_error])[
     $
@@ -344,21 +344,19 @@ Maybe prove this inductively:
     $
     We then use an inductive proof to argue that the inner-loop errors can be bounded as
     $
-        norm(cal(S)^((2k))({A,B}, t) - cal(C)^((2k))(t))_dmd <= Upsilon (norm(cal(U)_A (t) - cal(S)_A^((2k))(t))_dmd + norm(cal(U)_B (t) - cal(Q)_B (t))_dmd),
+        norm(cal(S)^((2l))({A,B}, t) - cal(C)^((2k, 2l))(t))_dmd <= Upsilon (norm(cal(U)_A (t) - cal(S)_A^((2k))(t))_dmd + norm(cal(U)_B (t) - cal(Q)_B (t))_dmd),
     $ <tmp_composite_4>
-    where the induction is over the outer-loop decomposition.
-    - *Base Case ($2l = 1$):*
-    #set math.equation(number-align: bottom)
-    $
+    where the induction is over the outer-loop indexing of $2l$.
+    - *Base Case ($2l = 1$):* $
         &norm(cal(C)^((2k,2))(t) - cal(S)^((2))({A, B})(t))_dmd \
         =& norm( cal(Q)_B (t\/2) compose cal(S)_A^((2k))(-t\/2)^dagger compose cal(S)_A^((2k))(t\/2) compose cal(Q)_B (t\/2) - cal(U)_B (t\/2) compose cal(U)_A (-t\/2)^dagger compose cal(U)_A (t\/2) compose cal(U)_B ( t\/ 2) )_dmd \
-        <=& 2 norm(cal(U)_A (t\/2) - S_A^((2)) (t\/2))_dmd + 2 norm(cal(U)_B (t\/2) - cal(Q)_B (t\/2))_dmd
-    $
+        <=& 2 norm(cal(U)_A (t\/2) - S_A^((2)) (t\/2))_dmd + 2 norm(cal(U)_B (t\/2) - cal(Q)_B (t\/2))_dmd.
+    $ Since $Upsilon_1 = 2$ this matches the induction hypothesis.
     - *Inductive Step: * In this scenario we assume that the hypothesis in @tmp_composite_4 holds for $2l - 2$ and we would like to show it holds for $2l$. We do so via the recursive structure given in @eq_composite_higher_order_def and @def:trotter_suzuki, which allows us to express the hypothesis as
     $
         &norm(cal(C)^((2k, 2l))(t) - cal(S)^((2l))({A,B}, t))_dmd \
       =& norm( cal(C)^((2k, 2l - 2)) (u_l t)^(compose 2) compose cal(C)^((2k, 2l-2))((1-4 u_l) t) compose cal(C)^((2k, 2l - 2)) (u_l t)^(compose 2) \
-      &  - cal(S)^((2l - 2))({A,B}, u_l t)^(compose 2) compose cal(S)^((2l -2))({A, B}, (1 - 4 u_l) t) compose cal(S)^((2l - 2))({A,B}, u_l t)^(compose 2)) #place($diamond.small$, dy: +1mm, dx: -0mm) \
+      &  - cal(S)^((2l - 2))({A,B}, u_l t)^(compose 2) compose cal(S)^((2l -2))({A, B}, (1 - 4 u_l) t) compose cal(S)^((2l - 2))({A,B}, u_l t)^(compose 2))  #place($diamond.small$, dy: +1mm, dx: -0mm) \
       <=& 4 norm(cal(C)^((2k, 2l -2))(u_l t) - cal(S)^((2l - 2))({A,B}, u_l t))_dmd \
       &" " +norm(cal(C)^((2k, 2l -2))((1 - 4 u_l) t) - cal(S)^((2l - 2))({A,B}, (1 - 4 u_l) t))_dmd \
       <=& 4 Upsilon_(l - 1) (norm(cal(U)_A (t) - cal(S)_A^((2k))(t))_dmd + norm(cal(U)_B (t) - cal(Q)_B (t))_dmd) \
@@ -368,7 +366,49 @@ Maybe prove this inductively:
     $
     Therefore the inductive step holds.
 
-    One point of emphasis we would like to make is that we are explicitly not utilizing the smaller times that come with the recursive outer-loop step. This is simply due to the bookkeeping issues of keeping track of each different time step used.
+    One point of emphasis we would like to make is that we are explicitly not utilizing the smaller times that come with the recursive outer-loop step. This is simply due to the difficulty of bookkeeping for each different time step used and it will be sufficient to use the upper bound of $t$. We can now continue with our proof of the lemma by substituting in the known Trotter-Suzuki and QDrift error terms, leading us to
+    $
+        norm(cal(U)(t) - cal(C)^((2k))(t))_dmd &<= 2 (Upsilon t)^(2k + 1) / (k + 1 \/ 2) alpha_"comm" ({A, B}, 2k) + Upsilon (norm(cal(U)_A (t) - cal(S)_A^((2k))(t))_dmd + norm(cal(U)_B - cal(Q)_B (t))_dmd ) \
+        &<= 2 (Upsilon t)^(2k + 1) / (k + 1 \/ 2) (alpha_"comm" ({A, B}, 2k) + Upsilon alpha_"comm" (A, 2k)) + Upsilon (4 norm(h_B)^2 t^2) / N_B .
+    $
+    Note that the extra factor of $Upsilon$ in front of $alpha_"comm" (A)$ comes from the fact that we have $Upsilon$ copies of the $A$ simulation channel as opposed to just one outer-loop decomposition.
+    // It will prove advantageous for us to have simple expressions for these two errors, so we define the following
+    // $
+    //     P(t) &:= t^(2k + 1) (2 Upsilon^(2k + 1)) / (k + 1\/2) (alpha_"comm" ({A, B}, 2k) + alpha_"comm" (A, 2k)) \
+    //     Q(t) &:= t^2 (4 Upsilon norm(h_B)^2) / N_B,
+    // $
+    // where "$P$" can be thought of as "product formula" and $Q$ for QDrift.
+]
+
+#h(5mm) Now that we have bounded the diamond distance error for a single time step we can proceed with our time-slicing arguments to produce a controllable error bound. This will lead us to our final expression for the query cost of a higher order composite method.
+#theorem_og("Higher-Order Composite Cost")[
+    Given a time $t$, error bound $epsilon$, and a partitioned Hamiltonian $H = A + B$ the $2k^"th"$ order Composite channel $cal(C)^((2k))$ utilizes at most
+    $
+        C_"Comp"^((2k)) <= Upsilon (Upsilon L_A + N_B) ceil( (4^(1/(2k)) (Upsilon t)^(1 + 1/2k)) / ((2k + 1) epsilon)^(1/(2k)) (alpha_"C" ({A,B}) + Upsilon alpha_"C" (A)) + (4 Upsilon norm(h_B)^2 t^2) / (N_B epsilon) ),
+    $
+    gates,where the $alpha_"C"$ are both of order $2k$, to meet the error budget given by
+    $
+        norm(cal(U)(t) - cal(C)^((2k))(t\/r)^(compose r))_dmd <= epsilon.
+    $
+    Using the upper bounds provided for Trotter-Suzuki and QDrift evolution channels and defining
+    $
+        q_B := (alpha_"Comm" (B, 2k) ) / (alpha_"Comm" (H, 2k))
+    $
+    to capture the amount of "commutator structure" of $H$ that is contained in $B$, we can rewrite this upper bound as
+    $
+        C_"Comp"^((2k)) <= Upsilon (Upsilon L_A + N_B) ceil((C_"Trot"^((2k))(H, t, epsilon) )/ Upsilon^(1 - 1\/2k) (1 - q_B)^(1\/2k) / ( L) + C_"QD" (H, t, epsilon) Upsilon / N_B (norm(h_B) / norm(h))^2).
+    $
+]
+#proof_og()[
+    We start off by utilizing standard time-slicing arguments to bound our single step distance
+    $
+        norm(cal(U)(t) - cal(C)^((2k))(t\/r)^(compose r))_dmd = norm(cal(U)(t\/r)^(compose r) - cal(C)^((2k))(t\/r)^(compose r))_dmd <= r norm(cal(U)(t\/r) - cal(C)^((2k))(t\/r))_dmd.
+    $
+    Using our results in @lem_composite_higher_order_error we can then bound the single time step error as
+    $
+        norm(cal(U)(t\/r) - cal(C)^((2k))(t\/r))_dmd <= P(t) / r^(2k + 1) + Q(t) / r^2.
+    $
+
 ]
 
 == Numerics
