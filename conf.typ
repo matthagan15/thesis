@@ -116,10 +116,10 @@
     counter(page).update(1)
     set page(
         numbering: "1",
-        margin: (left: 35mm, top: 20mm, bottom: 20mm, right: 35mm),
+        margin: (left: 35mm, top: 20mm, bottom: 20mm, right: 20mm),
         footer: context if is-chapter-page() {
             align(center)[
-                #counter(page).display("1")
+                #counter(page).display("1") #h(15mm)
             ]
         } else { [] },
         header: context if is-chapter-page() {
@@ -133,7 +133,7 @@
     )
     // set page(number-align: top + right)
     set text()
-    set par(leading: 1em, justify: true, first-line-indent: 7mm)
+    set par(leading: 1em, justify: true, first-line-indent: 5mm)
 
     // Render the body of the document
     set heading(numbering: (..nums) => nums.pos().map(str).join("."))
