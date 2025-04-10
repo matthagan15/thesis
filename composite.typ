@@ -317,7 +317,7 @@ In order to determine the number of queries needed for a Composite channel to ap
     and the higher-order outer-loop Composite channels are recursively defined as
     $
         cal(C)^((2k, 2l))(t) := cal(C)^((2k, 2l - 2)) (u_l t)^(compose 2) compose cal(C)^((2k, 2l - 2))((1-4 u_l)t) compose cal(C)^((2k, 2l - 2)) (u_l t)^(compose 2),
-    $
+    $ <eq_composite_higher_order_def>
     where $u_l$ and the number of stages $Upsilon$ are the same as in @def:trotter_suzuki. We will typically ignore the distinction between inner and outer loops and use $cal(C)^((2k)) = cal(C)^((2k, 2k))$.
 ]
 
@@ -329,7 +329,7 @@ Maybe prove this inductively:
 - Base Case: $ &norm(cal(C)^((2,2))(t) - cal(S)^((2k))({A, B})(t))_dmd \
   =& norm( cal(Q)_B (t\/2) compose cal(S)_A^((2))(t\/2) compose cal(S)_A^((2))(t\/2) compose cal(Q)_B (t\/2) - cal(U)_B (t\/2) compose cal(U)_A (t\/2) compose cal(U)_A (t\/2) compose cal(U)_B ( t\/ 2) )_dmd \
   <=& 2 norm(cal(U)_A (t\/2) - S_A^((2)) (t\/2))_dmd + 2 norm(cal(U)_B (t\/2) - cal(Q)_B (t\/2))_dmd $
-- Inductive Step: $ &norm(cal(C)^((2k, 2k)) - cal(S)^((2k))({A, B}) )_dmd \  =& norm(cal(C)^((2k, 2k - 2)) (u_k t)^(compose 2) compose cal(C)^((2k, 2k-2))((1-4 u_k) t) compose  ) $
+- Inductive Step: $ &norm(cal(C)^((2k, 2k)) - cal(S)^((2k))({A, B}) )_dmd \  =& $
 #lemma_og("Higher-Order Composite Error")[
     We stay winning.
 ] <lem_composite_higher_order_error>
@@ -342,7 +342,33 @@ Maybe prove this inductively:
     $
         norm(e^(i H t) -  S^((2k))({A, B}, t)) <= (Upsilon t)^(2 k + 1) / (k + 1\/ 2) alpha_"comm" ({A, B}, 2k).
     $
+    We then use an inductive proof to argue that the inner-loop errors can be bounded as
+    $
+        norm(cal(S)^((2k))({A,B}, t) - cal(C)^((2k))(t))_dmd <= Upsilon (norm(cal(U)_A (t) - cal(S)_A^((2k))(t))_dmd + norm(cal(U)_B (t) - cal(Q)_B (t))_dmd),
+    $ <tmp_composite_4>
+    where the induction is over the outer-loop decomposition.
+    - *Base Case ($2l = 1$):*
+    #set math.equation(number-align: bottom)
+    $
+        &norm(cal(C)^((2k,2))(t) - cal(S)^((2))({A, B})(t))_dmd \
+        =& norm( cal(Q)_B (t\/2) compose cal(S)_A^((2k))(-t\/2)^dagger compose cal(S)_A^((2k))(t\/2) compose cal(Q)_B (t\/2) - cal(U)_B (t\/2) compose cal(U)_A (-t\/2)^dagger compose cal(U)_A (t\/2) compose cal(U)_B ( t\/ 2) )_dmd \
+        <=& 2 norm(cal(U)_A (t\/2) - S_A^((2)) (t\/2))_dmd + 2 norm(cal(U)_B (t\/2) - cal(Q)_B (t\/2))_dmd
+    $
+    - *Inductive Step: * In this scenario we assume that the hypothesis in @tmp_composite_4 holds for $2l - 2$ and we would like to show it holds for $2l$. We do so via the recursive structure given in @eq_composite_higher_order_def and @def:trotter_suzuki, which allows us to express the hypothesis as
+    $
+        &norm(cal(C)^((2k, 2l))(t) - cal(S)^((2l))({A,B}, t))_dmd \
+      =& norm( cal(C)^((2k, 2l - 2)) (u_l t)^(compose 2) compose cal(C)^((2k, 2l-2))((1-4 u_l) t) compose cal(C)^((2k, 2l - 2)) (u_l t)^(compose 2) \
+      &  - cal(S)^((2l - 2))({A,B}, u_l t)^(compose 2) compose cal(S)^((2l -2))({A, B}, (1 - 4 u_l) t) compose cal(S)^((2l - 2))({A,B}, u_l t)^(compose 2)) #place($diamond.small$, dy: +1mm, dx: -0mm) \
+      <=& 4 norm(cal(C)^((2k, 2l -2))(u_l t) - cal(S)^((2l - 2))({A,B}, u_l t))_dmd \
+      &" " +norm(cal(C)^((2k, 2l -2))((1 - 4 u_l) t) - cal(S)^((2l - 2))({A,B}, (1 - 4 u_l) t))_dmd \
+      <=& 4 Upsilon_(l - 1) (norm(cal(U)_A (t) - cal(S)_A^((2k))(t))_dmd + norm(cal(U)_B (t) - cal(Q)_B (t))_dmd) \
+      &+ Upsilon_(l - 1) (norm(cal(U)_A (t) - cal(S)_A^((2k))(t))_dmd + norm(cal(U)_B (t) - cal(Q)_B (t))_dmd) \
+      &= 5 Upsilon_(l - 1) (norm(cal(U)_A (t) - cal(S)_A^((2k))(t))_dmd + norm(cal(U)_B (t) - cal(Q)_B (t))_dmd) \
+      =& Upsilon_l (norm(cal(U)_A (t) - cal(S)_A^((2k))(t))_dmd + norm(cal(U)_B (t) - cal(Q)_B (t))_dmd).
+    $
+    Therefore the inductive step holds.
 
+    One point of emphasis we would like to make is that we are explicitly not utilizing the smaller times that come with the recursive outer-loop step. This is simply due to the bookkeeping issues of keeping track of each different time step used.
 ]
 
 == Numerics
