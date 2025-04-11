@@ -400,7 +400,7 @@ In order to determine the number of queries needed for a Composite channel to ap
     $
         C_"Comp"^((2k)) <= Upsilon (Upsilon L_A + N_B) ceil((C_"Trot"^((2k))(H, t, epsilon) )/ Upsilon^(1 - 1\/2k) (1 - q_B)^(1\/2k) / ( L) + C_"QD" (H, t, epsilon) Upsilon / N_B (norm(h_B) / norm(h))^2).
     $ <eq_composite_higher_order_cost_constituents>
-]
+] <thm_composite_higher_order_cost>
 #proof_og()[
     We start off by utilizing standard time-slicing arguments to bound our single step distance
     $
@@ -449,24 +449,108 @@ In order to determine the number of queries needed for a Composite channel to ap
 ]
 
 === Conditions for Improvement
-Now that we have bounded the Composite channel error and computed the query cost we ask the natural question: "When is a Composite channel better than just using Trotter?" Our first answer to this question will be analytic and can be found in @thm_composite_higher_order_improvements #todo[Need to add in reference to the summary table once that is constructed]. We will be able to derive asymptotic conditions when a fixed partitioning can outperform either Trotter or QDrift. One issue that arises when making these comparisons is that we are comparing a Composite channel to _two_ different simulation methods, each with their own query cost. The relative performance of Trotter to QDrift is dependent on the simulation time $t$ and the error $epsilon$. It turns out that the ratio $C_"QD" / C_"Trot" $ depends on a power of the ratio $t/ epsilon$. For very accurate and long simulations we observe that Trotter has superior cost, but whenever error requirements are not high or the simulation time is relatively short QDrift is the more efficient simulation method. One thought experiment to illuminate this is the limit as $t << 1$, in which case QDrift can replicate the exact time evolution statistics with a single sample whereas Trotter-Suzuki methods need to implement one operator exponential per term of the Hamiltonian.
+Now that we have bounded the Composite channel error and computed the query cost we ask the natural question: "When is a Composite channel better than just using Trotter?" Our first answer to this question will be analytic and can be found in @thm_composite_higher_order_improvements and are summarized in @table_composite_advantages. We will be able to derive asymptotic conditions when a fixed partitioning can outperform either Trotter or QDrift. One issue that arises when making these comparisons is that we are comparing a Composite channel to _two_ different simulation methods, each with their own query cost. The relative performance of Trotter to QDrift is dependent on the simulation time $t$ and the error $epsilon$. It turns out that the ratio $C_"QD" / C_"Trot" $ depends on a power of the ratio $t/ epsilon$. For very accurate and long simulations we observe that Trotter has superior cost, but whenever error requirements are not high or the simulation time is relatively short QDrift is the more efficient simulation method. One thought experiment to illuminate this is the limit as $t << 1$, in which case QDrift can replicate the exact time evolution statistics with a single sample whereas Trotter-Suzuki methods need to implement one operator exponential per term of the Hamiltonian.
 
 #theorem_og([Conditions for Composite Channel Improvements])[
     Let $H$ be a family of Hamiltonians along with a partitioning scheme to generate a partition $H = A + B$ that varies with $L$. For a simulation time $t$ and diamond distance error bound of $epsilon$, let $xi$ be the number such that $C_"QD"^xi = C_"Trott"^((2k))$. There exists asymptotic regimes for the parameters $L_A$, $norm(h_B)$, and $N_B$ such that
     $
         C_"Comp"^((2k)) in o(min{C_"Trot"^((2k)), C_"QD" }),
     $
-    outlined below for the cases when $C_"QD" > C_"Trot"^((2k))$ ($0 < xi < 1$) and $C_"QD" <= C_"Trot"^((2k))$ ($xi >= 1$).
+    outlined below. // for the cases when $C_"QD" > C_"Trot"^((2k))$ ($0 < xi < 1$) and $C_"QD" <= C_"Trot"^((2k))$ ($xi >= 1$).
 
-    For the case when $C_"Trott"^((2k)) < C_"QD"$, if the following are satisfied
+    For the case when $C_"Trott"^((2k)) < C_"QD"$, corresponding to $0 < xi < 1$, if the following are satisfied
     + $L_A (1 - q_B)^(1\/2k) in o(L)$,
-    + $norm(h_B) in o(norm(h_B)^xi (sqrt(epsilon) /t)^(1 - xi))$,
+    + $norm(h_B) in o(norm(h)^xi (sqrt(epsilon) /t)^(1 - xi))$,
     + $N_B in Omega (L_A)$ and $N_B in o(L /(1 - q_B)^(1\/2k))$,
     then we have that $C_"Comp"^((2k)) in o(C_"Trot"^((2k))) = o(min{C_"Trot"^((2k)), C_"QD"})$.
 
-    For the case when $C_"QD" <= C_"Trot"^((2k))$, if the following are satisfied
+    For the case when $C_"QD" <= C_"Trot"^((2k))$, corresponding to $xi >= 1$, if the following are satisfied
+    + $
+            L_A in o(L^xi ( t^((2k + 1)(xi - 1)) / ( epsilon^( xi -1) ) (alpha_"C" (H)^xi) / (alpha_"C" (A) + alpha_"C" ({A, B}) ) )^(1\/2k) ),
+        $
+    + $norm(h_B) in o(norm(h))$,
+    + and $N_B in Theta(L_A)$,
+    then we have $C_"Comp"^((2k)) in o(C_"QD") = o(min{C_"Trot"^((2k)), C_"QD"}).$
 
+    Note that for $xi = 1$ the conditions on $L_A$ and $norm(h_B)$ are the same in both cases: $L_A in o(L)$ and $norm(h_B) in o(norm(h))$. The conditions on $N_B$ are satisfied by $N_B in Theta(L_A)$ as the condition $N_B in o(L / (1-q_B)^(1\/2k))$ is not valid when $xi = 1$.
 ]<thm_composite_higher_order_improvements>
+#proof_og()[
+    We start with the expression for the Composite channel cost from @thm_composite_higher_order_cost repeated here for clarity
+    $
+        C_"Comp"^((2k)) <= Upsilon (Upsilon L_A + N_B) ceil((C_"Trot"^((2k))(H, t, epsilon) )/ Upsilon^(1 - 1\/2k) (1 - q_B)^(1\/2k) / ( L) + C_"QD" (H, t, epsilon) Upsilon / N_B (norm(h_B) / norm(h))^2).
+    $
+    We will split our analysis up into the two cases outlined in the theorem statement.
+    - $0 < xi < 1$
+    In this scenario we have that $C_"QD" > C_"Trot"^((2k))$, so we can pull out the $C_"Trot"^((2k))$ cost and parametrize the ratio $C_"QD" / C_"Trot"^((2k)) = C_"QD"^(1-xi)$.
+    $
+        C_"Comp"^((2k)) <= C_"Trot"^((2k)) Upsilon (Upsilon L_A + N_B) ( (1 - q_B)^(1\/2k) / (Upsilon^(1 - 1\/2k) L) + C_"QD" (H, t, epsilon)^(1 - xi) Upsilon / N_B (norm(h_B) / norm(h))^2).
+    $
+    We can then show that $C_"Comp"^((2k)) in o(C_"Trot"^((2k)))$ if we are able to show that every term in the expansion of the above two factors are $o(1)$. We do so term by term.
+    $
+        L_A in o(L / (1-q_B)^(1\/2k)) &==> Upsilon^(1 + 1\/2k) ((1 - q_B)^(1\/2k) L_A) / L in o(1), \
+        norm(h_B) in o(norm(h)^(xi / 2) (sqrt(epsilon) / t)^(1 - xi) ) &==> Upsilon^2 (norm(h_B) / norm(h))^2 C_"QD"^(1 - xi) = (t^2 / epsilon)^(1 - xi) norm(h_B)^2 / norm(h)^xi in o(1), \
+        N_B in o( L / (1 - q_B)^(1\/2k)) &==> Upsilon^(1\/2k) (1 - q_B)^(1\/2k) N_B / L in o(1).
+    $
+    The last term we have is
+    $
+        Upsilon^3 C_"QD"^(1 - xi) ( norm(h_B)^2) / (norm(h)^2) L_A / N_B.
+    $
+    Using the QDrift cost expression we have that $C_"QD"^(1 - xi) <= 4^(1 - xi) (t^2 / epsilon)^(1 - xi) norm(h)^(2(1-xi))$. This tells us that $C_"QD"^(1-xi) norm(h_B)^2 /(norm(h)^2) in o(1)$ given the assumption $norm(h_B) in o(norm(h)^(xi/ 2) (sqrt(epsilon)/t)^(1 - xi) ) $. The total term above is then in $o(1)$ given the assumption that $N_B in Omega(L_A)$. As this is the last term in the expansion we have completed the $0 < xi < 1$ case.
+    - $xi >= 1$
+    In this scenario we have $C_"Trot"^((2k)) / C_"QD" = (C_"Trot"^((2k)))^(1-xi)$ which allows us to write
+    $
+        C_"Comp"^((2k)) <= C_"QD" Upsilon (Upsilon L_A + N_B) ((C_"Trot"^((2k)) )^(1-xi) / Upsilon^(1 - 1\/2k) (1 - q_B)^(1\/2k) / L + Upsilon / N_B (norm(h_B) / norm(h))^2).
+    $
+    We will tackle the hardest term in this expansion first, which is the one involving $(C_"Trot"^((2k)))^(1-xi)$. Using the cost expression for Trotter given in @thm_trotter_error we have
+    $
+        &Upsilon^(1 + 1\/2k) (1 - q_B)^(1\/2k) L_A / L (C_"Trot"^((2k)))^(1-xi) \
+        =& Upsilon^(2 + 1\/2k) (t^(1 + 1\/2k) / epsilon^(1\/2k))^(1 - xi) L_A / L^xi ((alpha_"C" (A) + alpha_"C" ({A, B})) / (alpha_"C" (H)^xi) )^(1\/2k).
+    $
+    This expression is in $o(1)$ given Assumption 1 from the theorem statement. We can then reduce the term involving $N_B$ and $C_"Trot"^((2k))$ to the previous term as $N_B in Theta(L_A)$
+    $
+        Upsilon N_B (C_"Trot"^((2k)) )^(1-xi) / Upsilon^(1 - 1\/2k) (1 - q_B)^(1\/2k) / L in Theta((1 - q_B)^(1\/2k) L_A / L (C_"Trot"^((2k)))^(1-xi)) in o(1),
+    $
+    where the last inclusion was shown for the previous term. The last two terms in the expansion involving the spectral norms are as follows
+    $
+        norm(h_B) in o(norm(h)) &==> Upsilon^2 (norm(h_B) / norm(h))^2 in o(1) \
+        norm(h_B) in o(norm(h)) " and " N_B in Theta(L_A) &==> Upsilon L_A / N_B (norm(h_B) / norm(h))^2 in o(1).
+    $
+    As we have shown all four terms in the expansion are $o(1)$ we have that $C_"Comp"^((2k)) in o(C_"QD") = o(min{C_"QD", C_"Trot"^((2k))})$ for $0 < xi < 1$ which completes the proof.
+]
+
+#h(5mm) Now that we have concrete bounds we would like to build some intuition for the assumptions that go into the theorem. As the expressions become fairly unwieldy in the generic setting we can isolate ourselves to the scenario where we expect the most benefit from using a Composite framework, when $C_"QD" = C_"Trot"^((2k))$ or $xi = 1$. The rationale behind this intuition is that if $C_"QD" << C_"Trot"^((2k))$, we can imagine building a composite channel by starting with a solely QDrift partitioning scheme and then moving over the most advantageous terms to the Trotter partition. We have a lot less room until the costs of Trotter begin to add up. Similar logic holds for the $C_"QD" >> C_"Trot"^((2k))$ regime. In the intermediate regime we have a bit more flexibility to move terms around without bumping in to these costly partitions.
+
+Another benefit to analyzing the $xi = 1$ scenario is that the resulting expressions simplify significantly. The three requirements reduce to the following:
++ $L_A in o(L)$, which we use the simplification that $alpha_"comm" (H) >= alpha_"comm" (A) + alpha_"comm" ({A, B})$ implies that $L_A in o(L)$ is sufficient to meet the exact requirement in @thm_composite_higher_order_cost,
++ $norm(h_B) in o(norm(h))$,
++ and $N_B in Theta (L_A)$.
+These convey much more intuition than the generic conditions we proved. Simply put these conditions say that if you can find a partitioning that contains most of the spectral weight of the Hamiltonian in a small number of terms then then the resulting Composite channel will be asymptotically cheaper than using a single simulation method. This of course only holds rigorously at the ratio of $t / epsilon$ such that Trotter and QDrift costs are equal, but we will demonstrate numerically in @sec_composite_numerics that these advantages hold in nearby values of $t$ and $epsilon$.
+To summarize this section we provide the following table that contains the requirements in @thm_composite_higher_order_improvements but in a easier to read format.
+#figure(
+    table(
+        columns: 3,
+        row-gutter: (2.2pt, auto),
+        rows: (7mm, 1.2cm, 1.2cm, 6mm, 1.1cm),
+        stroke: 0.5pt,
+        table.header[][$C_"QD" <= C_"Trot"^((2k))$][$C_"QD" > C_"Trot"^((2k))$],
+        align($L_A in$, horizon),
+        align($o(L / (1-q_B)^(1\/2k))$, horizon),
+        align(
+            $o(L^xi (t^(1 + 1\/2k) / epsilon^(1\/2k))^(xi - 1) (alpha_"C" (H)^(xi \/ 2k)) / (alpha_"C" (A) + alpha_"C" ({A,B}))^(1\/2k) )$,
+            horizon,
+        ),
+
+        align($norm(h_B) in$, horizon),
+        align($o(norm(h)^xi (sqrt(epsilon) / t)^(1 - xi))$, horizon),
+        align($o(norm(h))$, horizon),
+
+        [(Lower Bound) $N_B in$], $Omega(L_A)$, $Omega(L_A)$,
+        align([(Upper Bound) $N_B in$], horizon), align($o(L / (1-q_B)^(1\/2k))$, horizon), align($O(L_A)$, horizon),
+    ),
+    caption: [Summary of asymptotic requirements for parameters of interest when $C_"QD"^xi = C_"Trot"^((2k))$ to yield $C_"Comp"^((2k)) in o(min{C_"QD", C_"Trot"^((2k))})$.],
+) <table_composite_advantages>
+
+
 
 === Probabilistic Partitioning
 One of the major problems we encountered in @sec_composite_first_order_comparison is that the gate cost is sensitive to the partitioning used. Providing a detailed partitioning scheme that provably works for all Hamiltonians is a very challenging task and beyond the scope of this thesis. Instead, we will provide a probabilistic scheme that provably works for Hamiltonians where the terms have exponentially decaying spectral norms and there is a small commutator structure in the largest weight terms. This heuristically matches our intuition of Chemistry Hamiltonians, thus providing a plausible method for improving chemical simulations in quantum computing. Research conducted by Gunther et al. in @gunther2025phase verify that partially randomized techniques, which are simulation techniques similar in spirit to our Composite channel approach, are comparable in error to state-of-the-art techniques involving qubitization while using much less ancilla qubits. This reduction in memory requirements, along with their relatively simple implementations, make partially randomized schemes very appealing options for near term fault-tolerant simulations.
