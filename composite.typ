@@ -87,9 +87,9 @@ We now show how to implement basic product formulas, namely Trotter-Suzuki or ju
         S^((2k))(t) &:= S^((2k - 2))(u_k t) dot S^((2k - 2))(u_k t) dot S^((2k - 2)) ((1-4 u_k)t) dot S^((2k - 2))(u_k t) dot S^((2k - 2))(u_k t) \
         cal(S)^((2k))(rho;t) &:= S^((2k))(t) dot rho dot S^((2k))(t)^dagger,
     $ <eq:trotter_high_order>
-    where $u_k := 1 / (4-4^(1/(2k - 1)))$. In addition we define $Upsilon := 2 dot 5^(k-1)$ as the number of "stages" in the higher-order product formula.
+    where $u_k := 1 / (4-4^(1/(2k - 1)))$. In addition we define $Upsilon_k := 2 dot 5^(k-1)$ as the number of "stages" in the higher-order product formula, although we will typically just write $Upsilon$ when the order is apparent.
 ] <def:trotter_suzuki>
-Despite their simplicity, Trotter-Suzuki formulas are fiendishly difficult to analyze. For decades the only error analysis that existed was worst-case analysis that often drastically overestimated the actual error. It was known that the first order expression depended on the commutator structure among the terms, but this was not generalized until 2021 in @childs2021theory, 25 years after Lloyd's original work @lloyd1996universal. We will follow @childs2021theory and denote the expression that captures this commutator scaling as $alpha_"comm"$ (in @childs2021theory $tilde(alpha)_"comm"$ is used) which is defined as
+Despite their simplicity, Trotter-Suzuki formulas are fiendishly difficult to analyze. For decades the only error analysis that existed was worst-case analysis that often drastically overestimated the actual error. It was known that the first order expression depended on the commutator structure among the terms, but this was not generalized until 2021 in @childs2021theory, 25 years after Lloyd's original work @lloyd1996universal. We will follow @childs2021theory and denote the expression that captures this commutator scaling as $alpha_"comm"$, and sometimes when space is needed this may be abbreviated to $alpha_"C"$ when the context is clear, which we define as
 $
     alpha_"comm" (H, 2k) := sum_(gamma_i in {1, ..., L}) (product h_(gamma_i)) norm([H_(gamma_(2k + 1)), [H_(gamma_(2k)), [ ...,[H_(gamma_2), H_(gamma_1)] ... ]]])_oo .
 $ <eq:alpha_comm_def>
@@ -137,7 +137,7 @@ We now introduce QDrift @qdriftCampbell, one of the first randomized compilers f
     $
 ] <def:qdrift>
 #h(1cm) Once we have the channel defined we can then state the main results of @qdriftCampbell.
-#theorem_og("QDrift Cost", supplement: "QDrift Cost")[
+#theorem_og("QDrift Cost")[
     Given a Hamiltonian $H$, time $t$, and error bound $epsilon$, the ideal time evolution channel $cal(U)(t)$ can be approximated using $N_B = (4 t^2 norm(h)^2) / epsilon$ samples of a QDrift channel. This approximation is given by the diamond distance
     $
         norm(cal(U)(t) - cal(Q) (t, N_B))_(dmd) <= epsilon.
@@ -302,7 +302,9 @@ $
     &in O((t^2 L_A^2 a_"max"^2) / epsilon) \
     &in omega(C_"Comp"^((1))).
 $
-This shows that there exist circumstances where the cost of the Composite channel scales better than either of the two methods that compose it, i.e. $C_"Comp"^((1)) in o(min(C_"Trot"^((1)), C_"QD"))$.
+This shows that the Composite channel has asymptotically better cost over the methods it composes, i.e. $C_"Comp"^((1)) in o(min(C_"Trot"^((1)), C_"QD"))$.
+
+Although this example may be a little contrived, it does show in a completely rigorous manner that there do exist scenarios in which even first order Composite techniques could provide significant constant factor improvements. This provides strong evidence that more detailed research is needed to understand when Composite techniques can provide advantages. We provide further numeric evidence comparing Composite techniques to Trotter and QDrift for some small systems in @sec_composite_numerics.
 
 == Higher Order Composite Channels <sec:composite_higher_order>
 
@@ -385,7 +387,7 @@ In order to determine the number of queries needed for a Composite channel to ap
     Given a time $t$, error bound $epsilon$, and a partitioned Hamiltonian $H = A + B$ the $2k^"th"$ order Composite channel $cal(C)^((2k))$ utilizes at most
     $
         C_"Comp"^((2k)) <= Upsilon (Upsilon L_A + N_B) ceil( (4^(1/(2k)) (Upsilon t)^(1 + 1/2k)) / ((2k + 1) epsilon)^(1/(2k)) (alpha_"C" ({A,B}) + Upsilon alpha_"C" (A)) + (4 Upsilon norm(h_B)^2 t^2) / (N_B epsilon) ),
-    $
+    $ <eq_composite_higher_order_cost>
     gates,where the $alpha_"C"$ are both of order $2k$, to meet the error budget given by
     $
         norm(cal(U)(t) - cal(C)^((2k))(t\/r)^(compose r))_dmd <= epsilon.
@@ -397,7 +399,7 @@ In order to determine the number of queries needed for a Composite channel to ap
     to capture the amount of "commutator structure" of $H$ that is contained in $B$, we can rewrite this upper bound as
     $
         C_"Comp"^((2k)) <= Upsilon (Upsilon L_A + N_B) ceil((C_"Trot"^((2k))(H, t, epsilon) )/ Upsilon^(1 - 1\/2k) (1 - q_B)^(1\/2k) / ( L) + C_"QD" (H, t, epsilon) Upsilon / N_B (norm(h_B) / norm(h))^2).
-    $
+    $ <eq_composite_higher_order_cost_constituents>
 ]
 #proof_og()[
     We start off by utilizing standard time-slicing arguments to bound our single step distance
@@ -408,10 +410,70 @@ In order to determine the number of queries needed for a Composite channel to ap
     $
         norm(cal(U)(t\/r) - cal(C)^((2k))(t\/r))_dmd <= P(t) / r^(2k + 1) + Q(t) / r^2.
     $
+    Our goal is to find a lower bound on $r$ that will guarantee that the above is less than $epsilon$. In previous arguments we had monomials in $r$ which allowed us to take roots to compute a bound, but the polynomial $a r^n + b r^2 = c$ does not have closed form solutions for $n > 5$. We could try to provide closed solutions for second and fourth order Trotter-Suzuki formulas but we will instead provide a generic bound that will work for all higher order expressions.
 
+    Our route to constructing such abound comes from requiring the following inequalities be satisfied for $r_"min" < r$
+    $
+        P(t) / r^(2k + 1) + Q(t) / r^2 <= P(t) / r_"min"^(2k + 1) + Q(t) / r_"min"^2 <= epsilon / r <= epsilon / r_"min".
+    $
+    We can then create the intermediate inquality
+    $
+        P(t) / r^(2k + 1) + Q(t) / r^2 <= P(t) / (r^2 r_"min"^(2k - 1)) + Q(t) / r^2 <= P(t) / r_"min"^(2k + 1) + Q(t) / r_"min"^2 <= epsilon / r.
+    $
+    Pulling these powers of $r$ out allow us to simplify the inequality to
+    $
+        1 / epsilon (P(t) / (r_"min"^(2k - 1)) + Q(t)) <= r.
+    $ <tmp_composite_5>
+    Our final inequality then comes from using only powers of $r_"min"$ and noting the fact that $Q(t) > 0$ for all $t$. We have
+    $
+        P(t) / r_"min"^(2k + 1) &< P(t) / r_"min"^(2k + 1) + Q(t) / r_"min"^2 <= epsilon / r_"min" \
+        P(t) / epsilon &< r_"min"^(2k ) \
+        (P(t) / epsilon)^(1\/ 2k) &< r_"min",
+    $ <tmp_composite_6>
+    therefore achieving our bound on $r$, which can be thought of as simply taking $r$ large enough to ensure the Trotterized error is sufficiently small.
+
+    By plugging @tmp_composite_6 into @tmp_composite_5 yields an explicit lower bound on $r$ as
+    $
+        (P(t) / epsilon)^(1\/2k) + Q(t) / epsilon < r.
+    $
+    This matches the intuition developed from Trotter-Suzuki formulas in which the error decreases rapidly with the order of the formula, but leads to overall higher gate counts due to exponentially increasing constant factors, namely $Upsilon_k$. We now can write down the number of operator exponentials explicitly. As we have $Upsilon$ stages of interleaved product formulas and each stage has one application of a $2k$ order Trotter-Suzuki formula and one QDrift channel with $N_B$ samples we have $Upsilon (Upsilon L_A + N_B)$ operator exponentials per time-slice. By taking the ceiling of the derived bound on $r$ we arrive at
+    $
+        C_"Comp"^((2k)) <= Upsilon (Upsilon L_A + N_B) ceil( (P(t) / epsilon)^(1\/2k) + Q(t) / epsilon),
+    $
+    plugging in the definitions of $P(t)$ and $Q(t)$ from @eq_composite_p_n_q_def yields @eq_composite_higher_order_cost in the theorem statement. @eq_composite_higher_order_cost_constituents is derived from the following inequalities
+    $
+        P(t)^(1\/2k) / epsilon^(1\/2k) &<= (C_"Trot"^((2k)) (H, t, epsilon)) / L (1 - q_B)^(1\/2k) / Upsilon^(1 - 1\/ 2k) \
+        Q(t) / epsilon &= Upsilon (C_"QD" (H, t, epsilon) ) / N_B (norm(h_B) / norm(h))^2.
+    $
+    These two inequalities are straightforward substitutions by plugging in results from the product formula costs in @thm_trotter_error and @thm:qdrift_cost into @eq_composite_p_n_q_def, along with the definition of $q_B$.
 ]
 
-== Numerics
+=== Conditions for Improvement
+Now that we have bounded the Composite channel error and computed the query cost we ask the natural question: "When is a Composite channel better than just using Trotter?" Our first answer to this question will be analytic and can be found in @thm_composite_higher_order_improvements #todo[Need to add in reference to the summary table once that is constructed]. We will be able to derive asymptotic conditions when a fixed partitioning can outperform either Trotter or QDrift. One issue that arises when making these comparisons is that we are comparing a Composite channel to _two_ different simulation methods, each with their own query cost. The relative performance of Trotter to QDrift is dependent on the simulation time $t$ and the error $epsilon$. It turns out that the ratio $C_"QD" / C_"Trot" $ depends on a power of the ratio $t/ epsilon$. For very accurate and long simulations we observe that Trotter has superior cost, but whenever error requirements are not high or the simulation time is relatively short QDrift is the more efficient simulation method. One thought experiment to illuminate this is the limit as $t << 1$, in which case QDrift can replicate the exact time evolution statistics with a single sample whereas Trotter-Suzuki methods need to implement one operator exponential per term of the Hamiltonian.
+
+#theorem_og([Conditions for Composite Channel Improvements])[
+    Let $H$ be a family of Hamiltonians along with a partitioning scheme to generate a partition $H = A + B$ that varies with $L$. For a simulation time $t$ and diamond distance error bound of $epsilon$, let $xi$ be the number such that $C_"QD"^xi = C_"Trott"^((2k))$. There exists asymptotic regimes for the parameters $L_A$, $norm(h_B)$, and $N_B$ such that
+    $
+        C_"Comp"^((2k)) in o(min{C_"Trot"^((2k)), C_"QD" }),
+    $
+    outlined below for the cases when $C_"QD" > C_"Trot"^((2k))$ ($0 < xi < 1$) and $C_"QD" <= C_"Trot"^((2k))$ ($xi >= 1$).
+
+    For the case when $C_"Trott"^((2k)) < C_"QD"$, if the following are satisfied
+    + $L_A (1 - q_B)^(1\/2k) in o(L)$,
+    + $norm(h_B) in o(norm(h_B)^xi (sqrt(epsilon) /t)^(1 - xi))$,
+    + $N_B in Omega (L_A)$ and $N_B in o(L /(1 - q_B)^(1\/2k))$,
+    then we have that $C_"Comp"^((2k)) in o(C_"Trot"^((2k))) = o(min{C_"Trot"^((2k)), C_"QD"})$.
+
+    For the case when $C_"QD" <= C_"Trot"^((2k))$, if the following are satisfied
+
+]<thm_composite_higher_order_improvements>
+
+=== Probabilistic Partitioning
+One of the major problems we encountered in @sec_composite_first_order_comparison is that the gate cost is sensitive to the partitioning used. Providing a detailed partitioning scheme that provably works for all Hamiltonians is a very challenging task and beyond the scope of this thesis. Instead, we will provide a probabilistic scheme that provably works for Hamiltonians where the terms have exponentially decaying spectral norms and there is a small commutator structure in the largest weight terms. This heuristically matches our intuition of Chemistry Hamiltonians, thus providing a plausible method for improving chemical simulations in quantum computing. Research conducted by Gunther et al. in @gunther2025phase verify that partially randomized techniques, which are simulation techniques similar in spirit to our Composite channel approach, are comparable in error to state-of-the-art techniques involving qubitization while using much less ancilla qubits. This reduction in memory requirements, along with their relatively simple implementations, make partially randomized schemes very appealing options for near term fault-tolerant simulations.
+
+
+
+== Numerics <sec_composite_numerics>
 
 == Discussion <sec:composite_discussion>
-Testing theorion
+
