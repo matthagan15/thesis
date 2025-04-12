@@ -518,9 +518,9 @@ Now that we have bounded the Composite channel error and computed the query cost
     As we have shown all four terms in the expansion are $o(1)$ we have that $C_"Comp"^((2k)) in o(C_"QD") = o(min{C_"QD", C_"Trot"^((2k))})$ for $0 < xi < 1$ which completes the proof.
 ]
 
-#h(5mm) Now that we have concrete bounds we would like to build some intuition for the assumptions that go into the theorem. As the expressions become fairly unwieldy in the generic setting we can isolate ourselves to the scenario where we expect the most benefit from using a Composite framework, when $C_"QD" = C_"Trot"^((2k))$ or $xi = 1$. The rationale behind this intuition is that if $C_"QD" << C_"Trot"^((2k))$, we can imagine building a composite channel by starting with a solely QDrift partitioning scheme and then moving over the most advantageous terms to the Trotter partition. We have a lot less room until the costs of Trotter begin to add up. Similar logic holds for the $C_"QD" >> C_"Trot"^((2k))$ regime. In the intermediate regime we have a bit more flexibility to move terms around without bumping in to these costly partitions.
+#h(5mm) Now that we have concrete bounds we would like to build some intuition for the assumptions that go into the theorem. As the expressions become fairly unwieldy in the generic setting we can isolate the scenario where we expect the most benefit from using a Composite framework, which is when $C_"QD" = C_"Trot"^((2k))$ or $xi = 1$. The rationale behind this intuition is that if $C_"QD" << C_"Trot"^((2k))$, we can imagine building a composite channel by starting with a solely QDrift partitioning scheme and then moving over the most advantageous terms to the Trotter partition. We have a lot less room until the costs of Trotter begin to add up. Similar logic holds for the $C_"QD" >> C_"Trot"^((2k))$ regime. In the intermediate regime $C_"QD" approx C_"Trot"^((2k))$ we have a bit more flexibility to move terms around without bumping in to these costly partitions.
 
-Another benefit to analyzing the $xi = 1$ scenario is that the resulting expressions simplify significantly. The three requirements reduce to the following:
+Another benefit to analyzing the $xi = 1$ scenario is that the resulting assumptions needed for cost improvements simplify significantly. The three requirements reduce to the following:
 + $L_A in o(L)$, which we use the simplification that $alpha_"comm" (H) >= alpha_"comm" (A) + alpha_"comm" ({A, B})$ implies that $L_A in o(L)$ is sufficient to meet the exact requirement in @thm_composite_higher_order_cost,
 + $norm(h_B) in o(norm(h))$,
 + and $N_B in Theta (L_A)$.
@@ -551,13 +551,36 @@ To summarize this section we provide the following table that contains the requi
 ) <table_composite_advantages>
 
 
-
 === Probabilistic Partitioning
+Now that we have sufficient conditions to guarantee cost improvements for a given partition, in this section we will derive a partitioning scheme that can provably satisfy the cost requirements in @thm_composite_higher_order_improvements. This scheme is a probabilistic scheme in which each term has some probability $p_i$ of being placed in the Trotter partition $A$ and probability $1-p_i$ of being placed in the QDrift partition $B$. We can then compute the expected cost of the resulting composite channel and show with high probability that the resulting parameters satisfy the cost improvement requirements with high probability.
+
 One of the major problems we encountered in @sec_composite_first_order_comparison is that the gate cost is sensitive to the partitioning used. Providing a detailed partitioning scheme that provably works for all Hamiltonians is a very challenging task and beyond the scope of this thesis. Instead, we will provide a probabilistic scheme that provably works for Hamiltonians where the terms have exponentially decaying spectral norms and there is a small commutator structure in the largest weight terms. This heuristically matches our intuition of Chemistry Hamiltonians, thus providing a plausible method for improving chemical simulations in quantum computing. Research conducted by Gunther et al. in @gunther2025phase verify that partially randomized techniques, which are simulation techniques similar in spirit to our Composite channel approach, are comparable in error to state-of-the-art techniques involving qubitization while using much less ancilla qubits. This reduction in memory requirements, along with their relatively simple implementations, make partially randomized schemes very appealing options for near term fault-tolerant simulations.
 
-
+#todo[I'm now considering if it is worth it to include this probabilistic partitioning scheme. I think if you just use the `chop` partition then the same Hamiltonian satisfies the cost requirements. The probabilistic partitioning is a lot of work and tedium and does not seem to be useful in practice? ]
 
 == Numerics <sec_composite_numerics>
+This section is primarily based on joint work conducted in @pocrnic2024composite. In that paper we provided analytic extensions of the real time composite channels developed in @hagan2023composite in addition to conducting a numeric investigation to the performance of Composite channels, however we will only discuss the real time composite simulation results. We study various chemistry and condensed matter Hamiltonians used to benchmark simulation methods, namely Hydrogen chain systems, Uniform Electron Gas (Jellium), and nearest neighbor spin models on graphs. We find that both heuristic partitioning schemes developed by hand and partitionings based on machine learning optimizers perform comparably. Both partitioning schemes are capable of finding partitions that have anywhere from 1/2 to 1/19 lower query costs at the crossover times, depending on the Hamiltonian being studied. A summary of the numeric results are contained below in @table_composite_numerics.
+
+
+#figure(
+    table(
+        columns: 4,
+        table.header[*Hamiltonian*][$xi$][*Num. Terms*][* \* - Time*],
+        [Hydrogen-3], $2.3$, [62], [Real -],
+        [5 Site Jellium], [9.2], [56], [Real -],
+        [6 Site Jellium], [18.8], [94], [Real -],
+        [7 Site Jellium], [10.4], [197], [Real -],
+        [7 Spin Graph], [4.1], [49], [Real -],
+        [8 Spin Graph], [3.9], [64], [Real -],
+        [8 Spin Heisenberg], [3.1], [29], [Imag. -],
+        [Hydrogen-3], [2.3], [62], [Imag. -],
+        [6 Site Jellium], [18.8], [94], [Imag. -],
+    ),
+    caption: [
+        Summary of gate cost improvements observed via the _crossover advantage_ $t_xi$ defined in Equation (contingent on optimization convergence). We observe that savings tend to somewhat improve as the number of terms increases (within the same model), with the exception of Jellium 7 where optimizer struggles with partitioning due to the number of terms. This is evident in the lack of monotonicity of $C(tilde(cal(C)^1))$ in Figure \ref{fig:Jellium56}. The most significant savings are seen for the Jellium models. Even in cases where the number of terms are comparable to other models, larger advantages are persistent in Jellium. This is further establishes the spectral norm distribution as one of the most important indicators of performance in the composite framework.
+    ],
+) <table_composite_numerics>
+
 
 == Discussion <sec:composite_discussion>
 
