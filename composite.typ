@@ -18,8 +18,8 @@
 // #import cosmos.simple
 // #show: show-theorion
 
-// #let theorem = thmbox("theorem", "Theorem", stroke: 1pt, fill: rgb(0, 255, 0, 50))
-// #let definition = thmbox("definition", "Definition", stroke: 1pt, fill: rgb(0, 0, 255, 30))
+// #let theorem_og = thmbox("theorem", "Theorem", stroke: 1pt, fill: rgb(0, 255, 0, 50))
+// #let definition_og = thmbox("definition", "Definition", stroke: 1pt, fill: rgb(0, 0, 255, 30))
 
 #let todo = x => { text([TODO: #x], fill: red, weight: "bold") }
 
@@ -103,15 +103,23 @@ $
 $
 
 This allows us to give the error associated with a a Trotter-Suzuki formula in the following theorem.
-#theorem_og([Trotter-Suzuki Error @childs2021theory])[
+#theorem_og([Trotter-Suzuki @childs2021theory])[
     Let $S^((2k))$ be the Trotter-Suzuki unitary as given in @def:trotter_suzuki for the Hamiltonian $H = sum_(i =1)^L h_i H_i$. Then the spectral norm of the difference between the Trotter-Suzuki formulas $S^((1))(t\/r)$ and $S^((2k))(t\/r)$ and the ideal evolution $U(t\/r)$ is given by
     $
         norm(U(t\/r) - S^((1))(t\/r))_oo &<= t^2 / (2 r^2) " " alpha_"comm" (H,1), \
         norm(U(t\/r) - S^((2k))(t\/r))_oo &<= (( Upsilon t )^(2k + 1) ) / (r^(2k + 1)(k + 1\/2)) alpha_"comm" (H, 2k).
     $
+    The associated operator exponential cost can be computed via standard time-slicing arguments as
+    $
+        C_"Trot"^((1))(H, t, epsilon) &= L ceil(t^2 /(2 epsilon) sum_(i,j) norm([H_i, H_j])) \
+        C_"Trot"^((2k))(H, t, epsilon)&= Upsilon L ceil( (Upsilon t)^(1 + 1\/2k) / epsilon^(1\/2k) (4 alpha_"comm" (H, 2k)^(1\/2k) / (2k + 1)) )
+    $
 ] <thm_trotter_error>
 The complete proof of the above theorem is very nontrivial and beyond the scope of this thesis. See @childs2021theory for complete details, the proof of the higher order bounds can be found in Appendix E and the first order expression is found in Proposition 9 in Section V. Instead, we provide a heuristic proof for the first order error for completeness.
 
+#todo()[Probably should include a proof that spectral norm bounds on a unitary channel imply a diamond distance bound that is different only by a factor of 2.]
+
+#todo[Also probably should do a bit better proof below, can use a heuristic that all Taylor series of the exponential have the same special time t? or maybe just produce a bound?]
 #proof_og("Heuristic First Order")[
     Compute a Taylor Series for the Trotter formula and the ideal evolution. First the ideal evolution:
     $
@@ -125,7 +133,7 @@ The complete proof of the above theorem is very nontrivial and beyond the scope 
 ]
 
 === Randomized Product Formulas
-We now introduce QDrift @qdriftCampbell, one of the first randomized compilers for quantum simulation. The main idea that led to the development of QDrift is that instead of iterating through each term in the Hamiltonian to construct a product formula, or even a random ordering of terms as in @childs2019faster, each exponential is chosen randomly from the list of terms in $H$. Each term is selected with probability proportional to it's spectral weight, the probability of choosing $H_i$ is $h_i / (sum_j h_j) =: h_i / norm(h)$, and then simulated for a time $tau = norm(h) t$. This is the protocol for a single sample. As we will denote the portion of the Hamiltonian that we simulate with QDrift in later sections as $B$ we let $N_B$ denote the number of samples used.
+We now introduce QDrift @qdriftCampbell, one of the first randomized compilers for quantum simulation. The main idea of QDrift is that instead of iterating through each term in the Hamiltonian to construct a product formula, or even a random ordering of terms as in @childs2019faster, each exponential is chosen randomly from the list of terms in $H$. Each term is selected with probability proportional to it's spectral weight, the probability of choosing $H_i$ is $h_i / (sum_j h_j) =: h_i / norm(h)$, and then simulated for a time $tau = norm(h) t$. This is the protocol for a single sample. As we will denote the portion of the Hamiltonian that we simulate with QDrift in later sections as $B$ we let $N_B$ denote the number of samples used.
 #definition_og("QDrift Channel")[
     Let $N_B$ denote the number of samples, $norm(h) = sum_(i = 1)^L h_i$, and $tau := (norm(h) t)/ N_B$. The QDrift channel for a single sample is given as
     $
@@ -140,11 +148,11 @@ We now introduce QDrift @qdriftCampbell, one of the first randomized compilers f
 #theorem_og("QDrift Cost")[
     Given a Hamiltonian $H$, time $t$, and error bound $epsilon$, the ideal time evolution channel $cal(U)(t)$ can be approximated using $N_B = (4 t^2 norm(h)^2) / epsilon$ samples of a QDrift channel. This approximation is given by the diamond distance
     $
-        norm(cal(U)(t) - cal(Q) (t, N_B))_(dmd) <= epsilon.
+        norm(cal(U)(t) - cal(Q) (t, N_B))_(dmd) <= (4 t^2 norm(h)^2) / N_B .
     $
-    The number of operator exponentials is then given as
+    The number of operator exponentials $N_B$ is then given as
     $
-        C_"QD" (H, t, epsilon) <= (4 t^2 norm(h)^2) / epsilon.
+        C_"QD" (H, t, epsilon) = N_B = ceil( (4 t^2 norm(h)^2) / epsilon).
     $
 ] <thm:qdrift_cost>
 
@@ -222,7 +230,7 @@ The following theorem utilizes a quantitative variant of the above, along with t
     and since increasing $r$ only increases the number of operator exponentials used we simply set $r$ to be the ceiling of the right hand side. This then yields the theorem as we have $r$ applications of $cal(C)^((1))$ and each application uses $L_A$ operator exponentials for the Trotter channel and $N_B$ samples of the QDrift channel.
 ]
 
-=== First-Order Parameter Settings <sec_first_order_parameter_settings>
+=== First-Order Parameter Settings <sec_composite_first_order_partition>
 
 Our next task will be to determine "parameter settings" that optimize this gate cost, namely the partitioning $A + B$ and setting the number of QDrift samples $N_B$. To do this it will prove useful to have a continuous, non-integer variant of the gate cost expression which we define as
 $
@@ -358,7 +366,7 @@ In order to determine the number of queries needed for a Composite channel to ap
     $
         &norm(cal(C)^((2k, 2l))(t) - cal(S)^((2l))({A,B}, t))_dmd \
       =& norm( cal(C)^((2k, 2l - 2)) (u_l t)^(compose 2) compose cal(C)^((2k, 2l-2))((1-4 u_l) t) compose cal(C)^((2k, 2l - 2)) (u_l t)^(compose 2) \
-      &  - cal(S)^((2l - 2))({A,B}, u_l t)^(compose 2) compose cal(S)^((2l -2))({A, B}, (1 - 4 u_l) t) compose cal(S)^((2l - 2))({A,B}, u_l t)^(compose 2))  #place($diamond.small$, dy: +1mm, dx: -0mm) \
+      &  - cal(S)^((2l - 2))({A,B}, u_l t)^(compose 2) compose cal(S)^((2l -2))({A, B}, (1 - 4 u_l) t) compose cal(S)^((2l - 2))({A,B}, u_l t)^(compose 2)) #place($diamond.small$, dy: +1mm, dx: -0mm)   \
       <=& 4 norm(cal(C)^((2k, 2l -2))(u_l t) - cal(S)^((2l - 2))({A,B}, u_l t))_dmd \
       &" " +norm(cal(C)^((2k, 2l -2))((1 - 4 u_l) t) - cal(S)^((2l - 2))({A,B}, (1 - 4 u_l) t))_dmd \
       <=& 4 Upsilon_(l - 1) (norm(cal(U)_A (t) - cal(S)_A^((2k))(t))_dmd + norm(cal(U)_B (t) - cal(Q)_B (t))_dmd) \
@@ -532,7 +540,7 @@ To summarize this section we provide the following table that contains the requi
         row-gutter: (2.2pt, auto),
         rows: (7mm, 1.2cm, 1.2cm, 6mm, 1.1cm),
         stroke: 0.5pt,
-        table.header[][$C_"QD" <= C_"Trot"^((2k))$][$C_"QD" > C_"Trot"^((2k))$],
+        table.header[][$C_"QD" <= C_"Trot"^((2k)) <==> xi >= 1$][$C_"QD" > C_"Trot"^((2k)) <==> 0 < xi < 1$],
         align($L_A in$, horizon),
         align($o(L / (1-q_B)^(1\/2k))$, horizon),
         align(
@@ -541,7 +549,7 @@ To summarize this section we provide the following table that contains the requi
         ),
 
         align($norm(h_B) in$, horizon),
-        align($o(norm(h)^xi (sqrt(epsilon) / t)^(1 - xi))$, horizon),
+        align($o(norm(h)^xi (t / sqrt(epsilon))^(xi - 1))$, horizon),
         align($o(norm(h))$, horizon),
 
         [(Lower Bound) $N_B in$], $Omega(L_A)$, $Omega(L_A)$,
@@ -550,13 +558,26 @@ To summarize this section we provide the following table that contains the requi
     caption: [Summary of asymptotic requirements for parameters of interest when $C_"QD"^xi = C_"Trot"^((2k))$ to yield $C_"Comp"^((2k)) in o(min{C_"QD", C_"Trot"^((2k))})$.],
 ) <table_composite_advantages>
 
+=== Partitioning Scheme
+As we have seen throughout, the partition used to create a Composite channel has a significant impact on the resulting number of operator exponentials needed. This makes partitioning an important problem, but one that is also fairly challenging as the solution space is $2^L$. In this section we show how a simple partitioning scheme called `chop` can create partitions that work exceptionally well for systems with large separations between the largest spectral norm terms and the smallest spectral norms. `chop` creates a partition $A + B$ of a Hamiltonian given a norm cutoff $h_"chop"$, all terms with spectral norm above $h_"chop"$ are placed into $A$ and all those below are placed into QDrift:
+$
+    A_(#raw("chop")) &:= sum_(i = 1)^L II[h_i >= h_"chop"] h_i H_i, \
+    B_(#raw("chop")) &:= sum_(i = 1)^(L) bold(I) [h_i < h_"chop"] h_i H_i.
+$
 
-=== Probabilistic Partitioning
-Now that we have sufficient conditions to guarantee cost improvements for a given partition, in this section we will derive a partitioning scheme that can provably satisfy the cost requirements in @thm_composite_higher_order_improvements. This scheme is a probabilistic scheme in which each term has some probability $p_i$ of being placed in the Trotter partition $A$ and probability $1-p_i$ of being placed in the QDrift partition $B$. We can then compute the expected cost of the resulting composite channel and show with high probability that the resulting parameters satisfy the cost improvement requirements with high probability.
+#theorem_og("Simulation Improvements for Exponentially Decaying Hamiltonians")[
+    Let $H$ be a Hamiltonian $H = sum_i h_i H_i$ such that the spectral norms decay exponentially $h_i = 2^(-i)$ and the commutator structure is small, i.e. $alpha_"comm" (H, 2k) in O( (log L) / L)$. Then the `chop` partitioning scheme that places the largest $log L$ terms into Trotter and the remaining terms into QDrift satisfy the conditions for asymptotic improvement outlined in @thm_composite_higher_order_improvements whenever $t / epsilon$ is at the crossover point where $C_"QD" = C_"Trot"^((2k))$. This requires setting the number of QDrift samples $N_B$ to $log L$ as well.
+] <thm_composite_probabilistic_improvements>
 
-One of the major problems we encountered in @sec_composite_first_order_comparison is that the gate cost is sensitive to the partitioning used. Providing a detailed partitioning scheme that provably works for all Hamiltonians is a very challenging task and beyond the scope of this thesis. Instead, we will provide a probabilistic scheme that provably works for Hamiltonians where the terms have exponentially decaying spectral norms and there is a small commutator structure in the largest weight terms. This heuristically matches our intuition of Chemistry Hamiltonians, thus providing a plausible method for improving chemical simulations in quantum computing. Research conducted by Gunther et al. in @gunther2025phase verify that partially randomized techniques, which are simulation techniques similar in spirit to our Composite channel approach, are comparable in error to state-of-the-art techniques involving qubitization while using much less ancilla qubits. This reduction in memory requirements, along with their relatively simple implementations, make partially randomized schemes very appealing options for near term fault-tolerant simulations.
+#proof_og("Sketch")[
+    We will summarize the conditions needed whenever $xi = 1$, which was discussed informally after the proof of @thm_composite_higher_order_improvements. We need that $L_A in o(L)$, $norm(h_B) in o(norm(h))$, and $N_B in Theta(L_A)$. First we note that we can satisfy two of these conditions from the start by setting $L_A = log L = N_B$. The only remaining condition is that $norm(h_B) in o(norm(h))$. This can be computed via straightforward summations
+    $
+        norm(h) &= sum_(i = 0)^(L - 1) 2^(-i) = 2 (1 - 2^(-L)) \
+        norm(h_B) &= sum_(i = log(L) + 1)^(L - 1) 2^(-i) = 2^(1 - (log(L) + 1)) - 2^(-(L-1)) = L^(-1) - 2 dot 2^(-L).
+    $
+    As $norm(h) in Theta(1)$ and $norm(h_B) in Theta(L^(-1))$ we have that $norm(h_B) in norm(h)$. Therefore the conditions for asymptotic improvement at $xi = 1$ are met fairly easily.
+]
 
-#todo[I'm now considering if it is worth it to include this probabilistic partitioning scheme. I think if you just use the `chop` partition then the same Hamiltonian satisfies the cost requirements. The probabilistic partitioning is a lot of work and tedium and does not seem to be useful in practice? ]
 
 == Numerics <sec_composite_numerics>
 This section is primarily based on joint work conducted in @pocrnic2024composite. In that paper we provided analytic extensions of the real time composite channels developed in @hagan2023composite in addition to conducting a numeric investigation to the performance of Composite channels, however we will only discuss the real time composite simulation results. We study various chemistry and condensed matter Hamiltonians used to benchmark simulation methods, namely Hydrogen chain systems, Uniform Electron Gas (Jellium), and nearest neighbor spin models on graphs. We find that both heuristic partitioning schemes developed by hand and partitionings based on machine learning optimizers perform comparably. Both partitioning schemes are capable of finding partitions that have anywhere from 1/2 to 1/19 lower query costs at the crossover times, depending on the Hamiltonian being studied. A summary of the numeric results are contained below in @table_composite_numerics.
@@ -577,7 +598,7 @@ This section is primarily based on joint work conducted in @pocrnic2024composite
         [6 Site Jellium], [18.8], [94], [Imag. -],
     ),
     caption: [
-        Summary of gate cost improvements observed via the _crossover advantage_ $t_xi$ defined in Equation (contingent on optimization convergence). We observe that savings tend to somewhat improve as the number of terms increases (within the same model), with the exception of Jellium 7 where optimizer struggles with partitioning due to the number of terms. This is evident in the lack of monotonicity of $C(tilde(cal(C)^1))$ in Figure \ref{fig:Jellium56}. The most significant savings are seen for the Jellium models. Even in cases where the number of terms are comparable to other models, larger advantages are persistent in Jellium. This is further establishes the spectral norm distribution as one of the most important indicators of performance in the composite framework.
+        Summary of gate cost improvements observed via the _crossover advantage_ $t_xi$ defined in Equation (contingent on optimization convergence). We observe that savings tend to somewhat improve as the number of terms increases (within the same model), with the exception of Jellium 7 where optimizer struggles with partitioning due to the number of terms. This is evident in the lack of monotonicity of $C(tilde(cal(C)^1))$ in Figure \ref{fig:Jellium56}. The most significant savings are seen for the Jellium models. Even in cases where the number of terms are comparable to other models, larger advantages are persistent in Jellium. This further establishes the spectral norm distribution as one of the most important indicators of performance in the composite framework.
     ],
 ) <table_composite_numerics>
 

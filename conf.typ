@@ -58,13 +58,11 @@
         ],
     )
 
-    // Preliminary pages with Roman numerals
     set page(
         numbering: "i",
         number-align: center,
     )
 
-    // Abstract (double-spaced, max 350 words for doctoral thesis)
     page[
         #align(center)[
             #v(1em)
@@ -112,7 +110,6 @@
     ]
 
 
-    // Main document body with Arabic numerals
     counter(page).update(1)
     set page(
         numbering: "1",
@@ -127,12 +124,9 @@
         } else {
             align(right)[
                 #smallcaps([Chapter ] + hydra(1)) #h(1fr) #counter(page).display("1")
-                // CHAPTER #hydra(1, display: (hydra_ctx, hydra_content) => hydra_content) #h(1fr) #counter(page).display("1")
             ]
         },
     )
-    // set page(number-align: top + right)
-    set text()
     set par(leading: 1em, justify: true, first-line-indent: 5mm)
 
     // Render the body of the document
