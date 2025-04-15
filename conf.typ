@@ -32,7 +32,7 @@
 
     // Title Page (no numbering, centered)
     page(
-        margin: (bottom: 0cm),
+        margin: (x: 0cm, y: 0cm),
         footer: none,
         align(center)[
             #v(30mm)
@@ -86,7 +86,7 @@
     ]
 
     page[
-        #place(horizon + right, "This thesis is dedicated to...")
+        #place(horizon + right, [_This thesis is dedicated to my siblings \ JT, Veronica, and Brittany._])
     ]
 
     page[

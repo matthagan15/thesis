@@ -9,17 +9,26 @@
 #set math.equation(number-align: bottom)
 
 #import "@preview/ctheorems:1.1.3": *
-#let lemma_og = thmbox("lemma", "Lemma", stroke: 1pt, bodyfmt: x => text(x, style: "italic"))
+// #let lemma_og = thmbox("lemma", "Lemma", stroke: 1pt, bodyfmt: x => text(x, style: "italic"))
 #let proof_og = thmproof("proof", "Proof", inset: (x: 0cm))
-#let theorem_og = thmbox("theorem", "Theorem", stroke: 1pt, bodyfmt: x => text(x, style: "italic"))
-#let definition_og = thmbox("definition", "Definition", stroke: 1pt, bodyfmt: x => text(x, style: "italic"))
+// #let theorem_og = thmbox("theorem", "Theorem", stroke: 1pt, bodyfmt: x => text(x, style: "italic"))
+// #let definition_og = thmbox("definition", "Definition", stroke: 1pt, bodyfmt: x => text(x, style: "italic"))
 
-// #import "@preview/theorion:0.3.3": *
-// #import cosmos.simple
-// #show: show-theorion
-
-// #let theorem_og = thmbox("theorem", "Theorem", stroke: 1pt, fill: rgb(0, 255, 0, 50))
-// #let definition_og = thmbox("definition", "Definition", stroke: 1pt, fill: rgb(0, 0, 255, 30))
+#let lemma_og = thmbox("lemma", "Lemma", stroke: 1pt, bodyfmt: x => text(x, style: "italic"), fill: rgb("e8887377"))
+#let theorem_og = thmbox(
+    "theorem",
+    "Theorem",
+    stroke: 1pt,
+    bodyfmt: x => text(x, style: "italic"),
+    fill: rgb("#c8f6ad"),
+)
+#let definition_og = thmbox(
+    "definition",
+    "Definition",
+    stroke: 1pt,
+    bodyfmt: x => text(x, style: "italic"),
+    fill: rgb("#62b6cb44"),
+)
 
 #let todo = x => { text([TODO: #x], fill: red, weight: "bold") }
 
@@ -101,6 +110,20 @@ This then allows us to decompose the total commutator structure into 3 pieces: c
 $
     alpha_"comm" (H, 2k) = alpha_"comm" (A, 2k) + alpha_"comm" (B, 2k) + alpha_"comm" ({A, B}, 2k).
 $
+We also note the following bounds that will be used later. We can ignore the commutator structure and use the triangle inequality to get
+$
+    alpha_"C" (H, 2k) &= sum_(gamma_i in {1, ..., L}) (product h_(gamma_i)) norm([H_(gamma_(2k + 1)), [H_(gamma_(2k)), [ ...,[H_(gamma_2), H_(gamma_1)] ... ]]]) \
+    &<= sum_(gamma_i in {1, ..., L}) (product h_(gamma_i)) 2^(2k) norm(H_(gamma_(2k+ 1))) norm(H_(gamma_(2k))) ... norm(H_(gamma_1)) \
+    &= 2^(2k) product_(i = 1)^(2k + 1) sum_(gamma_i in {1, ... ,L}) h_(gamma_i) \
+    &= 2^(2k) norm(h)^(2k + 1).
+$ <eq_alpha_comm_upper_bound>
+Similar arguments show the following
+$
+    alpha_"C" (A, 2k) &<= 2^(2k) norm(h_A)^(2k + 1)
+$ <eq_alpha_comm_upper_bound_2>
+$
+    alpha_"C" ({A, B}, 2k) &<= 2^(2k) sum_(i = 1)^(2k) norm(h_A)^l norm(h_B)^(2k + 1 - l) <= 2^(2k) norm(h_A)^(2k + 1).
+$ <eq_alpha_comm_upper_bound_3>
 
 This allows us to give the error associated with a a Trotter-Suzuki formula in the following theorem.
 #theorem_og([Trotter-Suzuki @childs2021theory])[
@@ -540,7 +563,7 @@ To summarize this section we provide the following table that contains the requi
         row-gutter: (2.2pt, auto),
         rows: (7mm, 1.2cm, 1.2cm, 6mm, 1.1cm),
         stroke: 0.5pt,
-        table.header[][$C_"QD" <= C_"Trot"^((2k)) <==> xi >= 1$][$C_"QD" > C_"Trot"^((2k)) <==> 0 < xi < 1$],
+        table.header[][$C_"QD" > C_"Trot"^((2k)) <==> 0 < xi < 1$][$C_"QD" <= C_"Trot"^((2k)) <==> xi >= 1$],
         align($L_A in$, horizon),
         align($o(L / (1-q_B)^(1\/2k))$, horizon),
         align(
@@ -549,7 +572,7 @@ To summarize this section we provide the following table that contains the requi
         ),
 
         align($norm(h_B) in$, horizon),
-        align($o(norm(h)^xi (t / sqrt(epsilon))^(xi - 1))$, horizon),
+        align($o(norm(h)^xi (sqrt(epsilon) / t)^(1 - xi))$, horizon),
         align($o(norm(h))$, horizon),
 
         [(Lower Bound) $N_B in$], $Omega(L_A)$, $Omega(L_A)$,
@@ -558,35 +581,85 @@ To summarize this section we provide the following table that contains the requi
     caption: [Summary of asymptotic requirements for parameters of interest when $C_"QD"^xi = C_"Trot"^((2k))$ to yield $C_"Comp"^((2k)) in o(min{C_"QD", C_"Trot"^((2k))})$.],
 ) <table_composite_advantages>
 
-=== Partitioning Scheme
+=== `chop` Partitioning Scheme
 As we have seen throughout, the partition used to create a Composite channel has a significant impact on the resulting number of operator exponentials needed. This makes partitioning an important problem, but one that is also fairly challenging as the solution space is $2^L$. In this section we show how a simple partitioning scheme called `chop` can create partitions that work exceptionally well for systems with large separations between the largest spectral norm terms and the smallest spectral norms. `chop` creates a partition $A + B$ of a Hamiltonian given a norm cutoff $h_"chop"$, all terms with spectral norm above $h_"chop"$ are placed into $A$ and all those below are placed into QDrift:
 $
-    A_(#raw("chop")) &:= sum_(i = 1)^L II[h_i >= h_"chop"] h_i H_i, \
-    B_(#raw("chop")) &:= sum_(i = 1)^(L) bold(I) [h_i < h_"chop"] h_i H_i.
+    A_(#raw("chop")) &:= sum_(i = 1)^L II[h_i >= h_"chop"] h_i H_i, #h(1.5cm) B_(#raw("chop")) &:= sum_(i = 1)^(L) II [h_i < h_"chop"] h_i H_i,
 $
+where we use $II [ "Proposition"]$ to denote the standard indicator function where $II["True"] = 1, II["False"] = 0$.
 
+`chop` will prove to be a very useful partitioning scheme both analytically and numerically. Analytically we will be able to show that it satisfies the conditions outlined in @thm_composite_higher_order_improvements for specific Hamiltonians. Numerically, it is very simple to create a specified partition from a Hamiltonian and further it is straightforward to optimize as the partition can be adjusted with a a single parameter $h_"chop"$. This still leaves open the problem of choosing the right number of QDrift samples $N_B$, but we did not find this parameter an issue to optimize analytically or numerically. In @hagan2023composite we provided a proababilistic partitioning scheme that is tuned solely through $N_B$. This scheme was very flexble, we were able to show that it saturates to the Trotter and QDrift costs in the appropriate limits as well as asymptotic cost improvements for very specific scenarios with high probability, but it's complicated analysis makes it an unfit candidate for inclusion in this thesis. Instead, we will focus on showing how `chop` can outperform Trotter or QDrift with rapidly decaying Hamiltonians in the theorem below.
+
+#todo[Make sure that the conditions below are not flipped. ]
 #theorem_og("Simulation Improvements for Exponentially Decaying Hamiltonians")[
-    Let $H$ be a Hamiltonian $H = sum_i h_i H_i$ such that the spectral norms decay exponentially $h_i = 2^(-i)$ and the commutator structure is small, i.e. $alpha_"comm" (H, 2k) in O( (log L) / L)$. Then the `chop` partitioning scheme that places the largest $log L$ terms into Trotter and the remaining terms into QDrift satisfy the conditions for asymptotic improvement outlined in @thm_composite_higher_order_improvements whenever $t / epsilon$ is at the crossover point where $C_"QD" = C_"Trot"^((2k))$. This requires setting the number of QDrift samples $N_B$ to $log L$ as well.
+    Let $H$ be a Hamiltonian $H = sum_i h_i H_i$ such that the spectral norms decay exponentially $h_i = 2^(-i)$. Then the `chop` partitioning scheme that places the largest $log L$ terms into Trotter and the remaining terms into QDrift, which corresponds to a norm cutoff of $h_"chop" = 1 / L$, satisfy the conditions for asymptotic improvement outlined in @thm_composite_higher_order_improvements whenever the following hold.
+    + $N_B = L_A = log(L)$.
+    + If $0 < xi < 1$ ($C_"QD" > C_"Trot"^((2k))$), then the simulation time is bounded from above by $t in o(L^(1/(1-xi)) sqrt(epsilon))$.
+    + If $xi >= 1$ ($C_"QD" <= C_"Trot"^((2k))$), then $t^(1 + 1\/2k) >= epsilon^(1\/2k)$ and the commutator structure is bounded from _below_ by $ alpha_"C" (H, 2k)^(1\/2k) in omega (log(L)^(1/xi) / L). $
 ] <thm_composite_probabilistic_improvements>
 
-#proof_og("Sketch")[
-    We will summarize the conditions needed whenever $xi = 1$, which was discussed informally after the proof of @thm_composite_higher_order_improvements. We need that $L_A in o(L)$, $norm(h_B) in o(norm(h))$, and $N_B in Theta(L_A)$. First we note that we can satisfy two of these conditions from the start by setting $L_A = log L = N_B$. The only remaining condition is that $norm(h_B) in o(norm(h))$. This can be computed via straightforward summations
+#proof_og()[
+    As the conditions for improvement depend on $L_A, norm(h_B),$ and $N_B$, but we know that $L_A = N_B = log(L)$, all we need to compute is $norm(h_B)$. This is done using straightforward sums:
     $
-        norm(h) &= sum_(i = 0)^(L - 1) 2^(-i) = 2 (1 - 2^(-L)) \
-        norm(h_B) &= sum_(i = log(L) + 1)^(L - 1) 2^(-i) = 2^(1 - (log(L) + 1)) - 2^(-(L-1)) = L^(-1) - 2 dot 2^(-L).
+        norm(h_B) = sum_(i = log(L) + 1)^(L) 2^(-i) = 2^(1 - (log(L) + 1)) - 2^(-L) = 1 / L - 2^(-L) in Theta(L^(-1)).
     $
-    As $norm(h) in Theta(1)$ and $norm(h_B) in Theta(L^(-1))$ we have that $norm(h_B) in norm(h)$. Therefore the conditions for asymptotic improvement at $xi = 1$ are met fairly easily.
+    The total norm can be computed similarly
+    $
+        norm(h) = sum_(i = 0)^(L - 1) 2^(-i) = 1 - 2^(-L) in Theta(1).
+    $
+    Now we just need to check the conditions on each parameter. We will analyze the requirements for $xi$ for each parameter instead of doing a case by case analysis for the two regimes of $xi$.
+
+    Starting with $N_B$, we find that $N_B = L_A in Omega(L_A)$ trivially and that $N_B = log(L) in o(L / (1 - q_B)^(1\/2k))$ along with $N_B = L_A in O(L_A)$ guarantee that $N_B$ meets the conditions in @thm_composite_higher_order_improvements straightforwardly.
+
+    We then turn to the next simplest parameter $norm(h_B)$. For $xi >= 1$ we require $norm(h_B) in norm(h)$, and since we computed that $norm(h_B) in Theta(L^(-1))$ and $norm(h) in Theta(1)$ this condition holds. For $xi >= 1$ we require $norm(h_B) in o(norm(h)^xi (sqrt(epsilon) / t)^(1 - xi))$. This can be propagated to a condition on $t$ as
+    $
+        norm(h_B) = Theta(L^(-1)) in o( (sqrt(epsilon) / t )^(1 - xi)) <==> t in o(L^(1 / (1-xi)) sqrt(epsilon)).
+    $
+    This makes intuitive sense, as $xi -> 1$ we have $L^(1/(1 - xi)) -> oo$ and our requirement then holds for all $t$. This follows from the fact that the original requirement, in this limit, boils down to $norm(h_B) in o(norm(h))$ which is true.
+
+    The last term we will need to address is $L_A$. For $0 < xi < 1$ we require $L_A in o(L)$, which is trivially satisfied. For $xi >= 1$ we need a couple results. The first will be a simplification of the requirements, if we assume that $t^(1 + 1\/2k) >= epsilon^(1\/2k)$, which should be true for simulations of interest, then we have
+    $
+        o(L^xi ( alpha_"C" (H)^(xi \/2k) ) / (alpha_"C" (A) + alpha_"C" ({A,B}))^(1\/2k)) in o(L^xi (t^(1 + 1\/2k) / epsilon^(1\/2k))^(xi - 1) ( alpha_"C" (H)^(xi \/2k) ) / (alpha_"C" (A) + alpha_"C" ({A,B}))^(1\/2k)).
+    $
+    Using the simplification on the left, we then require $L_A = log(L) in o(L^xi  ( alpha_"C" (H)^(xi \/2k) ) / (alpha_"C" (A) + alpha_"C" ({A,B}))^(1\/2k))$. We could either turn this into a condition on $xi$ or on $alpha_"C" (H)$, but it will be simplest to present as a condition on $alpha_"C" (H)$.
+
+
+    Now we can use the bounds on $alpha_"C" (A)$ and $alpha_"C" ({A,B})$ derived in @eq_alpha_comm_upper_bound_2 and @eq_alpha_comm_upper_bound_3 to argue
+    $
+        alpha_"C" (A) + alpha_"C" ({A,B}) <= 2^(2k) (norm(h_A)^(2k + 1) + 2k norm(h_A)^(2k + 1)) = (2k + 1) 2^(2k) norm(h_A)^(2k + 1).
+    $
+    This, along with the fact that $norm(h_A) = 1 - 1/L <= 1$ implies
+    $
+        1 / (2k+1)^(1\/2k) <= 1 / (alpha_"C" (A) + alpha_"C" ({A,B}))^(1\/2k).
+    $
+    Moreover, $2k + 1 >= 1$ implies $1 <= 1/(2k+1)^(1\/2k)$. This means that
+    $
+        L_A in o(L^xi alpha_"C" (H)^(xi \/ 2k))
+    $ <tmp_composite_7>
+    is sufficient to satisfy the asymptotic improvement conditions. Once we have this form we are pretty much done, as the following implication follows directly from the definition of $o(dot)$ and $omega(dot)$, and this guarantees @tmp_composite_7
+    $
+        alpha_"C" (H)^(1\/2k) in omega(log(L)^(1\/xi) / L) <==> log(L) in o(L^xi alpha_"C" (H)^(xi \/ 2k)).
+    $ <eq_composite_chop_alpha_c_requirement>
+    We also point out that this requirement seems to make intuitive sense, if the original Hamiltonian has a closed commutator structure, then it does not make sense to do a Composite channel as a Trotter formula would have no error. @eq_composite_chop_alpha_c_requirement makes this intuition quantitative.
 ]
 
 
 == Numerics <sec_composite_numerics>
-This section is primarily based on joint work conducted in @pocrnic2024composite. In that paper we provided analytic extensions of the real time composite channels developed in @hagan2023composite in addition to conducting a numeric investigation to the performance of Composite channels, however we will only discuss the real time composite simulation results. We study various chemistry and condensed matter Hamiltonians used to benchmark simulation methods, namely Hydrogen chain systems, Uniform Electron Gas (Jellium), and nearest neighbor spin models on graphs. We find that both heuristic partitioning schemes developed by hand and partitionings based on machine learning optimizers perform comparably. Both partitioning schemes are capable of finding partitions that have anywhere from 1/2 to 1/19 lower query costs at the crossover times, depending on the Hamiltonian being studied. A summary of the numeric results are contained below in @table_composite_numerics.
+In this section we turn to studying the performance of Composite channels on benchmark quantum systems. This work was conductly jointly with Pocrnic et al. in @pocrnic2024composite in which the real time Composite simulations we outlined in this chapter were studied numerically and extended to "imaginary time" evolution. If real time evolution is characterized by the map $ket(psi) |-> e^(-i H t) ket(psi)$ then imaginary time is given by the map $ket(psi) |-> e^(- beta H) ket(psi)$. Application of imaginary time evolution maps can be used to prepare thermal states. If we start with a maximally mixed state, then imaginary evolution for time $beta / 2$ gives
+$id / dim |-> e^(-beta H \/ 2) id / dim e^(-beta H \/ 2) = e^(-beta H) / dim$. This is clearly not a quantum channel as the output needs to be properly normalized; dealing with these normalization factors constitutes a significant amount of the analytic work, which was performed by Pocrnic, to extend QDrift and Composite simulations to imaginary time evolution in @pocrnic2024composite.
 
+To analyze the performance of a Composite channel, real or imaginary, we constructed a library @compositeLibrary can be used to simulate the dynamics of a product formula channel with a given partitioning, number of QDrift terms $N_B$, time $t$, and error $epsilon$. Numerically we did not measure the diamond distance of the channel, as this involves a fairly costly maximization. This maximization can be computed via a semidefinite program, this becomes prohibitively costly when used to optimize the "hyperparameters" of the simulation, such as the partitioning. We instead used the trace distance which is easier to compute and avoids the issues of bias found when using infidelity. To find the exact gate count needed we used a search procedure over the minimal number of time steps, either $r$ for Trotter formulas or $N_B$ for QDrift, needed to meet the error threshold $epsilon$.
 
+The main metric we used to analyze the performance of Composite channels is the crossover ratio $r_"cross"$. As the cost of a QDrift channel scales as $O(t^2 / epsilon)$ and Trotter scales as $O(t^(1 + 1\/2k)/ epsilon^(1\/2k))$ there exists some time $t_"cross"$ such that $C_"QD" (H, t_"cross", epsilon) = C_"Trot"^((2k)) (H, t_"cross", epsilon)$. As this is the simulation time that we expect the most flexibility, and therefore cost improvements, for Composite channels we then define the crossover ratio as
+$
+    r_"cross" := (C_"QD" (H, t_"cross", epsilon)) / (C_"comp" (H, t_"cross", epsilon)) = (C_"Trot"^((2k)) (H, t_"cross", epsilon)) / (C_"comp" (H, t_"cross", epsilon)).
+$ <eq_composite_crossover_ratio>
+We then study the performance of this crossover ratio as a function of the partitioning of the channel, which we typically use the `chop` partition with cutoff $h_"chop"$, and the number of QDrift samples $N_B$. These parameters were then optimized over using Gradient Boosted Regression Trees (GBRT) in Scikit-learn @pedregosa2011scikit. A summary of the advantages seen for Composite channels can be found below in @table_composite_numerics.
 #figure(
     table(
         columns: 4,
-        table.header[*Hamiltonian*][$xi$][*Num. Terms*][* \* - Time*],
+        stroke: (x: 0.5pt, y: 0.5pt),
+        table.header[*Hamiltonian*][$r_"cross"$][*\# Terms*][* \* - Time*],
         [Hydrogen-3], $2.3$, [62], [Real -],
         [5 Site Jellium], [9.2], [56], [Real -],
         [6 Site Jellium], [18.8], [94], [Real -],
@@ -598,7 +671,7 @@ This section is primarily based on joint work conducted in @pocrnic2024composite
         [6 Site Jellium], [18.8], [94], [Imag. -],
     ),
     caption: [
-        Summary of gate cost improvements observed via the _crossover advantage_ $t_xi$ defined in Equation (contingent on optimization convergence). We observe that savings tend to somewhat improve as the number of terms increases (within the same model), with the exception of Jellium 7 where optimizer struggles with partitioning due to the number of terms. This is evident in the lack of monotonicity of $C(tilde(cal(C)^1))$ in Figure \ref{fig:Jellium56}. The most significant savings are seen for the Jellium models. Even in cases where the number of terms are comparable to other models, larger advantages are persistent in Jellium. This further establishes the spectral norm distribution as one of the most important indicators of performance in the composite framework.
+        Summary of gate cost improvements observed via the crossover ratio $r_"cross"$ given in @eq_composite_crossover_ratio. We observe that savings tend to somewhat improve as the number of terms increases (within the same model), with the exception of Jellium 7 where optimizer struggles with partitioning due to the number of terms. This is evident in the lack of monotonicity of $C(tilde(cal(C)^1))$ in Figure \ref{fig:Jellium56}. The most significant savings are seen for the Jellium models. Even in cases where the number of terms are comparable to other models, larger advantages are persistent in Jellium. This further establishes the spectral norm distribution as one of the most important indicators of performance in the composite framework.
     ],
 ) <table_composite_numerics>
 
