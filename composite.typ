@@ -219,7 +219,7 @@ We will first bound the error of this approximation to the ideal evolution. This
     And the rightmost term can be bounded using the subadditivity of the diamond distance
 
     $
-        norm(cal(U)_B compose cal(U)_A - cal(C)^((1)) )_dmd &= norm(cal(Q)_B compose cal(S)^((1))_A - cal(U)_B compose cal(U)_A)_dmd \
+        norm(cal(U)_B compose cal(U)_A - cal(C)^((1)) )_dmd &= norm(cal(U)_B compose cal(U)_A - cal(Q)_B compose cal(S)^((1))_A)_dmd \
         &<= norm(cal(U)_B - cal(Q)_B)_dmd + norm(cal(U)_A - cal(S)_A^((1)))_dmd \
         &<= (4 norm(h_B) t^2) / N_B + t^2 sum_(i,j) a_i a_j norm([A_i, A_j])_oo.
     $ <tmp:composite_2>
@@ -654,7 +654,7 @@ The main metric we used to analyze the performance of Composite channels is the 
 $
     r_"cross" := (C_"QD" (H, t_"cross", epsilon)) / (C_"comp" (H, t_"cross", epsilon)) = (C_"Trot"^((2k)) (H, t_"cross", epsilon)) / (C_"comp" (H, t_"cross", epsilon)).
 $ <eq_composite_crossover_ratio>
-We then study the performance of this crossover ratio as a function of the partitioning of the channel, which we typically use the `chop` partition with cutoff $h_"chop"$, and the number of QDrift samples $N_B$. These parameters were then optimized over using Gradient Boosted Regression Trees (GBRT) in Scikit-learn @pedregosa2011scikit. A summary of the advantages seen for Composite channels can be found below in @table_composite_numerics.
+We then study the performance of this crossover ratio as a function of the partitioning of the channel, which we typically use the `chop` partition with cutoff $h_"chop"$, and the number of QDrift samples $N_B$. These parameters were then optimized over using Gradient Boosted Regression Trees (GBRT) in Scikit-learn @pedregosa2011scikit. A summary of the advantages seen for Composite channels can be found below in @table_composite_numerics and afterwards more detailed results for each Hamiltonians studied are presented.
 #figure(
     table(
         columns: 4,
@@ -671,10 +671,12 @@ We then study the performance of this crossover ratio as a function of the parti
         [6 Site Jellium], [18.8], [94], [Imag. -],
     ),
     caption: [
-        Summary of gate cost improvements observed via the crossover ratio $r_"cross"$ given in @eq_composite_crossover_ratio. We observe that savings tend to somewhat improve as the number of terms increases (within the same model), with the exception of Jellium 7 where optimizer struggles with partitioning due to the number of terms. This is evident in the lack of monotonicity of $C(tilde(cal(C)^1))$ in Figure \ref{fig:Jellium56}. The most significant savings are seen for the Jellium models. Even in cases where the number of terms are comparable to other models, larger advantages are persistent in Jellium. This further establishes the spectral norm distribution as one of the most important indicators of performance in the composite framework.
+        Summary of gate cost improvements observed via the crossover ratio $r_"cross"$ given in @eq_composite_crossover_ratio. We observe that savings tend to somewhat improve as the number of terms increases (within the same model), with the exception of Jellium 7 where GBRT struggles with partitioning due to the number of terms.
     ],
 ) <table_composite_numerics>
 
+=== Hydrogen Chain
+Using OpenFermion @mcclean2020openfermion and PySCF @pyscf we were able to compute the Hamiltonian for a chain of 3 Hydrogen atoms equally spaced in a line. OpenFermion is a package for managing electronic structure Hamiltonians, it not only generates the required fermionic creation and annihilation operators but can utilize Jordan-Wigner encodings to make the results amenable to simulation on quantum computers. PySCF is a library used to compute the required molecular orbital integrals that give the actual constants in the final Hamiltonian. We used an active space which was given by the minimal basis and is a byproduct of our minimal spin configuration.
 
 == Discussion <sec:composite_discussion>
 
