@@ -678,5 +678,54 @@ We then study the performance of this crossover ratio as a function of the parti
 === Hydrogen Chain
 Using OpenFermion @mcclean2020openfermion and PySCF @pyscf we were able to compute the Hamiltonian for a chain of 3 Hydrogen atoms equally spaced in a line. OpenFermion is a package for managing electronic structure Hamiltonians, it not only generates the required fermionic creation and annihilation operators but can utilize Jordan-Wigner encodings to make the results amenable to simulation on quantum computers. PySCF is a library used to compute the required molecular orbital integrals that give the actual constants in the final Hamiltonian. We used an active space which was given by the minimal basis and is a byproduct of our minimal spin configuration.
 
+The results of the simulations we conducted are found in @fig_composite_hchain_1. Details of the partitioning schemes determined by the
+#figure(
+    image("figs/H3update.png"),
+    caption: [Hydrogen 3 simulation. The crossover time for first order Trotter is around $norm(H) t approx 0.15$ with a crossover ratio of $approx 2.3$. For second order Trotter the crossover time is $approx 0.2$ with a crossover ratio of $approx 2$. Note that the simulation methods with a tilde denote a GBRT optimized partition and the unmarked method is a hand-tuned `chop` partitioning scheme. #todo[Replace the $cal(X)$ in the legend with $cal(C)$. ]],
+) <fig_composite_hchain_1>
+
+#figure(
+    grid(
+        columns: 2,
+        row-gutter: 5mm,
+        image("figs/H3_nb.png"), image("figs/H3_w.png"),
+        "(a)", "(b)",
+    ),
+    caption: [(a) Optimal number of QDrift samples $N_B$ for $"H"_3$ as determined by GBRT. (b) Spectral weight of the Trotter partition $norm(h_A)$ computed by GBRT applied to $h_"chop"$, normalized by the total spectral weight of $"H"_3$ as a function of simulation time $t$.],
+) <fig_composite_hchain_2>
+
+=== Jellium
+Another standard chemistry benchmark system, the Uniform Electron Gas (UEG) which is also known as Jellium, is a collection of free electrons in a solid with a uniform positive potential to serve as nuclei. The Hamiltonian we used is given below
+$
+    H_"Jelly" =& 1 / 2 sum_(p, sigma) k_p^2 a^dagger_(p, sigma) a_(p, sigma) - (4 pi) / Omega sum_(p != q, j, sigma) (zeta_j e^(i k_(q - p) dot R_j) / k^2_(p - q)) a_(p, sigma)^dagger a_(q, sigma) \
+    &+ (2 pi) / Omega sum_((p,sigma) != (q, sigma'), nu != 0) a^dagger_(p, sigma) a^dagger_(q, sigma') a_(q + nu, sigma') a_(p - nu, sigma) / k_nu^2,
+$ <eq_composite_jellium_ham>
+where $sigma$ represents a spin, $p, q$ denote momentum eigenvalues, $R_j$ the position of the $j^"th"$ nuclei, $zeta_j$ the atomic number, $k_nu = 2 pi nu \/ Omega^(1/3)$, and $Omega$ denotes the cell volume. We then use the Jordan-Wigner encoding to represent the creation and annihilation operators as Pauli strings on qubits. For a derivation of this Hamiltonian see Appendix B of @babbush2018low.
+
+This Hamiltonian serves as a useful benchmark for Composite simulations as there are a lot of terms and the distribution of the spectral norm of each term fits our intuition for Composite channel advantages derived earlier. @fig_composite_jelly_norms demonstrates not only the increase in the number of terms as we increase the number of sites used but also how the norms are sharply peaked about the strongest few terms.
+#figure(
+    grid(
+        columns: 2,
+        row-gutter: 5mm,
+        image("figs/J5dist.png"), image("figs/J7dist.png"),
+        "(a) Jellium 5", "(b) Jellium 7",
+    ),
+    caption: [Semi-log plots of the spectral norm of the Jellium Hamiltonian. The plots not only show the large increase in the number of terms as we increase te sites but also demonstrate the increasingly concentrated norm in the strongest few terms. The red horizontal line indicates one of the values of $h_"chop"$ used in later simulations.],
+) <fig_composite_jelly_norms>
+
+In @fig_composite_jelly_sims below we show how the cost of simulating Jellium for various number of sites scales with the normalized simulation time $norm(H) t$. These models are the highest gate cost improvements we observed numerically. We find that having more terms in the Hamiltonian allows for greater flexibility in developing partitionings, allowing for more cost savings, but also makes the problem of choosing a partitioning more challenging. We can see this occur with our GBRT chosen `chop` partitioning in @fig_composite_jelly_sims (c) where the cost of the Composite channel is non-monotonic with respect to $norm(H) t$.
+
+#figure(
+    grid(
+        columns: 2, row-gutter: 3mm,
+        image("figs/Jellium5.png"), image("figs/Jellium6.png"),
+        "(a) Jellium 5", "(b) Jellium 6",
+        grid.cell(colspan: 2, image("figs/Jellium7.png", width: 50%)), grid.cell(colspan: 2, "(c) Jellium 7")
+    ),
+    caption: [Query costs associated with exact implementation of various product formulas for different Jellium models.],
+) <fig_composite_jelly_sims>
+
+===
+
 == Discussion <sec:composite_discussion>
 
