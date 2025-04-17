@@ -3,9 +3,21 @@
 #let ket(psi) = $lr(|#psi angle.r)$
 #let bra(psi) = $lr(angle.l #psi|)$
 #let ketbra(a, b) = $|#a angle.r angle.l #b|$
+#let braket(a, b) = $angle.l #a|#b angle.r$
 #let tp = $times.circle$
 #let id = $bb(1)$
 #let dmd = $diamond.medium$
+// Common objects
+#let hilb = $cal(H)$
+#let partfun = $cal(Z)$
+#let identity = $bb(1)$
+#let gue = $"GUE"$
+#let sinc = math.op("sinc")
+#let hermMathOp = math.op("Herm")
+#let im = math.op("Im")
+#let diag = math.op("diag")
+#let herm(x) = $hermMathOp parens(#x)$
+
 
 #import "@preview/ctheorems:1.1.3": *
 // #let lemma_og = thmbox("lemma", "Lemma", stroke: 1pt, bodyfmt: x => text(x, style: "italic"))
@@ -32,6 +44,9 @@
 #let todo = x => { text([TODO: #x], fill: red, weight: "bold") }
 #set math.equation(number-align: bottom)
 
+#let q0 = $1 / (1 + e^(-beta gamma))$
+#let q1 = $e^(-beta gamma) / (1 + e^(-beta gamma))$
+
 #show: thmrules.with(qed-symbol: $square$)
 
 #heading("Preparing Thermal Quantum States", level: 1, supplement: "Chapter") <ch:thermal_state_prep>
@@ -52,16 +67,6 @@ The rest of this chapter is organized as follows. In @sec_tsp_intro we briefly d
 == Related Work and Main Results <sec_tsp_intro>
 
 
-// Common objects
-#let hilb = $cal(H)$
-#let partfun = $cal(Z)$
-#let identity = $bb(1)$
-#let gue = $"GUE"$
-#let sinc = math.op("sinc")
-#let hermMathOp = math.op("Herm")
-#let im = math.op("Im")
-#let diag = math.op("diag")
-#let herm(x) = $hermMathOp parens(#x)$
 
 The simulation of quantum systems and materials is among the most promising applications for exponential advantages of digital quantum computers over classical computers @aspuru2005simulated @reiher2017elucidating @tensorHypercontraction. A critical step in quantum simulation algorithms, as well as other quantum algorithms such as Semi-Definite Program (SDP) solvers @brandao2019sdp and Hamiltonian learning routines @anshu_sample-efficient_2021, is the preparation of good input states, which are typically thermal states $frac(e^(-beta H), tr(e^(-beta H)))$. Thermal states at low temperatures (high $beta$) have large overlap with the ground states of the system, indicating that preparing thermal states is just as difficult as the QMA-Hard $k$-local ground state preparation problem @kempe2005complexitylocalhamiltonianproblem.
 
@@ -87,11 +92,11 @@ $
 
 where $lambda(i,j) = lambda_S(i) + lambda_E(j)$ and we will sort the eigenvalues in nondecreasing order such that $i > j => lambda_S(i) >= lambda_S(j)$. We note that the ground state in our 1-indexed notation is therefore $ketbra(1,1)$. We also make use of the following notation for the energy differences of the system-environment Hamiltonian and just the system
 
-$ Delta(i,j|k,l) := lambda(i,j) - lambda(k,l), quad Delta_S(i,i') = lambda_S(i) - lambda_S(i'), $ <eq:delta_def>
+$ Delta(i,j|k,l) := lambda(i,j) - lambda(k,l), quad Delta_S(i,i') = lambda_S(i) - lambda_S(i'), $ <eq_delta_def>
 
 and because our eigenvalues are sorted $i > j => Delta_S(i,j) >= 0$. We will need a few other notations for eigenvalue differences. First we denote the degeneracy of an eigenvalue $lambda(i,j)$ using $eta(i,j)$ and the number of times a system eigenvalue _difference_ is present as $eta_Delta (i,j)$. For example, in a truncated harmonic oscillator with 4 energy levels the lowest gap $Delta$ is present 3 times, so $eta_Delta (1, 2) = 3$. The second is that we will need to eventually analyze interferences between eigenvalue differences of the system, so we define
 
-$ delta_(min) := min_(Delta_S(i,j) != Delta_S(k,l)) lr(| Delta_S(i,j) - Delta_S(k, l) |). $ <eq:delta_min_def>
+$ delta_(min) := min_(Delta_S(i,j) != Delta_S(k,l)) lr(| Delta_S(i,j) - Delta_S(k, l) |). $ <eq_delta_min_def>
 
 Note that nothing in this definition prevents one of the summands, say $Delta_S (k,l)$, from being 0. This implies that $delta_(min) <= Delta_S (i,j)$ for all $i$ and $j$.
 
@@ -99,11 +104,11 @@ Currently our dynamics involved a system separated from the environment, so we n
 
 $
     G = U_("haar") D U_("haar")^dagger, U_("haar") tilde "Haar"(hilb_S tp hilb_E) text(" and ") D_(i i) tilde cal(N)(0,1),
-$ <eq:interaction_def>
+$ <eq_interaction_def>
 
 where the eigenvectors are Haar distributed and the eigenvalues I.I.D. normal Gaussian variables. We then add this random interaction term to our system-environment dynamics with a coupling constant $alpha$, yielding a total dynamics governed by $H_S + H_E + alpha G$. We define the following rescaled coupling constant
 
-$ tilde(alpha) := frac(alpha t, sqrt(dim + 1)), $ <eq:a_tilde_def>
+$ tilde(alpha) := frac(alpha t, sqrt(dim + 1)), $ <eq_a_tilde_def>
 
 where the $dim$ is the total Hilbert space $hilb$ dimension. The rescaling with respect to $dim$ is to capture the factors of $1/(dim + 1)$ in the transition amplitudes that appear later and leads to much more compact expressions.
 This gives a decomposition of expectation values over $G$ into two parts
@@ -147,7 +152,7 @@ $
 
 We then see that if $[ rho, H] = 0$ then $Phi (rho; 0) = id (rho)$, and as we restrict ourselves to such input states we will use this throughout the remainder of the paper. The next order correction is the $O(alpha^1)$ term.
 #theorem([First Order $Phi$])[
-    Let $Phi$ be the thermalizing quantum channel given by @eq:PhiDef and $G$ the randomly chosen interaction term as given by @eq:interaction_def. The $O(alpha)$ term in the weak-coupling expansion in @eq_tsp_phi_taylor_series vanishes
+    Let $Phi$ be the thermalizing quantum channel given by @eq:PhiDef and $G$ the randomly chosen interaction term as given by @eq_interaction_def. The $O(alpha)$ term in the weak-coupling expansion in @eq_tsp_phi_taylor_series vanishes
     $ frac(partial, partial alpha) Phi (rho; alpha) |_(alpha = 0) = 0. $
 ] <thm_tsp_first_order_phi>
 #proof()[
@@ -207,12 +212,62 @@ where we will use the environment qubit probabilities $q(0)$ and $q(1)$ in calcu
     + The transition element from $ketbra(i,i)$ to $ketbra(j,j)$, for $i != j$, is given by $
     bra(j) cal(T) (ketbra(i,i)) ket(j) = tilde(alpha)^2 (&sinc^2(Delta_S (i,j) t/2) + 1/(1 + e^(-beta gamma)) sinc^2 ((Delta_S (i,j) - gamma)t/2) \
     & + e^(-beta gamma)/(1 + e^(-beta gamma)) sinc^2((Delta_S (i,j) + gamma) t/2)).
-  $
+  $ <eq_transition_terms_total>
     + For same-state transitions $ketbra(i,i)$ to $ketbra(i,i)$ we have $
     bra(i) cal(T)(ketbra(i,i)) ket(i) = - sum_(j != i) bra(j) cal(T) (ketbra(i,i)) ket(j),
   $ which follows from $tr cal(T)(rho) = 0$ as shown in @lem_tsp_transitions.
     + There are no coherences, or off-diagonal density matrix elements, introduced in the system up to $O(alpha^2)$, or mathematically $ j != k ==> bra(j) cal(T) (ketbra(i,i)) ket(k) = 0. $
+]<thm_tsp_second_order_expansion>
+Before we prove this result we will introduce the concept of on- and off-resonant transitions which we give below.
+#definition([On and Off Resonant Transitions])[
+    The transition elements in @eq_transition_terms_total can be divided into on-resonance and off-resonance transitions based on the arguments to the $sinc$ function. We define the on-resonance transitions as
+    $
+        bra(j) cal(T)_"on" (ketbra(i,i)) ket(j) := & tilde(alpha)^2 q0 II[ |Delta_S (i,j) - gamma| <= delta_min] sinc^2 ((Delta_S (i,j) - gamma ) t / 2) \
+        + & tilde(alpha)^2 q1 II[ |Delta_S (i,j) + gamma| <= delta_min] sinc^2 ((Delta_S (i,j) + gamma) t / 2)
+    $ <eq_on_resonance>
+    and the off-resonance terms as
+    $
+        bra(j) cal(T)_"off" (ketbra(i,i)) ket(j) := & tilde(alpha)^2 q0 II[ |Delta_S (i,j) - gamma| > delta_min] sinc^2 ((Delta_S (i,j) - gamma ) t / 2) \
+        + & tilde(alpha)^2 q1 II[ |Delta_S (i,j) + gamma| > delta_min] sinc^2 ((Delta_S (i,j) + gamma) t / 2) \
+        + & tilde(alpha)^2 sinc^2 (Delta_S (i,j) t / 2).
+    $ <eq_off_resonance>
+    For the same-state transitions $ketbra(i,i)$ to $ketbra(i,i)$ the on- and off-resonance transitions are equal to
+    $
+        bra(i) cal(T)_"on" (ketbra(i,i)) ket(i) &= - sum_(j != i) bra(j) cal(T)_"on" (ketbra(i,i)) ket(j) \
+        " and " bra(i) cal(T)_"off" (ketbra(i,i)) ket(i) &= - sum_(j != i) bra(j) cal(T)_"off" (ketbra(i,i)) ket(j).
+    $ <eq_same_state_transition_resonances>
+] <def_transition>
+We will now use these definitions to prove @thm_tsp_second_order_expansion.
+#proof([of @thm_tsp_second_order_expansion])[
+    The bulk of this proof will be based on straightforward reductions from @eq_el_gigante. To start we will first show that no off-diagonal elements are introduced to the density matrix. By taking the $(j,k)$ matrix element of the output from @eq_el_gigante we see
+    $
+        bra(j) cal(T)(ketbra(i,i))ket(k) &= sum_(l, m) e^(-beta lambda_E (m)) / (1 + e^(-beta lambda_E (m))) bra(j\, l) alpha^2 / 2 EE_G [ partial^2 / (diff alpha^2) Phi_G (ketbra(i\, m, i\, m)) |_(alpha = 0) ] ket(k\, l) \
+        &= - sum_(l,m) q(m) tilde(alpha)^2 (chi (i,m) + chi (i,m)^* + t^2 eta (i,m)) braket(j\, l, i\, m) braket(i\, m, k\, l) \
+        & + sum_(l, m) q(m) sum_(a,b) tilde(alpha)^2 sinc^2 (Delta (i,m|a,b) t / 2 ) braket(j\,l, a\,b) braket(a\, b, k\, l) \
+        &= 0,
+    $
+    where we introduce $q(m)$ for $m=0,1$ to be a placeholder for the prefactors in @eq_el_gigante and the last equality is due to the fact that $j != k$ implies that $braket(j\, l, i\,m)$ and $braket(i\,m, k\, l)$ cannot both be nonzero and likewise for $braket(j\, l, a\,b)$ and $braket(a\,b, k\,l)$.
+
+    Since we have shown that coherences are not introduced to our system we can focus on the transitions from diagonal entries to diagonal entries in $rho$. We make heavy use of Eq. \eqref{eq:el_gigante_dos} which tells us that for $i != k$ the system-environment transition amplitude is
+    $
+        alpha^2 / 2 bra(k\, l) EE_G [ diff^2 / (diff alpha^2) Phi_G (ketbra(i\, j, i\,j)) |_(alpha = 0) ] ket(k\, l) = tilde(alpha)^2 sinc^2 ( Delta (i,j | k, l) t / 2) .
+    $
+    Now because all the operations present in the above expression are linear we can compute this map for the initial environment state $rho_E (beta)$ straightforwardly. Taking the output of this linear combination and computing the trace over the environment then gives us the expression for $cal(T)$ using the assumption that the environment is a single qubit we find using the definition of $gamma$ and $Delta_S$ in @eq_delta_def
+    $
+        bra(j) cal(T)(ket(i)bra(i)) ket(j) &= sum_(k, l) q(k) frac(alpha^2, 2)bra(j\, l) bb(E)_G [frac(partial^2, partial alpha^2) Phi_G(ket(i\, k)bra(i\,k)) |_(alpha = 0)] ket(j\, l) \
+        &= tilde(alpha)^2 sum_(k, l) q(k) sinc^2 (frac(Delta(i, k | j , l) t, 2)) \
+        &= tilde(alpha)^2 (q(0) sinc^2 (frac(Delta(i, 0 | j , 0) t, 2)) + q(0) sinc^2 (frac(Delta(i, 0 | j , 1) t, 2))) \
+        & quad + tilde(alpha)^2 (q(1) sinc^2 (frac(Delta(i, 1 | j , 0) t, 2)) + q(1) sinc^2 (frac(Delta(i, 1 | j , 1) t, 2))) \
+        &= tilde(alpha)^2 (q(0) sinc^2 (frac(Delta_S (i,j) t, 2)) + q(0) sinc^2 (frac((Delta_S (i,j) - gamma) t, 2))) \
+        & quad + tilde(alpha)^2 (q(1) sinc^2 (frac((Delta_S (i, j) + gamma) t, 2)) + q(1) sinc^2 (frac(Delta_S (i,j) t, 2))),
+    $
+    where we see that combining the terms with $sinc^2 (Delta_S(i,j) t / 2)$, as $q(0) + q(1) = 1$, we immediately get @eq_transition_terms_total.
+
+    To classify these terms as on-resonance or off-resonance we will focus on the argument to the sinc function, which is of the form $Delta_S(i,j) t/ 2$ or $(Delta_S(i,j) plus.minus gamma) t/ 2$. The idea is that we will take $t$ large enough so that only the energy differences that are less than $delta_"min"$, as defined in @eq_delta_min_def, will be non-negligible. Clearly the term $tilde(alpha)^2 sinc^2 ( frac(Delta_S (i,j)t, 2) )$ will always be off-resonance, as $delta_"min" <= Delta_S (i,j)$.
+
+    Now we have three terms to classify as either on-resonance or off-resonance, we refer to each term by their argument to the $sinc$ function. The first we can categorically declare as being off-resonance is the $Delta_S(i,j)$ term. By [??] we know $sinc^2(Delta_S(i,j) t/ 2) <= 4 / (delta_"min"^2 t^2)$, which we will make arbitrarily small in later sections. The other two can only be classified as on or off resonance depending if $Delta_S(i,j)$ is positive or negative. If $i > j$ then we know that $Delta_S(i,j) >= 0$ and therefore $sinc^2((Delta_S(i,j) - gamma)t/2)$ term can be close to 1 if $gamma approx Delta_S(i,j)$, which also shows the $Delta_S(i,j) + gamma$ term is off-resonance for all $gamma$. We say that the $Delta_S(i,j) - gamma$ term in this scenario is on-resonance if $|Delta_S(i,j) - gamma| <= delta_"min"$. This classification is best described symbolically as
 ]
+
 
 == Single Qubit and Truncated Harmonic Oscillator <sec_tsp_oscillator>
 
