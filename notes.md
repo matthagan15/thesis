@@ -1,0 +1,1 @@
+Just wanted to remark on some annoyances with Typst as I write this doc. The first thing is that equation numbers do *not* move out of the way whenever writing long equations. This is probably for the best, as you really don't want the equations running off into the margins as that looks really bad but they don't move at all.

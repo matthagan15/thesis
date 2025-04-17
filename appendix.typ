@@ -2,7 +2,7 @@
 #import "conf.typ": *
 
 #counter(heading).update(0)
-#set heading(numbering: "A")
+#set heading(numbering: "A", supplement: "Appendix")
 #show heading.where(level: 1): it => {
     let number = if it.numbering != none {
         context counter(heading).display(it.numbering)
@@ -33,5 +33,4 @@
 )
 = Trotter Bounds
 
-
-#lorem(1000)
+= Haar Integrals <sec_appendix_haar>

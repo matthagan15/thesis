@@ -97,7 +97,7 @@
     ]
 
     page[
-        #outline()
+        #outline(indent: 7.5mm)
     ]
 
     // Optional lists (user can customize/remove as needed)
