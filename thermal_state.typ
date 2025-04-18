@@ -266,7 +266,52 @@ We will now use these definitions to prove @thm_tsp_second_order_expansion.
     To classify these terms as on-resonance or off-resonance we will focus on the argument to the sinc function, which is of the form $Delta_S(i,j) t/ 2$ or $(Delta_S(i,j) plus.minus gamma) t/ 2$. The idea is that we will take $t$ large enough so that only the energy differences that are less than $delta_"min"$, as defined in @eq_delta_min_def, will be non-negligible. Clearly the term $tilde(alpha)^2 sinc^2 ( frac(Delta_S (i,j)t, 2) )$ will always be off-resonance, as $delta_"min" <= Delta_S (i,j)$.
 
     Now we have three terms to classify as either on-resonance or off-resonance, we refer to each term by their argument to the $sinc$ function. The first we can categorically declare as being off-resonance is the $Delta_S(i,j)$ term. By [??] we know $sinc^2(Delta_S(i,j) t/ 2) <= 4 / (delta_"min"^2 t^2)$, which we will make arbitrarily small in later sections. The other two can only be classified as on or off resonance depending if $Delta_S(i,j)$ is positive or negative. If $i > j$ then we know that $Delta_S(i,j) >= 0$ and therefore $sinc^2((Delta_S(i,j) - gamma)t/2)$ term can be close to 1 if $gamma approx Delta_S(i,j)$, which also shows the $Delta_S(i,j) + gamma$ term is off-resonance for all $gamma$. We say that the $Delta_S(i,j) - gamma$ term in this scenario is on-resonance if $|Delta_S(i,j) - gamma| <= delta_"min"$. This classification is best described symbolically as
+    $
+        i > j "and" |Delta(i,j) - gamma| <= delta_("min") ==>
+        bra(j) cal(T)_"on" (ketbra(i,i)) ket(j) =
+        tilde(alpha)^2 q(0) "sinc"^2 ( (Delta_S (i,j) - gamma)t / 2 ).
+    $ <tmp_tsp_1>
+    The $q(0)$ prefactor indicates that the ancilla started in it's low energy state and since $sinc^2$ is symmetric we can write the argument as $gamma Delta_S (i,j)$ which can be remembered as the ancilla gaining $gamma$ amount of energy and the system losing $Delta_S (i,j)$. In this scenario the $Delta_S (i,j) + gamma$ term is therefore put in the off-resonance map
+    $
+        i > j "and" |Delta_S (i,j) - gamma| <= delta_min \
+        ==>
+        bra(j) cal(T)_"off" (ketbra(i,i)) ket(j) =
+        tilde(alpha)^2 ( sinc^2 ( Delta_S (i,j) t / 2 ) +
+            q(1) sinc^2 ( (Delta_S (i,j) + gamma) t / 2 ) ).
+    $
+
+    Now for $i < j$ we find that the on-resonance term is
+    $
+        i < j "and" |Delta_S (i,j) + gamma| <= delta_("min") ==>
+        bra(j) cal(T)_"on" (ketbra(i, i)) ket(j) =
+        tilde(alpha)^2 q(1) sinc^2 ( (Delta_S (i,j) + gamma)t / 2 ).
+    $ <tmp_tsp_2>
+    Similarly to before the $q(1)$ prefactor tells us the ancilla starts in the excited state. This matches with the energy argument by noting that $Delta_S (i,j) <= 0$ and that the argument to $"sinc"$ is symmetric, which allows us to write it as $|Delta_S (i,j)| - gamma$; indicating that the system gains energy $|Delta_S (i,j)|$ and the ancilla energy _drops_ by $-gamma$ (therefore increases by $gamma$). In this scenario the $Delta_S (i,j) - gamma$ term is off-resonance and we have
+    $
+        i < j "and" |Delta_S (i,j) + gamma| <= delta_("min") \
+        ==>
+        bra(j) cal(T)_"off" (ketbra(i, i)) ket(j) =
+        tilde(alpha)^2 ( sinc^2 ( Delta_S (i,j) t / 2 ) +
+            q(0) sinc^2 ( (Delta_S (i,j) - gamma) t / 2 ) )
+    $
+
+    Now to compute the $i = j$ case, it is sufficient to utilize our results from the $i != j$ scenario. This is because our second order correction has zero trace $tr(cal(T)(rho)) = 0$ from , so we can define the on-resonance and off-resonance terms as the following
+
+    $
+        bra(i) cal(T)(ket(i)bra(i)) ket(i) &= - tilde(alpha)^2 sum_(k != i) bra(k) cal(T)(ketbra(i,i)) ket(k) \
+        &= - tilde(alpha)^2 sum_(k != i) bra(k) (cal(T)_"on" (ketbra(i, i)) + cal(T)_"off" (ket(i)bra(i))) ket(k) \
+        &=: bra(i) cal(T)_"on" (ketbra(i, i)) ket(i) + bra(i) cal(T)_"off" (ket(i)bra(i)) ket(i)
+    $
+
+    By plugging in @tmp_tsp_1 and @tmp_tsp_2 to the above we are done with the self-transition terms.
 ]
+
+=== Markovian Dynamics and Error Terms <sec_tsp_markovian_dynamics>
+
+Now that we have fully computed the significant contributors to the output of our channel $Phi$, we move on to characterize the behavior of the channel as a Markov chain with noise.
+A Markov chain is a random process that involves a walker transitioning to vertices on a graph wherein the probability of transition does not depend on the history of the walker. Specifically, in this context we view the vertices in this graph as the eigenstates of the Hamiltonian. The repeated interaction model because of the lack of coherences in the weak coupling limit can be interpreted as a Markov process over these eigenstates with transitions probabilities given by the above analysis.
+
+Specifically, the Markov chain is dictated by the $Phi (rho; 0)$ and $cal(T)_"on"$ terms in the weak-coupling expansion, for $[rho, H_S] = 0$ we showed that $Phi (rho; 0) = id (\ho)$, so from now on we will specifically only deal with such density matrices and characterize the zeroth order term as an identity map. As for the Markov chain, we will use normal font to denote matrices, such as $I$ for the identity matrix and $T$ for the transition term added on. We use $e_i$ to denote the basis vector associated with the quantum state $ketbra(i, i)$ and $p$ to denote the probability vector for $rho$ associated with its eigenvalues.
 
 
 == Single Qubit and Truncated Harmonic Oscillator <sec_tsp_oscillator>
