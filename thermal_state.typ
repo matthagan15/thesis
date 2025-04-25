@@ -17,6 +17,8 @@
 #let im = math.op("Im")
 #let diag = math.op("diag")
 #let herm(x) = $hermMathOp parens(#x)$
+#let tpose = sym.top
+#let on = $"on"$
 
 
 #import "@preview/ctheorems:1.1.3": *
@@ -39,6 +41,13 @@
     stroke: 1pt,
     bodyfmt: x => text(x, style: "italic"),
     fill: rgb("#62b6cb44"),
+)
+#let corollary = thmbox(
+    "corollary",
+    "Corollary",
+    stroke: 1pt,
+    bodyfmt: x => text(x, style: "italic"),
+    fill: rgb("#c4c67d"),
 )
 
 #let todo = x => { text([TODO: #x], fill: red, weight: "bold") }
@@ -313,8 +322,199 @@ A Markov chain is a random process that involves a walker transitioning to verti
 
 Specifically, the Markov chain is dictated by the $Phi (rho; 0)$ and $cal(T)_"on"$ terms in the weak-coupling expansion, for $[rho, H_S] = 0$ we showed that $Phi (rho; 0) = id (\ho)$, so from now on we will specifically only deal with such density matrices and characterize the zeroth order term as an identity map. As for the Markov chain, we will use normal font to denote matrices, such as $I$ for the identity matrix and $T$ for the transition term added on. We use $e_i$ to denote the basis vector associated with the quantum state $ketbra(i, i)$ and $p$ to denote the probability vector for $rho$ associated with its eigenvalues.
 
+#lemma([Quantum Dynamics to Classical Markov Chain])[
+    Let $T$ be the matrix defined by
+    $
+        e_i^tpose T e_j := bra(i) cal(T)_"on" (ketbra(j, j)) ket(i).
+    $
+    The matrix $I + T$ is a column stochastic matrix and models the Markovian dynamics of our thermalizing channel up to $O(alpha^2 t^2)$,
+    $
+        bra(j) (id + cal(T)_"on")^(compose L) (ketbra(i,i)) ket(j) = e_j^tpose (I + T)^L e_i.
+    $
+    By linearity of $id + cal(T)_"on"$ this identity extends to any diagonal density matrix input $rho = sum_i p(i) ketbra(i,i)$.
+] <lem_tsp_quantum_to_classical>
+#proof()[We prove this inductively on $L$. The base case of $L = 1$ is trivial from the defintion of $T$
+    $
+        bra(j) (id + cal(T)_("on"))(ketbra(i, i)) ket(j) = delta_(i,j) + bra(j) cal(T)_("on")(ketbra(i, i)) ket(j) = e_j^tpose (I + T) e_i.
+    $
+
+    For the inductive step we will rely on the fact that there are no off-diagonal elements for diagonal inputs.
+    $
+        bra(j) cal(T)_("on") (ketbra(i, i)) ket(k) = delta_(j,k) bra(j) cal(T)_("on") (ketbra(i,i)) ket(j) ==> bra(j) cal(T)_("on")^(compose L) (ketbra(i, i)) ket(k) = delta_(j,k) bra(j) cal(T)_(on)^(compose L) (ketbra(i, i)) ket(j).
+    $
+
+    This is again by induction where the case $L = 1$ is proved in Theorem and the inductive step is
+    $
+        bra(j) cal(T)_(on)^(compose L) (ketbra(i, i)) ket(k) &= bra(j) cal(T)_(on) ( cal(T)_(on)^(compose L - 1) (ketbra(i, i)) ) ket(k) \
+        &= sum_(m, n) bra(j) cal(T)_(on) ( ketbra(m, m) cal(T)_(on)^(compose L - 1)(ketbra(i, i)) ketbra(n, n) ) ket(k) \
+        &= sum_(m, n) delta_(m,n) bra(m) cal(T)_(on)^(compose L - 1)(ketbra(i, i)) ket(m) bra(j) cal(T)_(on) ( ketbra(m, m) ) ket(k) \
+        &= sum_(m) bra(m) cal(T)_(on)^(compose L - 1)(ketbra(i, i)) ket(m) delta_(j,k) bra(j) cal(T)_(on) ( ketbra(m, m) ) ket(j) \
+        &= delta_(j,k) bra(j) cal(T)_(on)^(compose L) (ketbra(i, i)) ket(j).
+    $
+
+    This argument points the way towards how we will prove the inductive step in our stochastic conversion, starting with
+    $
+        bra(j) (identity + cal(T)_(on))^(compose L)(ketbra(i, i)) ket(j) &= bra(j) ( (identity + cal(T)_(on))^(compose L - 1) (ketbra(i, i)) + cal(T)_(on) compose (identity + cal(T)_(on))^(compose L - 1) (ketbra(i, i)) ) ket(j) \
+        &= e_j^tpose (identity + T)^(L - 1) e_i + bra(j) cal(T)_(on) compose (identity + cal(T)_(on))^(compose L - 1) (ketbra(i, i)) ket(j).
+    $<eq_tsp_matrix_reloaded1>
+
+    We can use the inductive hypothesis on the term on the left and we now have to break down the $cal(T)_(on)$ term.
+    $
+        bra(j) cal(T)_(on) compose (identity + cal(T)_on)^(compose L - 1) (ketbra(i, i)) ket(j) &= sum_(m, n) bra(j) cal(T)_(on) ( ketbra(m, m) (identity + cal(T)_(on))^(compose L - 1) (ketbra(i, i)) ketbra(n, n) ) ket(j) \
+        &= sum_(m) bra(j) cal(T)_(on) ( ketbra(m, m) ) ket(j) e_m^tpose (I + T)^(L - 1) e_i \
+        &= sum_m e_j^tpose T e_m e_m^tpose (I + T)^(L -1) e_i \
+        &= e_j^tpose T(I + T)^(L-1) e_i.
+    $
+
+    Substituting this into @eq_tsp_matrix_reloaded1 yields
+    $ bra(j) (identity + cal(T)_(on))^(compose L)(ketbra(i, i)) ket(j) = e_j^tpose (I + T)^(L) e_i. $
+
+    Our final step in the proof is to show that $I + T$ is column-stochastic. This is straightforward from our definition of $T$
+    $ sum_i e_i^tpose (I + T) e_j = 1 + sum_i bra(i) cal(T)_(on)(ketbra(j, j)) ket(i). $
+
+    Now we use the fact that $bra(j) cal(T)_(on)(ketbra(j, j)) ket(j) = - sum_(i != j) bra(i) cal(T)_(on)(ketbra(j, j)) ket(i)$ from @eq_same_state_transition_resonances to conclude that $I + T$ is column stochastic.
+]
+
+Since we will be effectively reducing our quantum dynamics to classical dynamics over the eigenbasis for $H_S$ we will need bounds on the convergence of Markov chains. This is a very deep area of research, with many decades of results, so we point interested readers to the comprehensive book by Levin and Peres @levin2017markov. As we will be dealing with non-reversible Markov chains we unfortunately cannot use the relatively well-developed theory for reversible Markov chains. Luckily, we will only need the following theorem due to Jerison.
+#theorem([Jerison's Markov Relaxation Theorem @jerison2013general])[
+    Let $M : bb(R)^(N) -> bb(R)^(N)$ be an ergodic Markov transition matrix acting on an $N$ dimensional state space with absolute spectral gap $lambda_star := 1 - max_(i > 1) |lambda_i (M)|$, where the eigenvalues of $M$ are ordered $1 = lambda_1 >= lambda_2 >= dots >= lambda_N >= -1$. Given this gap, if the number of steps $L$ in the Markov chain satisfies the following bound
+    $
+        L &>= (N) / (lambda_(star)) ( 2 log (1) / (lambda_(star)) + 4(1 + log 2) + (1) / (N) (2 log ( (1) / (epsilon) ) - 1) ) =: (N) / (lambda_star) J,
+    $
+    where $J$ is the collection of logarithmic and constant terms that we will typically ignore in asymptotic notation, then the resulting state $M^L vec(x)$ is $epsilon$ close to the fixed point
+    $
+        forall arrow(x) " s.t. " x_i >= 0 " and " sum_i x_i = 1, quad norm(arrow(pi) - M^L arrow(x))_1 <= epsilon.
+    $
+    We use $arrow(pi)$ to denote the unique eigenvector of eigenvalue 1 for $M$.
+]<thm_markov_chain_bound>
+
+#h(5mm) Now that we have an idea of how long it takes for our Markov chain to converge to the fixed points we need to show which states are actually fixed points. We demonstrate that for finite $beta$ any fixed point must satisfy a summation of detailed-balance terms. This fixed point is unique if the Markov chain is ergodic, which we do not argue in this lemma as an arbitrary thermalization channel $Phi$ may not be ergodic. For the ground state limit of $beta -> oo$ we show that the Markov matrix $I + T$ is upper triangular, which is crucial to our analysis of the spectral gap of the Markov chain in later results. We also demonstrate that the ground state is a fixed point in this limit nearly trivially.
+#lemma([Markov Chain Fixed Points])[
+    Let $T$ be the transition matrix with sum zero columns $sum_j e_j^tpose T e_i$ for all $i$, negative diagonal entries $e_i^tpose T e_i <= 0$, and off-diagonals smaller than 1 $e_j^tpose T e_i <= 1$ for $j != i$, associated with the on-resonance term $cal(T)_(on)$ of an arbitrary thermalizing channel $Phi$. A vector $arrow(p)$ is a fixed point of the Markovian dynamics $I + T$ if and only if it is in the kernel of $T$. This holds for finite $beta$ if the following is satisfied for all $j$
+    $
+        sum_(i != j) (e^(-beta lambda_S (i))) / (partfun_S (beta)) e_j^tpose T e_i - (e^(-beta lambda_S (j))) / (partfun_S (beta)) e_i^tpose T e_j = 0.
+    $<eq_tsp_detailed_balance>
+    In the $beta -> infinity$ limit the ground state $e_1$ is a fixed point and $T$ is upper triangular
+    $
+        lim_(beta -> infinity) (I + T) e_1 = e_1 " and " i > j ==> lim_(beta -> infinity) e_i^tpose T e_j = 0.
+    $
+]<lem_fixed_points>
+#proof()[
+    To show that the thermal state is the fixed point of the zero knowledge thermalizing channel we need to show that
+    $T arrow(p)_(beta) = 0$ and that the Markov chain is ergodic. Ergodicity will be easy to prove so we focus on showing that $T arrow(p)_(beta) = 0$. This condition can be expressed as
+    $
+        e_j^tpose T arrow(p)_(beta) = sum_i (e^(-beta lambda_S (i))) / (partfun_S (beta)) e_j^tpose T e_i = 0.
+    $<eq_tsp_thermal_state_tmp_1>
+    We can make a quick substitution as we know the diagonal elements must equal the sum of the remainder of the column
+    $
+        e_i^tpose T e_i = - sum_(j != i) e_j^tpose T e_i,
+    $
+    which we can then pull out the $i = j$ term from the sum in @eq_tsp_thermal_state_tmp_1
+    $
+        e_j^tpose T arrow(p)_(beta) &= sum_(i != j) (e^(-beta lambda_S(i))) / (partfun_S (beta)) e_j^tpose T e_i - (e^(-beta lambda_S (j))) / (partfun_S (beta)) sum_(k != j) e_k^tpose T e_j,
+    $
+    which is 0 if and only if $arrow(p)_(beta)$ is a fixed point of $I + T$.
+
+    We now show the $beta -> infinity$ case. We can show that $T$ is upper triangular using @thm_tsp_second_order_expansion which gives us the on-resonance transition amplitude. We assume $i < j$, which implies $Delta_S (i,j) <= 0$, and get
+    $
+        lim_(beta -> infinity) e_j^tpose T e_i &= lim_(beta -> infinity) bra(j) cal(T)_(on)(ketbra(i,i)) ket(j) \
+        &= tilde(alpha)^2 lim_(beta -> infinity) [ (e^(-beta gamma)) / (1 + e^(-beta gamma)) II[ |Delta_S (i,j) + gamma| <= delta_(min)] sinc^2 ((Delta_S (i, j) + gamma) t / (2) ) ] \
+        &= tilde(alpha)^2 II[ |Delta_S (i,j) + gamma| <= delta_(min)] sinc^2 ((Delta_S (i, j) + gamma) t / 2 ) lim_(beta -> infinity) (e^(-beta gamma)) / (1 + e^(-beta gamma)) \
+        &= 0.
+    $
+    This further shows that the ground state is a fixed point, as every other eigenvector must have higher energy and therefore all on-resonance transitions _from_ the ground state must be 0
+    $
+        lim_(beta -> infinity) e_1^tpose T e_1 &= lim_(beta -> infinity) bra(1) cal(T)_(on)(ketbra(1, 1)) ket(1) = - sum_(j > 1) lim_(beta -> infinity) bra(j) cal(T)_(on)(ketbra(1, 1)) ket(j) = 0.
+    $
+    This then shows that the ground state is fixed
+    $
+        (I + T) e_1 = e_1,
+    $
+    and completes the proof.
+]
+
+#h(5mm) Using the decomposition from @thm_tsp_second_order_expansion and intermediate expressions in its proof we can now show why the off-resonance map $cal(T)_"off"$ is named "off-resonance"; even in the worst case scenario of choosing a bad value of $gamma$ such that all terms in $cal(T)$ end up in $cal(T)_"off"$ the trace norm of its output is always controllably small via $alpha$.
+
+#corollary()[The induced trace norm of the off-resonance map $cal(T)_"off" (rho)$, for all density matrices $rho$ such that $[rho, H_S] = 0$ and $dim >= 2$, is upper bounded for all choices of the environment Hamiltonian $gamma$ by
+    $
+        norm(cal(T)_"off" (rho))_1 <= (8 alpha^2) / (delta_min^2).
+    $
+]<cor_tsp_t_off_norm>
+#proof()[
+    This result follows from applying bounds on the sinc function from @lem_sinc_poly_approx (given in @sec_appendix_haar) to the worst-case scenario off-resonance terms given in @eq_off_resonance.
+    $
+        i != j ==> abs(bra(j)cal(T)_("off")(ketbra(i, i))ket(j)) &<= tilde(alpha)^2 (4) / (delta_(min)^2 t^2) ( 1 + q(0) + q(1) ) = (8 alpha^2) / (delta_(min)^2(dim + 1)).
+    $
+    This allows us to bound the off-resonance self-transition term in @thm_tsp_second_order_expansion
+    as
+    $
+        abs(bra(i)cal(T)_("off")(ketbra(i, i))ket(i)) &= abs(- sum_(j != i) bra(j) cal(T)_("off")(ketbra(i, i)) ket(j)) <= (dim_S - 1) (8 alpha^2) / (delta_(min)^2 (dim + 1)) <= (4 alpha^2) / (delta_(min)^2).
+    $
+    Now we can use this, along with our no off-diagonal output elements of $cal(T)$, to compute the trace norm of the off-resonance map
+    $
+        norm(cal(T)_("off")(rho))_1 &= sum_(j) abs(bra(j) cal(T)_("off")(rho) ket(j)) \
+        &<= sum_(i, j) rho_(i,i) abs(bra(j)cal(T)_("off")(ketbra(i, i))ket(j)) \
+        &= sum_(i) rho_(i,i) (sum_(j != i) |bra(j) cal(T)_("off")(ketbra(i, i)) ket(j)| + |bra(i) cal(T)_("off")(ketbra(i, i))ket(i)| ) \
+        &<= sum_(i) rho_(i,i) ( (dim_S - 1) (8 alpha^2) / (delta_(min)^2(dim + 1)) + (4 alpha^2) / (delta_(min)^2) ) \
+        &<= (8 alpha^2) / (delta_(min)^2).
+    $
+]
+
+#h(5mm) The last result in this section that we will need is a bound on the trace norm of the remainder term, which we state in the following theorem.
+#theorem([Remainder Bound])[
+    Let $R_(Phi)(rho)$ be the remainder term for the second-order Taylor series expansion
+    of the quantum channel $Phi$ acting on an input state $rho$ about $alpha=0$ defined in @eq_tsp_phi_taylor_series
+    where the Schätten 1-norm of the remainder operator is bounded by
+    $
+        norm(R_(Phi) (rho ; alpha))_1 <= (16 sqrt(2)) / (sqrt(pi)) dim_S (alpha t)^3.
+    $
+]<thm_remainder_bound>
+The proof of the remainder bound follows from the triangle inequality and remainder bounds on Taylor series and is given in @sec_appendix_haar.
+
+I'm thinking of including a "template" theorem that can be used to simplify the 4 proofs contained in the following section. Let $rho_"fix"$ denote the unique fixed point for a channel $EE_gamma [id + cal(T)_"on"^((gamma))]$ and $tilde(lambda_star)$ the spectral gap of the scaled transition matrix, so $tilde(alpha)^2 tilde(lambda_star) = lambda_star$. Then we have
+$
+    norm(rho_"fix" - (EE_gamma Phi_gamma)^(compose L) (rho) )_1 &<= norm(rho_"fix" - (id + EE_gamma cal(T)_"on"^((gamma)))^(compose L) )_1 + L norm(EE_gamma cal(T)_"off"^((gamma)) + R_Phi)_1 \
+    &<= norm(rho_"fix" - (id + EE_gamma cal(T)_"on"^((gamma)))^(compose L) )_1 + L (norm(EE_gamma cal(T)_"off"^((gamma)))_1 + norm(R_Phi)_1) \
+    &<= norm(rho_"fix" - (id + EE_gamma cal(T)_"on"^((gamma)))^(compose L) )_1 + L ((8 alpha^2) / delta_min^2 + (16 sqrt(2)) / sqrt(pi) dim_S (alpha t)^3).
+$
+So now in order to balance these terms we can set $alpha = 1\/(dim_S delta_min^2 t^3 )$ and the expression on the right becomes $L alpha^2 / delta_min^2 (8 + 16 sqrt(2/ pi)).$ Now using Jerison's theorem we can argue that
+$
+    L >= dim^2 / (alpha^2 t^2 tilde(lambda_star)) J
+$
+is sufficient to guarantee that the distance to the fixed point is $tilde(O)(epsilon)$.
+Now we note that the right hand side forces us to require $L alpha^2 / delta_min^2 in tilde(O)(epsilon)$ holds only if
+$
+    (dim^2) / (delta_min^2 t^2 tilde(lambda_star) ) in tilde(O)(epsilon)
+$
+can be satisfied if $t = dim / (delta_min sqrt(epsilon tilde(lambda_star)))$. and then we are done.
 
 == Single Qubit and Truncated Harmonic Oscillator <sec_tsp_oscillator>
+
+The first system we study is the qubit $hilb_S = CC^2$. This system is simple enough that we can explicitly write the dynamics as a $2 times 2$ transition matrix, which makes it easy to compute required simulation times and easy for the reader to follow. Although this system could be viewed as a warmup to the more general systems in Section \ref{sec:general_systems}, as the proof techniques are very similar, we remark that this system does have some unique properties. The biggest difference is that we do not assume any kind of belief distribution of the eigenvalue gap $Delta$ of the system. We only require that a window of width $2 sigma$ is known that contains $Delta$. We can then characterize the runtime in terms of $sigma$ and in addition to determining runtime we find it determines an upper bound on the $beta$ that can be prepared at low error.
+
+The other unique phenomenon with the single qubit scenario is that the total simulation time needed is _independent_ of $beta$. Although this may seem incorrect, as most existing thermal state preparation algorithms tend to scale at least linearly with $beta$, this is in fact a property of the underlying Markov chain. The rate of convergence of the Markov chain is dictated by the spectral gap, which for this system is shown to be $tilde(alpha)^2$. The only aspect of the Markov chain that changes with $beta$ is what the fixed point is and the Markov Relaxation @thm_markov_chain_bound provides relaxation guarantees regardless of initial or final state.
+
+#theorem()[
+    Let $H_S$ be an arbitrary single qubit Hamiltonian with eigenvalue gap $Delta$, $rho$ any input state that commutes with $H_S$, and $L$ the number of interactions simulated. Given a window of width $2 sigma$ that is promised to contain $Delta$ and satisfies the inequality
+    $
+        sigma <= min {epsilon / (2 beta), Delta sqrt(epsilon / 2)},
+    $
+    then the following parameter choices
+    $
+        alpha &= 1 / (t^3(Delta + sigma)^2),\
+        t &in 1 / sigma [sqrt(1- sqrt(1 - (2 sigma^2) / (epsilon Delta^2))), sqrt(1 + sqrt(1 - (2 sigma^2) / (epsilon Delta^2)))], \
+        "and " L &= ceil(10 / (alpha^2 t^2(1 - sigma^2 t^2 \/2)) (2 log(5/(alpha^2 t^2 sinc^2(|Delta - gamma| t \/2))) \ & #h(1cm) + 4 log(2 e) - 1/2 + log(2/epsilon))),
+    $
+    are sufficient to guarantee thermalization of the form $norm(rho_S(beta) - Phi^(compose L) (rho))_1 in tilde(O)(epsilon)$. In the limit as $sigma -> 0$, the total simulation time required scales as
+    $
+        lim_(sigma -> 0) L dot t in tilde(O) (1 / (Delta epsilon^(2.5))).
+    $
+]
+#proof()[
+    The proof will be structured into three parts. First, we will need a bound on how close the fixed point of the Markov chain is to the thermal state, because the fixed point is exactly the thermal state only when $gamma = Delta$ and our window of width $sigma$ is sufficiently small given our error budget. Second, once we have these bounds we then need to determine the number of interactions $L$ that will be necessary to reach the fixed point within trace distance $epsilon$. Lastly, we use this value of $L$ to bound the accumulative error from the off-resonance mapping $cal(T)_"off"$ and remainder term $R_Phi$.
+
+    We start by breaking down the trace distance into three components, one for the fixed-point distance from the thermal state, one for the Markov dynamics distance to the fixed-point, and lastly the remainder terms
+]
 
 == Generic Systems <sec_tsp_generic_sys>
 
