@@ -4,6 +4,7 @@
 #let bra(psi) = $lr(angle.l #psi|)$
 #let ketbra(a, b) = $|#a angle.r angle.l #b|$
 #let braket(a, b) = $angle.l #a|#b angle.r$
+#let bracket(a, b, c) = $angle.l #a|#b|#c angle.r$
 #let tp = $times.circle$
 #let id = $bb(1)$
 #let dmd = $diamond.medium$
@@ -509,12 +510,280 @@ The other unique phenomenon with the single qubit scenario is that the total sim
     $
         lim_(sigma -> 0) L dot t in tilde(O) (1 / (Delta epsilon^(2.5))).
     $
-]
+] <thm_single_qubit>
 #proof()[
     The proof will be structured into three parts. First, we will need a bound on how close the fixed point of the Markov chain is to the thermal state, because the fixed point is exactly the thermal state only when $gamma = Delta$ and our window of width $sigma$ is sufficiently small given our error budget. Second, once we have these bounds we then need to determine the number of interactions $L$ that will be necessary to reach the fixed point within trace distance $epsilon$. Lastly, we use this value of $L$ to bound the accumulative error from the off-resonance mapping $cal(T)_"off"$ and remainder term $R_Phi$.
 
     We start by breaking down the trace distance into three components, one for the fixed-point distance from the thermal state, one for the Markov dynamics distance to the fixed-point, and lastly the remainder terms
+    $
+        &norm(rho_S (beta; Delta) - Phi^(compose L)(rho))_1 \
+        &<= norm(rho_S (beta; Delta) - rho_S (beta; gamma))_1 + norm(rho_S (beta; gamma) - Phi^(compose L)(rho))_1 \
+        &<= norm(rho_S (beta; Delta) - rho_S (beta; gamma))_1 + norm(rho_S (beta; gamma) - (identity + cal(T)_("on"))^(compose L)(rho))_1 + norm((identity + cal(T)_("on"))^(compose L)(rho) - Phi^(compose L)(rho))_1 \
+        &<= norm(rho_S (beta; Delta) - rho_S (beta; gamma))_1 + norm(rho_S (beta; gamma) - (identity + cal(T)_("on"))^(compose L)(rho))_1 + L(norm(cal(T)_("off")(rho))_1 + norm(R_Phi)_1).
+    $ <eq_single_qubit_three_errors>
+    We proceed with the leftmost term first. The trace distance can be computed explicitly for a single qubit state as
+    $
+        &norm(rho_S (beta; gamma) - rho_S (beta; Delta))_1 \
+        &= abs(bra(1) rho_S (beta; gamma) ket(1) - bra(1) rho_S (beta; Delta) ket(1)) + abs(bra(2) rho_S (beta; gamma) ket(2) - bra(2) rho_S (beta; Delta) ket(2)) \
+        &= abs(bra(1) rho_S (beta; gamma) ket(1) - bra(1) rho_S (beta; Delta) ket(1)) + abs(1 - bra(1) rho_S (beta; gamma) ket(1) - 1 + bra(1) rho_S (beta; Delta) ket(1)) \
+        &= 2 abs(bra(1) rho_S (beta; gamma) ket(1) - bra(1) rho_S (beta; Delta) ket(1)).
+    $ <eq_single_qubit_int_1>
+    Now we expand $bracket(1, rho_S (beta; gamma), 1)$ about $gamma = Delta$
+    $
+        bracket(1, rho_S (beta; gamma), 1) = frac(1, 1 + e^(-beta gamma)) &= frac(1, 1 + e^(-beta Delta)) + (gamma - Delta) beta frac(1, 1 + e^(-beta gamma_star)) frac(e^(-beta gamma_star), 1 + e^(-beta gamma_star)) \
+        &= bracket(1, rho_S (beta; Delta), 1) + (gamma - Delta) beta frac(1, 1 + e^(-beta gamma_star)) frac(e^(-beta gamma_star), 1 + e^(-beta gamma_star)),
+    $
+    where $gamma_star$ denotes the special value of $gamma$ that is guaranteed to make the above equation hold by Taylor's Remainder Theorem.
+    Since the rightmost factors can be upper bounded by $frac(1, 1 + e^(-beta gamma_star)) frac(e^(-beta gamma_star), 1 + e^(-beta gamma_star)) <= 1$, this can be rearranged and plugged into @eq_single_qubit_int_1 to give the upper bound
+    $
+        norm(rho_S (beta, gamma) - rho_S (beta, Delta))_1 <= 2 beta abs(Delta - gamma).
+    $
+    Since we require this distance to be less than $epsilon$, we can upper bound $abs(Delta - gamma) <= sigma$ and require
+    $
+        sigma <= frac(epsilon, 2 beta).
+    $ <eq_single_qubit_ineq_1>
+
+    Now we move on to the second stage of the proof: computing the number of interactions needed to reach the fixed point of the Markov chain. As the Markov transition matrix is only $2 times 2$ we will compute it explicitly. To do so, we need the matrix elements for $T$, which can be computed using @thm_tsp_second_order_expansion
+    $
+        arrow(e)_1^tpose T arrow(e)_1 = bracket(1, cal(T)_("on")(ket(1)bra(1)), 1) &= -tilde(alpha)^2 frac(e^(-beta gamma), 1 + e^(-beta gamma)) sinc^2(frac((-Delta + gamma)t, 2))
+        \
+        arrow(e)_2^tpose T arrow(e)_1 = bracket(2, cal(T)_("on")(ket(1)bra(1)), 2) &= tilde(alpha)^2 frac(e^(-beta gamma), 1 + e^(-beta gamma)) sinc^2(frac((-Delta + gamma)t, 2)) \
+        arrow(e)_1^tpose T arrow(e)_2 = bracket(1, cal(T)_("on")(ket(2)bra(2)), 1) &= tilde(alpha)^2 frac(1, 1 + e^(-beta gamma)) sinc^2(frac((Delta - gamma)t, 2)) \
+        arrow(e)_2^tpose T arrow(e)_2 = bracket(2, cal(T)_("on")(ket(2)bra(2)), 2) &= -tilde(alpha)^2 frac(1, 1 + e^(-beta gamma)) sinc^2(frac((Delta - gamma)t, 2)).
+    $ <eq_single_qubit_markov_4>
+    This gives us the total Markov chain matrix as
+    $
+        I + T = mat(1,0;0,1) + tilde(alpha)^2 sinc^2((Delta - gamma) t / 2) q0 mat(-e^(-beta gamma) , 1; e^(-beta gamma), -1),
+    $ <eq_markov_matrix_single_qubit_gamma>
+    where it can be seen that the fixed point is
+    $
+        (I + T) arrow(p)_(beta, gamma) = arrow(p)_(beta, gamma) = q0 arrow(e)_1 + q1 arrow(e)_2.
+    $
+
+    #h(5mm) To show convergence we will need the spectral gap of @eq_markov_matrix_single_qubit_gamma, which is given as $lambda_star = tilde(alpha)^2 sinc^2((Delta - gamma) t/2)$. Plugging this into the Markov Relaxation @thm_markov_chain_bound we can compute a lowe bound on the number of interactions needed
+    $
+        L >= (2 J) / (tilde(alpha)^2 sinc^2( abs(Delta - gamma) t / 2)),
+    $ <eq_one_qubit_l_bound_1>
+    where $J$ captures subleading logarithmic factors.
+
+    ur next goal is to simplify these bounds so that we can propagate them to our final error requirements. We first use @lem_sinc_poly_approx to produce a bound on $sinc$ whenever $gamma$ is within our window and $|Delta - gamma| <= sigma$
+    $
+        sinc^2( |Delta - gamma| t / 2) >= 1 - (sigma^2 t^2) / 2,
+    $
+    provided that $t sigma <= sqrt(2)$ to make the bound meaningful. Recalling that the dimension of the system is 4, we can then create a new lower bound for $L$ by plugging this expression for sinc in to @eq_one_qubit_l_bound_1
+    $
+        L >= (10 J) / (alpha^2 t^2 (1 - sigma^2 t^2 \/ 2))
+    $ <eq_one_qubit_l_bound_2>
+    which is larger than our bound in @eq_one_qubit_l_bound_1. If we choose $L$ to be twice this bound we will for sure meet the Markov chain error requirements.
+
+    The third stage of the proof utilizes the above bound on $L$ to bound the off-resonance and remainder terms. The magnitiude of the total off-resonance contributions are $L norm(cal(T)_"off")_1 <= 8 \/ Delta^2$, given by @cor_tsp_t_off_norm, and the remainder term is $L norm(R_Phi)_1 <= 32 sqrt(2\/pi) alpha t^3$ from @thm_remainder_bound. Setting $alpha = 1\/ (t^3 (Delta + sigma)^2) <= 1\/(t^3 Delta^2)$ allows us to make the following inequalities
+    $
+        L(norm(cal(T)_"off")_1 + norm(R_Phi)_1) &<= (20 J) / (t^2 (1 - sigma^2 t^2 \/ 2)) (8 / Delta^2 + 32 sqrt(2 / pi) alpha t^3) \
+        &<= (20 J) / (t^2 Delta^2 (1 - sigma^2 t^2 \/ 2)) (8 + 32 sqrt(2/pi)).
+    $ <eq_one_qubit_l_bound_3>
+    The last step is then to show that the above is $tilde(O)(epsilon)$. As $J$ contains only logarithmic factors, it is sufficient to show that there exists a $t$ such that $t^2(1 - sigma^2 t^2 \/2) <= epsilon$. Rearranging this expression reveals a quadratic in $t^2$that must satisfy the following
+    $
+        Delta^2 t^2 (1 - (sigma^2 t^2) / 2) - 1 / epsilon >= 0.
+    $ <eq_single_qubit_tmp_3>
+    The roots of this quadratic are
+    $
+        t^2 = 1 / sigma^2 (1 plus.minus sqrt(1 - (2 sigma^2)/(Delta^2 epsilon))),
+    $
+    meaning that if $t$ lies between these two roots then our bound in @eq_one_qubit_l_bound_3 is $tilde(O)(epsilon)$.
+
+    The first observation to make about these roots is that we require $sigma <= Delta sqrt(epsilon \/2)$ in order to keep the roots real and not become complex. As $sigma -> 0$ we note that the larger root $1 / sigma^2 (1 + sqrt(1 - (2 sigma^2)/(Delta^2 epsilon)))$ approaches infinity and the smaller root approaches $1\/Delta^2 epsilon$. This means that @eq_one_qubit_l_bound_3 has valid solutions provided $sigma$ is sufficiently small. This means that we have successfully bounded all 3 error terms present in the original decomposition @eq_single_qubit_three_errors by $tilde(O)(epsilon)$. We have done so by setting the following parameters
+    - $alpha = 1 / ((Delta + sigma)^2 t^3)$,
+    - $t in 1 / sigma^2 [1 - sqrt(1 - (2 sigma^2)/(Delta^2 epsilon)) , 1 + sqrt(1 - (2 sigma^2)/(Delta^2 epsilon))]$,
+    - and $L >= tilde(Omega) (1/(alpha^2 t^2 (1 - sigma^2 t^2 \/2)))$.
+    Substituting in derived expressions for these parameters is sufficient to yield the theorem statement.
 ]
+
+=== Harmonic Oscillator <sec_tsp_harmonic_oscillator>
+Now that we have explored the thermalization channel completely for the single qubit case we turn our attention to a more complicated system: a truncated harmonic oscillator. For this scenario we will assume that the oscillator gap, $Delta$, is known. This is mostly to simplify proofs of ergodicity and should not be an issue in practice, as evidenced by later theorems that show thermalization without eigenvalue knowledge. The reason behind this proof requirement is that by tuning $gamma$ to be the spectral gap we can create a ``ladder" transition matrix in which states can move one level up or down. The proof of ergodicity relies on this ladder. Once we remove knowledge of $Delta$ if $gamma$ has some probability of being close to $2 Delta$ this special ladder structure is destroyed. To avoid this annoyance and focus on the special structure granted by the harmonic oscillator we will assume $gamma = Delta$.
+
+This system also represents a transition from the single qubit to more general settings discussed later as the guarantees on total simulation time as a function of $beta$ are similar. For the harmonic oscillator we are only able to bound the spectral gap in the ground state limit as $beta -> infinity$, meaning that the convergence time for finite $beta$ has to be characterized in terms of the spectral gap of the Markov chain. For infinite $beta$ we are able to compute the spectral gap exactly, as the Markov transition matrix is upper triangular. The following theorem introduces this technique in a straightforward setting before it is used later for more complicated transition matrices.
+
+#theorem([Harmonic Oscillator])[
+    Let $H_S$ denote a truncated harmonic oscillator with $dim_S$ energy levels that are separated by $Delta$, giving $lambda_S (k) = k Delta$ for $1 <= k <= dim_S$, let $gamma$ be chosen to match the eigenvalue gap $gamma = Delta$ exactly, and let $rho$ be any input state that commutes with $H_S$. Setting the following parameters for the thermalizing channel $Phi$
+    $
+        alpha = (epsilon^(1.5) tilde(lambda_star)(beta)^(1.5) Delta) / (dim_S^4), t = dim_S (Delta sqrt(epsilon tilde(lambda_star)(beta)))," and " L in tilde(O)(dim_S^2 / (alpha^2 t^2 tilde(lambda_star)(beta))),
+    $
+    where $tilde(lambda_star)(beta)$ is the spectral gap of the scaled transition matrix $T \/ tilde(alpha)^2$, is sufficient for thermaliziation for arbitrary $beta$ as
+    $
+        norm(rho_S(beta) - Phi^(compose L) (rho))_1 in tilde(O)(epsilon).
+    $
+    This gives the total simulation time required as
+    $
+        L dot t in tilde(O)(dim_S^9 / (Delta epsilon^(2.5) tilde(lambda_star)(beta)^(2.5))).
+    $
+    In the limit $beta -> oo$ the above settings for $alpha, t$, and $L$ are valid for preparing the ground state with the spectral gap of the scaled transition matrix is further given by
+    $
+        lim_(beta -> oo) tilde(lambda_star)_beta = 1.
+    $
+] <thm_harmonic_oscillator>
+#proof()[
+    We first show that the thermal state is the unique fixed point for finite $beta$. This will be done by computing the nonzero on-resonance transitions and plugging in to @lem_fixed_points. As $gamma = Delta$, $Delta_S(i,j) = (i - j) Delta$, and $delta_min = Delta$, we can deduce that the on-resonance transitions will only be nonzero for adjacent states $ketbra(i,i)$ and $ketbra(i plus.minus 1, i plus.minus 1)$. This can be seen explicitly for $i != j$ by evaluating the transition elements given by @def_transition.
+    $
+        bra(j) cal(T)_"on" (ketbra(i,i)) ket(j)
+        &= tilde(alpha)^2 q0 II[ abs(Delta_S (i,j) - gamma) <= delta_min] sinc^2((Delta_S (i,j) - gamma)t / 2) \
+        &" " + tilde(alpha)^2 q1 II[abs(Delta_S (i,j) + gamma) <= delta_min] sinc^2((Delta_S (i,j) + gamma) t / 2)\
+        &= tilde(alpha)^2 q(0) II[j = i - 1] sinc^2((Delta_S (i,j) - gamma)t / 2) \
+        &" " + tilde(alpha)^2 q(1) II[j = i + 1] sinc^2((Delta_S (i,j) + gamma)t / 2) \
+        &= tilde(alpha)^2 (q(0) II[j = i - 1] + q(1) II[j = i + 1])
+    $ <eq_harmonic_oscillator_t_matrix>
+
+    We now plug this expression into @eq_tsp_detailed_balance of @lem_fixed_points and use the fact that $Delta_S (i,i+1) = Delta$ for the harmonic oscillator
+    $
+        &sum_(i != j) frac(e^(-beta lambda_S (i)), cal(Z)_S (beta)) bracket(j, cal(T)_("on") (ket(i)bra(i)), j) - frac(e^(-beta lambda_S (j)), cal(Z)_S (beta)) bracket(i, TT_("on")(ket(j)bra(j)), i) \
+        &= tilde(alpha)^2 e^(-beta lambda_S (j)) / (cal(Z)_S (beta) ) sum_(i != j) [II[j = i - 1] (q(0) e^(-beta Delta_S (i, j)) - q(1) ) + II[j = i + 1] (q(1) e^(-beta Delta_S (i, j)) - q(0) ) ] \
+        &= tilde(alpha)^2 frac(e^(-beta lambda_S (j)), cal(Z)_S (beta)) ((e^(-beta Delta) q(0) - q(1)) + (e^(+beta Delta) q(1) - q(1))) \
+        &= tilde(alpha)^2 frac(e^(-beta lambda_S (j)), cal(Z)_S (beta)) ((e^(-beta Delta) frac(1, 1 + e^(-beta gamma)) - frac(e^(-beta gamma), 1 + e^(-beta gamma))) + (e^(+beta Delta) frac(e^(-beta gamma), 1 + e^(-beta gamma)) - frac(1, 1 + e^(-beta gamma)))) \
+        &= 0,
+    $
+    where the final equality comes from setting $gamma = Delta$. By @lem_fixed_points this is sufficient for $rho_S (beta)$ to be a fixed point of $id + cal(T)_"on"$.
+
+    To show that $rho_S (beta)$ is the unique fixed point of the Markov chain it suffices to show that the walk is ergodic. This means that we need to show that the walk can generate transitions between any two sites, or in other words, the hitting time for any two states $i != j$ is nonzero. We prove this by induction on $i - j$ first for $i > j$. For $i = j + 1$ we have
+    $
+        bra(j) (id + cal(T)_"on")(ketbra(i, i)) ket(j) = bra(j) (id + cal(T)_"on")(ketbra(j + 1, j + 1)) ket(j) = tilde(alpha)^2 q(0),
+    $
+    which is nonzero and therefore the base case holds. Assuming $i = j + n$ holds we show that the hitting time for $i = j  + n + 1$ is nonzero. Let $p$ denote the probability of transitioning from $j$ to $j + n$ after $n$ applications of $id + cal(T)_"on"$. We show that the probability of transitioning to $j + n + 1$ is nonzero in a few steps starting with the reduction
+    $
+        &bra(j) (id + cal(T)_"on")^(compose n + 1) (ketbra(j + n + 1, j + n + 1)) ket(j) \
+        &= sum_(k_1, k_2) bra(j) (id + cal(T)_"on")^(compose n ) compose (ketbra(k_1, k_1) (id + cal(T)_"on")(ketbra(j + n + 1, j + n + 1)) ketbra(k_2, k_2)) ket(j).
+    $
+    We then can set $k_1 = k_2 = k$ as we know that $id + cal(T)_"on"$ does not add coherences, meaning it maps diagonal operators ($ketbra(j + n + 1, j + n + 1)$) to diagonal operators ($ketbra(k, k)$).
+    We can then use the fact that one application of $id + cal(T)_"on"$ can map $j + n + 1$ to $j + n$ and take only that term out of the sum over $k$
+    $
+        &sum_k bra(j) (id + cal(T)_"on")^(compose n) compose (ketbra(k, k) (id + cal(T)_"on")(ketbra(j + n + 1, j + n + 1)) ketbra(k, k)) ket(j) \
+        &>= bra(j) (id + cal(T)_"on")^(compose n) compose (braket(j + n, j + n) (id + cal(T)_"on")(ketbra(j + n + 1, j + n + 1)) ketbra(j + n, j + n)) ket(j) \
+        &= tilde(alpha)^2 q(0) bra(j) (id + cal(T)_"on")^(compose n) (ketbra(j + n, j + n)) ket(j) \
+        &= tilde(alpha)^2 q(0) p,
+    $
+    which is clearly greater than 0. To prove the case where $i < j$ the same inductive argument above can be repeated but this time factors of $q(1)$ accumulate as opposed to $q(0)$.
+
+    ow that we have shown that the thermal state is the fixed point we would like to bound the total simulation time needed. To do so we first decompose our error into two parts, a Markov chain error and an off-resonance and remainder error
+    $
+        norm(rho_S (beta) - Phi^(compose L)(rho))_1 <= norm(rho_S (beta) - (id + cal(T)_"on" )^(compose L) (rho))_1 + L (norm(cal(T)_"off")_1 + norm(R_Phi)_1)
+    $<eq_harmonic_oscillator_error_breakdown>
+    We first bound the number of interactions, $L$, needed for the output of the Markov chain to be $epsilon$ close to the fixed point and then use this bound on $L$ to upper bound the off-resonance and remainder error. Unfortunately in the finite $beta$ scenario we are unable to determine the spectral gap of $T$, the entries of which are given in Eq. \eqref{eq:harmonic_oscillator_t_matrix}. The spectral gap of $T$ is necessary to use Jerison's Markov Relaxation @thm_markov_chain_bound which poses a problem for our understanding of the evolution time needed. Instead, we will pull out the overall factor of $tilde(alpha)^2$ and let $tilde(lambda_star) (beta)$ denote the spectral gap of $T \/ tilde(alpha)^2$. This then allows us to use @thm_markov_chain_bound but we will have to leave the number of interactions required in terms of $tilde(lambda_star )(beta)$.
+
+    @thm_markov_chain_bound tells us that requiring
+    $
+        L >= dim_S / (tilde(alpha)^2 tilde(lambda_star) (beta)) J in tilde(O)(dim_S^2 / (alpha^2 t^2 tilde(lambda_star) (beta)))
+    $
+
+    is sufficient for the total variational distance between the stationary distribution to be $epsilon$-small, in other words $norm(rho_S (beta) - (id + cal(T)_"on")^(compose L)(rho))_1 in tilde(O)(epsilon)$. Now we use this expression for $L$ to bound the off-resonance and remainder errors. To do so we first want to asymptotically bound the two contributions, which can be found in @cor_tsp_t_off_norm and @thm_remainder_bound. The sum of the two errors is given by
+    $
+        norm(cal(T)_"off")_1 + norm(R_Phi)_1 <= (8 alpha^2) / (Delta^2) + 16 sqrt(pi/2) dim_S (alpha t)^3.
+    $
+    by setting $alpha = 1\/(dim_S Delta^2 t^3)$ we can simplify the above as
+    $
+        norm(cal(T)_"off")_1 + norm(R_Phi)_1 <= (alpha^2) / (Delta^2) (8 + 16 sqrt(pi / 2)).
+    $
+    Using the sub-additivity property of the trace distance the total error scales as
+    $
+        L(norm(cal(T)_"off")_1 + norm(R_Phi)_1) &<= (dim_S^2 alpha^2 J) / (alpha^2 t^2 tilde(lambda_star)(beta) Delta^2) (8 + 16 sqrt(pi / 2)) \
+        &in tilde(O)(dim_S^2 / (t^2 Delta^2 tilde(lambda_star) (beta))).
+    $
+    We can make this $tilde(O)(epsilon)$ by setting $t = dim_S / (Delta sqrt(epsilon tilde(lambda_star) (beta)))$. This then gives the total simulation time as
+    $
+        L dot t in tilde(O)(dim_S^2 / (alpha^2 t tilde(lambda_star) (beta) )) = tilde(O)(dim_S^9 / ( epsilon^(2.5) tilde(lambda_star) (beta)^(3.5))).
+    $
+
+    Now that we have analyzed the finite $beta$ regime, we turn to the $beta -> oo$ limit. Our proof above fo the fixed points only works for finite $beta$, but @lem_fixed_points tells us that in the $beta -> oo$ limit the ground state is a fixed point. We will show it is the unique fixed point by directly computing the spectrum of $T$, which will be rather easy to do. @lem_fixed_points further tells us that as $beta -> oo$ the matrix $T$ is upper triangular, which means we can compute the spectrum simply by just computing the diagonal elements. We do so via @eq_harmonic_oscillator_t_matrix and @eq_env_state_def, which says that for $1 < i < dim_S$ we have
+    $
+        arrow(e)_i^tpose T arrow(e)_i &= bra(i) cal(T)_"on" (ketbra(i,i)) ket(i) \
+        &= - sum_(j != i) bra(j) cal(T)_"on" (ketbra(i,i)) ket(j) \
+        &= - tilde(alpha)^2 sum_(j != i) (q(0) II[j = i - 1] + q(1) II[j = i + 1]) \
+        &= -tilde(alpha)^2 (q(0) + q(1)) \
+        &= - tilde(alpha)^2,
+    $
+    where the summation is only nonzero for $j = i plus.minus 1$. For $i = 1$ we note that because $arrow(e)_1$ is a fixed point we have $arrow(e)_j^tpose T arrow(e)_1 = 0$, so the diagonal entry is 0. The computation for $i = dim_S$ is similar to the above but yields from @eq_env_state_def
+    $
+        lim_(beta -> oo) bra(dim_S) cal(T)_"on" (ketbra(dim_S, dim_S)) ket(dim_S) = -tilde(alpha)^2 lim_(beta -> oo) q(0) = -tilde(alpha)^2.
+    $
+
+    #h(5mm) This shows us that the zero temperature limit of the transition matrix $T$ is
+    $
+        lim_(beta -> oo) T = tilde(alpha)^2 mat(
+        0 , 1 ,   ,;
+        , -1 , 1 ,  ,;
+        , , -1  , , ;
+        , , , dots.down , ;
+        , , , , 1 ;
+        , , , , -1
+      ).
+    $
+    We can compute the spectrum via the characteristic polynomial $det( lambda I - T)$. This is because $T$ is upper triangular and the determinant we need to compute is
+    $
+        det(lambda I - lim_(beta -> oo) T) = mat(delim: "|",
+      lambda , -tilde(alpha)^2 , , ;
+        , lambda + tilde(alpha)^2 , -tilde(alpha)^2 , , ;
+        , ,  lambda + tilde(alpha)^2  , ,  ;
+        , , ,  dots.down , ;
+        , , , , -tilde(alpha)^2 ;
+        , , , , lambda + tilde(alpha)^2
+      ).
+    $
+    The roots of the above characteristic polynomial gives the spectrum of $T$ as 0 and $-tilde(alpha)^2$ with multiplicity $dim_S - 1$. This not only gives the spectral gap of $tilde(alpha)^2$ but further shows that the ground state is the unique fixed point because 0 only has multiplicity 1. This shows that $lim_(beta -> oo) tilde(lambda_star)(beta) = 1$.
+
+    We now can use this to repeat the simulation time bound arguments from the finite $beta$ case. The decomposition in @eq_harmonic_oscillator_error_breakdown is still valid and we can use the Markov Relaxation @thm_markov_chain_bound to bound
+    $
+        L >= dim_S / (tilde(alpha)^2 lim_(beta -> oo) tilde(lambda_star) (beta)) J in tilde(Theta) (dim_S^2 / (alpha^2 t^2)).
+    $
+    The arguments for the off-resonance and remainder error bounds are the exact same and tell us that it suffices to set
+    $
+        alpha = 1 / (dim_S Delta^2 t^3) " and " t = dim_S / (Delta sqrt(epsilon)).
+    $
+    This gives the total simulation time needed as
+    $
+        L dot t in tilde(O)(dim_S^9 / (epsilon^(2.5) Delta)).
+    $
+]
+
+=== Numerics <sec_specific_numerics>
+Now that we have rigorous bounds on each of the parameters $alpha, t$ and $L$ needed to prepare thermal states of simple systems, we turn to numerics to test these bounds. The first question we explore is how the total simulation time $L dot t$ behaves as a function of $alpha$ and $t$. After, we examine the dependence of the total simulation time on the inverse temperature $beta$ and we observe a Mpemba-like effect where we find higher temperature states can cool faster than lower temperature ones @auerbach1995supercooling. Finally, we demonstrate how our proof techniques could be leading to worse $epsilon$ scaling than appears numerically necessary. Throughout these experiments we have the same numeric method of starting with the maximally mixed state $rho_S (0)$ and performing a search on the minimal number of interactions needed for the mean trace distance over all samples to be less than the target $epsilon$. The number of samples is increased until the variance in the trace distance is less than an order of magnitude below the mean.
+
+In @fig_tot_time_vs_single_time we explore the total simulation time needed to prepare a thermal state with $beta = 2.0$ and $epsilon = 0.05$ for a single qubit system. We plot the total simulation time $L dot t$ needed as a function of $t$ for various settings of $alpha$. We find that increasing both parameters tends to decrease the overall cost until a saturation point is reached, which is at a value of $t$ slightly larger $1/alpha$. For a fixed value of $alpha$ this initial decrease in $L dot t$ is inverse with $t$, in agreement with our finding of $L in tilde(O)(t^(-2))$ in Eq. \eqref{eq:single_qubit_l_bound_2} for $sigma = 0$. However, this process of decreasing the cost by increasing $t$ can only scale so far and appears to run into a minimum number of interactions $L$ required to thermalize. After this saturation point $L dot t$ scales linearly with $t$, indicating that the number of interactions $L$ has reached a minimum.
+
+Another major take away from @fig_tot_time_vs_single_time is that it demonstrates that our thermalizing channel is exceptionally robust beyond the weak-coupling expansion in which we can theoretically analyze it. The values of $alpha t$ used in the far right of the plot completely break our weak-coupling expansion, as we have values of $tilde(alpha)$ that reach up to 500. One interesting phenomenon that we do not have an explanation for is the ``clumping" of various settings of $alpha$ in the large $t$ limit. As $alpha t$ dictates the amount of time that the random interaction term $G$ is simulated for, it could be that once a minimum amount of randomness is added via this interaction it is no longer beneficial in causing transitions among system eigenstates.
+
+#figure(
+    image("tsp_numerics/single_qubit_tot_time_vs_t.svg"),
+    caption: [Total simulation time for a single qubit system to reach within trace distance of $0.05$ of the thermal state for $beta = 2$ as a function of per-interaction simulation time $t$. The slope of the large $t$ asymptote is $approx$ 1.01.],
+)<fig_tot_time_vs_single_time>
+
+The next task we have is to examine the $beta$ dependence. For the harmonic oscillator @thm_harmonic_oscillator is helpful for giving an idea of the total simulation time for the ground state but we cannot extend it to finite $beta$ due to the special structure of the transition matrix in the $beta -> oo$ limit. Perturbation theory could possibly be used to extend the computation of the spectral gap to the low temperature regime, but even then it would break down for large temperature (small $beta$). For generic $beta$ the structure of the harmonic oscillator transition matrix is tridiagonal but it is not quite Toeplitz, as the main diagonals deviate in the upper left and bottom right corners. We could try to pull these deviations into a separate matrix and treat them as perturbations to a fully Toeplitz matrix, which we can then compute the spectrum of. The issue with this approach is that these deviations are on the order of $tilde(alpha)^2 q(0)$ and $tilde(alpha)^2 q(1)$, which are comparable to the eigenvalues of the unperturbed matrix.
+
+In @fig_sho_total_time_vs_beta we are able to probe the total simulation time and spectral gap of the harmonic oscillator as a function of $beta$. We reveal a rather surprising Mpemba-like phenomenon where it takes longer for an infinite temperature initial state (the maximally mixed state) to cool to intermediate temperatures than low temperature states. The Mpemba effect @mpemba is a classical phenomenon related to the time needed to freeze hot water compared to room temperature water with mentions going all the way back to Aristotle. This phenomenon has been extended to quantum thermodynamics and observed in both theory @nickMpemba @mpembaExplanation and in recent experimental research @zhang2025mpembaObservation. Our observations are not only a further analytic observation, but we are able to provide a proposed mechanism that explains the behavior. It is clear that the distance of our initial state to the target thermal state $norm(rho_S (beta) - rho_S (infinity))_1$ increases monotonically with $beta$ but what is not obvious is that the spectral gap of the underlying Markov chain is \emph{also} increasing. As larger spectral gaps lead to quicker convergences this acts in an opposite way on the total simulation time. The end result is that for small $beta$ the increase in initial distance is stronger than the increase in the spectral gap and $L dot t$ increases. After some amount of $beta$ these forces flip and the spectral gap effects become stronger than the initial state distance increasing, leading to a reduction in $L dot t$. This phenomenon appears to become more pronounced as the dimension of the harmonic oscillator increases, as can be seem in the $dim_S = 10$ data. Two things remain unclear: the first is what parameters affect the position and height of the peak in total simulation time and the second is if this behavior is present in Hamiltonians with more complicated eigenvalue difference structure than the harmonic oscillator.
+
+#figure(
+    grid(
+        columns: 2,
+        row-gutter: 3mm,
+        image("tsp_numerics/sho_total_time_vs_beta_dim_4.svg"), image("tsp_numerics/spec_gap_dim_4.svg"),
+        "(a) dim = 4 truncated harmonic oscillator", [(b) $dim = 4$ spectral gap vs $beta$],
+        grid.cell(colspan: 2, image("tsp_numerics/sho_total_time_vs_beta_dim_10.svg", width: 50%)), grid.cell(
+            colspan: 2,
+            [(c) $dim = 10$ truncated harmonic oscillator],
+        )
+    ),
+
+    caption: [Demonstration of $beta$ dependence of the thermalizing channel $Phi$ for the truncated harmonic oscillator. The environment gap $gamma$ was tuned to match the system gap $Delta$ exactly. The minimal number of interactions was found by binary search over values of $L$ that have an average error of less than $epsilon = 0.05$ with 100 samples.],
+) <fig_sho_total_time_vs_beta>
+
+The analytic proofs given in @thm_single_qubit and @thm_harmonic_oscillator are entirely based on our weak-coupling expansion derived in @sec_tsp_weak_coupling. The high level picture of this expansion is that we have a remainder error that scales like $tilde(O)(alpha t)^3)$ and an off-resonance error that scales as $O(alpha^2)$. To balance these two terms we then set $alpha = O(1/t^3)$. However, as seen in @fig_tot_time_vs_single_time our thermalization routine appears to be quite robust beyond this weak-coupling expansion, which could lead to significant improvements in runtime. In our derivation for the $O(alpha)$ and $O(alpha^2)$ terms we relied on our eigenvalues being I.I.D Gaussian variables, with the first and second order expressions containing factors with the first and second moments respectively of the Gaussian distribution. This would suggest that the third order term in a weak coupling expansion might also be 0, similarly to the first order term. This would lead to a supposed remainder error of $O(alpha^4 t^4)$, which after balancing with the off-resonance error would give $alpha = O(1 \/ t^2)$. If the number of interactions then scales like $O(1 \/ (alpha^2 t^2))$, which is consistent with the spectral gap of $cal(T)_"on"$ scaling as $O(alpha^2 t^2)$, then to make the total error of order $O(epsilon)$ we would require $t in tilde(O)(1\/ epsilon^(0.5))$ as in @thm_single_qubit and @thm_harmonic_oscillator. This conjecture then leads to a total simulation time of order $O(1\/epsilon^(1.5))$.
+
+
+
+#figure(
+    image("tsp_numerics/epsilon_fitting_4.svg"),
+    caption: [Scaling of $L dot t$ to prepare a harmonic oscillator thermal state with $beta = dim_S = 4$ with respect to $1 \/ epsilon$ in a log-log plot. For each line in the plot we scaled $alpha$ by a constant value to make $tilde(alpha)^2 approx 0.05$ for the largest value of $epsilon$. Each of these slopes was obtained via a least squares fitting of a power-law to $L dot t$ and $1 \/ epsilon$ and are consistently larger by 0.25-0.27 compared to stated predictions.],
+) <fig_epsilon_scaling>
+
+An even further conjecture would be to keep $alpha dot t$ as a small constant, in this case we are essentially saying that the randomized dynamics $e^(i alpha t G)$ are beneficial and should not be thought of as some remainder error to be minimized. If the $alpha t$ constant is small enough then the dynamics will still be approximated by the Markov chain $cal(T)_"on"$. Our spectral gap will still scale as $O((alpha t)^2)$ and $t$ as $O(1 \/ epsilon^(0.5))$. This would lead to our total simulation time scaling as $O(1 \/ epsilon^(0.5))$. In @fig_epsilon_scaling we numerically explore these various scalings of $alpha$ for the harmonic oscillator with $beta = dim_S = 4$. Our first remark is that the $alpha = O(1\/ t^3)$ scaling as dictated by @thm_harmonic_oscillator is numerically supported.
+Specifically, the theorem suggests that we should observe $O(1 \/ epsilon^(2.5))$ scaling for $L dot t$.
+Our experiment suggesting $L dot t in O(1 \/ epsilon^(2.764))$ which is approximately consistent and deviations from this scaling may arise from the inclusion of data in the fit from outside of the weak coupling limit which is the only regime where we anticipate this scaling.
 
 == Generic Systems <sec_tsp_generic_sys>
 

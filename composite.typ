@@ -680,7 +680,7 @@ Using OpenFermion @mcclean2020openfermion and PySCF @pyscf we were able to compu
 
 The results of the simulations we conducted are found in @fig_composite_hchain_1. Details of the partitioning schemes determined by the
 #figure(
-    image("figs/H3update.png"),
+    image("composite_numerics/H3update.png"),
     caption: [Hydrogen 3 simulation. The crossover time for first order Trotter is around $norm(H) t approx 0.15$ with a crossover ratio of $approx 2.3$. For second order Trotter the crossover time is $approx 0.2$ with a crossover ratio of $approx 2$. Note that the simulation methods with a tilde denote a GBRT optimized partition and the unmarked method is a hand-tuned `chop` partitioning scheme. #todo[Replace the $cal(X)$ in the legend with $cal(C)$. ]],
 ) <fig_composite_hchain_1>
 
@@ -688,7 +688,7 @@ The results of the simulations we conducted are found in @fig_composite_hchain_1
     grid(
         columns: 2,
         row-gutter: 5mm,
-        image("figs/H3_nb.png"), image("figs/H3_w.png"),
+        image("composite_numerics/H3_nb.png"), image("composite_numerics/H3_w.png"),
         "(a)", "(b)",
     ),
     caption: [(a) Optimal number of QDrift samples $N_B$ for $"H"_3$ as determined by GBRT. (b) Spectral weight of the Trotter partition $norm(h_A)$ computed by GBRT applied to $h_"chop"$, normalized by the total spectral weight of $"H"_3$ as a function of simulation time $t$.],
@@ -707,7 +707,7 @@ This Hamiltonian serves as a useful benchmark for Composite simulations as there
     grid(
         columns: 2,
         row-gutter: 5mm,
-        image("figs/J5dist.png"), image("figs/J7dist.png"),
+        image("composite_numerics/J5dist.png"), image("composite_numerics/J7dist.png"),
         "(a) Jellium 5", "(b) Jellium 7",
     ),
     caption: [Semi-log plots of the spectral norm of the Jellium Hamiltonian. The plots not only show the large increase in the number of terms as we increase te sites but also demonstrate the increasingly concentrated norm in the strongest few terms. The red horizontal line indicates one of the values of $h_"chop"$ used in later simulations.],
@@ -719,9 +719,12 @@ In @fig_composite_jelly_sims below we show how the cost of simulating Jellium fo
 #figure(
     grid(
         columns: 2, row-gutter: 3mm,
-        image("figs/Jellium5.png"), image("figs/Jellium6.png"),
+        image("composite_numerics/Jellium5.png"), image("composite_numerics/Jellium6.png"),
         "(a) Jellium 5", "(b) Jellium 6",
-        grid.cell(colspan: 2, image("figs/Jellium7.png", width: 50%)), grid.cell(colspan: 2, "(c) Jellium 7")
+        grid.cell(colspan: 2, image("composite_numerics/Jellium7.png", width: 50%)), grid.cell(
+            colspan: 2,
+            "(c) Jellium 7",
+        )
     ),
     caption: [Query costs associated with exact implementation of various product formulas for different Jellium models.],
 ) <fig_composite_jelly_sims>
@@ -736,7 +739,7 @@ where $h_(i,j)$ is a site-dependent coupling constant and $h_k$ is a site-depend
     grid(
         columns: 2,
         row-gutter: 3mm,
-        image("figs/graph7.png"), image("figs/graph8.png"),
+        image("composite_numerics/graph7.png"), image("composite_numerics/graph8.png"),
         [(a) 7 Spin $H_"graph"$], [(b) 8 Spin $H_"graph"$],
     ),
     caption: [Operator query cost plots for 7 spin model (a) and 8 spin model (b), which have crossover ratios of $r_"cross" = 4.1$ and $r_"cross" = 3.9$ respectively.],
@@ -748,9 +751,9 @@ In this section we briefly discuss the application of our Composite simulation a
 #figure(
     grid(
         columns: 2, row-gutter: 5mm,
-        image("figs/iH3.png"), image("figs/iHeisenberg8.png"),
+        image("composite_numerics/iH3.png"), image("composite_numerics/iHeisenberg8.png"),
         [(a) $"H"_3$], [(b) 8 Spin Heisenberg],
-        grid.cell(image("figs/iJellium6.png", width: 50%), colspan: 2),
+        grid.cell(image("composite_numerics/iJellium6.png", width: 50%), colspan: 2),
         grid.cell(colspan: 2, "(c) 6 Site Jellium")
     ),
     caption: [Operator exponential costs for imaginary time simulations. In (a) the crossover advantage is $r_"cross" = 2.3$, in (b) $r_"cross" = 3.1$, and in (c) $r_"cross" = 18.8$.],
