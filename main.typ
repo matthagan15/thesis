@@ -15,6 +15,7 @@
 #include "intro.typ"
 #include "composite.typ"
 #include "thermal_state.typ"
+#include "conclusion.typ"
 
 #show heading.where(level: 1): it => {
     let number = if it.numbering != none {
