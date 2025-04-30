@@ -128,7 +128,7 @@
 
 == Haar Integral Proofs <sec_appendix_haar>
 
-In this section we present the more technical work needed to state our results in @sec_tsp_weak_coupling. @lem_two_heisenberg_interactions and @lem_sandwiched_interaction are used to compute the effects of the randomized interactions in a form that are usable in the main result of Lemma \ref{lem:big_one}. @lem_haar_two_moment can be derived from Appendix C in @brandao2021complexity.
+In this section we present the more technical work needed to state our results in @sec_tsp_weak_coupling. @lem_two_heisenberg_interactions and @lem_sandwiched_interaction are used to compute the effects of the randomized interactions in a form that are usable in the main result of @lem_tsp_transitions. @lem_haar_two_moment can be derived from Appendix C in @brandao2021complexity.
 
 #lemma()[
     Let $integral (dot) d U$ denote the expectation over the Haar measure over the set of unitary matrices acting on a $dim$ dimensional Hilbert space. Then for $ket(i_1), ket(i_2), ..., ket(k_2)$ drawn from an orthonormal basis
@@ -300,8 +300,8 @@ In this section we present the more technical work needed to state our results i
 
     The last two terms $(C) = (D)$ are computed as follows:
     $
-        integral (C) d G &= t^2 integral_0^1 integral_0^1 integral G(s_1 t) rho(t) G((1-s_2)t) ~d G ~ d s_1 d s_2 \
-        &= t^2 sum_(i,j) rho_(i j) e^(i(lambda(i) - lambda(j))t) integral_0^1 integral_0^1 integral G(s_1 t) ket(i)bra(j) G((1-s_2)t) ~ d G ~ d s_1 d s_2 \
+        integral (C) d G &= t^2 integral_0^1 integral_0^1 integral G(s_1 t) rho(t) G((1-s_2)t) " "d G " " d s_1 d s_2 \
+        &= t^2 sum_(i,j) rho_(i j) e^(i(lambda(i) - lambda(j))t) integral_0^1 integral_0^1 integral G(s_1 t) ket(i)bra(j) G((1-s_2)t) " " d G " " d s_1 d s_2 \
         &= frac(t^2, dim + 1) sum_(i,j) rho_(i j) e^(i(lambda(i) - lambda(j))t) ( ket(i)bra(j) + delta_(i j) sum_(a) integral_0^1 integral_0^1 e^(i(lambda(a) - lambda(i))(s_1 + s_2 - 1)t) d s_1 d s_2 ket(a)bra(a)) \
         &= frac(t^2, dim + 1) sum_(i,j) rho_(i j) e^(i Delta_(i j) t) (ket(i)bra(j) + delta_(i j) sum_(a : Delta_(a i) != 0) frac(2(1- cos (Delta_(a i) t)), Delta_(a i)^2 t^2) ket(a)bra(a) + delta_(i j) sum_(a : Delta_(a i) = 0) ket(a)bra(a))
     $
@@ -310,25 +310,25 @@ In this section we present the more technical work needed to state our results i
     $
         &integral frac(partial^2, partial alpha^2) Phi_G(ket(i\, j)bra(k\, l))|_(alpha = 0) d G \
         &= -frac(2  e^(i Delta(i,j|k,l) t), dim + 1) (sum_((a,b): Delta(i,j|a,b) != 0) frac(1 - i Delta(i,j|a,b)t - e^(-i Delta(i,j|a,b) t), Delta(i,j|a,b)^2) \
-            &~+ sum_((a,b): Delta(k,l|a,b) != 0) frac(1 + i Delta(k,l|a,b) t - e^(i Delta(k,l|a,b) t), Delta(k,l|a,b)^2) + frac(t^2,2)(eta(i,j) + eta(k,l)) ) ket(i\,j)bra(k\,l) \
-        &~ +delta_(i,k) delta_(j,l) frac(2 e^(i Delta(i,j|k,l)t), dim+1) ( sum_((a,b): Delta(i,j|a,b) != 0 ) frac(2(1- cos (Delta(i,j|a,b)t)), Delta(i,j|a,b)^2) ket(a\,b)bra(a\,b) + t^2 sum_((a,b) : Delta(i,j|a,b) = 0) ket(a\,b)bra(a\,b))
-    $ <eq:second_order_output>
+            &+ sum_((a,b): Delta(k,l|a,b) != 0) frac(1 + i Delta(k,l|a,b) t - e^(i Delta(k,l|a,b) t), Delta(k,l|a,b)^2) + frac(t^2,2)(eta(i,j) + eta(k,l)) ) ket(i\,j)bra(k\,l) \
+        & +delta_(i,k) delta_(j,l) frac(2 e^(i Delta(i,j|k,l)t), dim+1) ( sum_((a,b): Delta(i,j|a,b) != 0 ) frac(2(1- cos (Delta(i,j|a,b)t)), Delta(i,j|a,b)^2) ket(a\,b)bra(a\,b) + t^2 sum_((a,b) : Delta(i,j|a,b) = 0) ket(a\,b)bra(a\,b))
+    $ <eq_second_order_output>
 
     The last step we need is to use the half angle formula to change the cosine to a sine
     $
         frac(2(1 - cos(Delta(i,j| a,b)t)), Delta(i,j|a,b)^2) &= frac(2(1 - (1 - 2 sin^2(frac(Delta(i,j|a,b)t, 2)))), Delta(i,j|a,b)^2) \
         &= t^2 frac(sin^2 (frac(Delta(i,j|a,b) t, 2)), frac(Delta(i,j|a,b)^2 t^2, 4)) \
         &= t^2 sinc^2 (frac(Delta(i,j|a,b) t, 2)),
-    $ <eq:trig_end>
+    $ <eq_trig_end>
     which yields the statement.
 
     We can compute these by plugging in to Eq. @eq_el_gigante again, which yields
     $
-        &integral bra(i'\, j') cal(T) ( ket(i\, j)bra(i\, j) ) ket(i'\, j') ~d G = cases(
+        &integral bra(i'\, j') cal(T) ( ket(i\, j)bra(i\, j) ) ket(i'\, j') " " d G = cases(
     tilde(alpha)^2 sinc^2(Delta(i,j | i', j') t /2) & (i, j) != (i', j') \
     -tilde(alpha)^2 sum_((a,b) != (i, j)) sinc^2(Delta(a,b|i,j) t / 2) & (i,j) = (i', j')
     ).
-    $ <eq:system_environment_transitions>
+    $ <eq_system_environment_transitions>
 
     The $(i, j) != (i', j')$ case should be apparent, the first term with the coherence factors $chi$ are zero and the second term is what remains. The $(i,j) = (i', j')$ case can be seen as follows. For the first term we have
     $
@@ -341,7 +341,7 @@ In this section we present the more technical work needed to state our results i
         &= sum_(a,b: Delta(i,j| a,b) != 0) frac(2 - e^(-i Delta(i,j| a,b) t) - e^(+i Delta(i,j| a,b) t), Delta(i,j|a,b)^2) \
         &= sum_(a,b: Delta(i,j| a,b) != 0) t^2 sinc^2 ( frac(Delta(i,j| a,b) t, 2) ),
     $
-    where the last step follows from a trigonometric identity (see @eq:trig_end in @sec_appendix_haar for details). Since $sinc(0) = 1$ the $eta(i,j)$ term can be expressed as $eta(i,j) = sum_(a,b : Delta(i,j|a,b) = 0) sinc^2 ( frac(Delta(i,j| a,b) t, 2) )$. Plugging this into Eq. @eq_el_gigante gives
+    where the last step follows from a trigonometric identity (see @eq_trig_end in @sec_appendix_haar for details). Since $sinc(0) = 1$ the $eta(i,j)$ term can be expressed as $eta(i,j) = sum_(a,b : Delta(i,j|a,b) = 0) sinc^2 ( frac(Delta(i,j| a,b) t, 2) )$. Plugging this into Eq. @eq_el_gigante gives
     $
         &integral bra(i\,j) cal(T) (ket(i\,j)bra(i\,j)) ket(i\,j) d G \
         &= bra(i\,j) (-frac(alpha^2 t^2, dim + 1) sum_(a,b) sinc^2 ( frac(Delta(i,j| a,b) t, 2) ) ket(i\,j)bra(i\,j) + sum_(a,b) sinc^2( frac(Delta(i,j | a,b)t, 2) ) ket(a\,b)bra(a\,b) ) ket(i\,j) \
@@ -349,4 +349,54 @@ In this section we present the more technical work needed to state our results i
     $
     As a by-product of this computation we have just shown that $tr(cal(T)(rho)) = 0$ and that our mapping is trace preserving to $O(alpha^2)$.
 
+]
+
+#proof([of @thm_remainder_bound])[
+    First we note that although $R_Phi (rho) = alpha^3 / 6 diff_alpha^3 Phi(rho) |_(alpha = alpha_star)$ for a specific value $alpha_star > 0$ our proof will actually hold for any value of $alpha_star > 0$. To compute the trace norm we will use the triangle inequality, unitary invariance of the Schätten norms, and submultiplicativity. To start,
+    $
+        norm(diff_alpha^3 Phi(rho))_1 &= norm((diff^3)/(diff alpha^3) EE_G tr_E e^(i (H + alpha G)t) rho tp rho_E e^(-i (H + alpha G)t))_1 \
+        &<= EE_G norm((diff^3)/(diff alpha^3) e^(i (H + alpha G)t) rho tp rho_E e^(-i (H + alpha G)t) )_1,
+    $
+    where we can take $EE_G$ out of the norm via the triangle inequality and we can remove the trace via Proposition 1 of @rastegin2012relations, which proves $norm(tr_E [X])_1 <= norm(X)_(dim_E) <= norm(X)_1$. To proceed we use the decomposition of the second derivatives from the proof of @lem_tsp_transitions, specifically @eq_second_derivative_labels. This gives the following
+    $
+        norm(R_Phi)_1 &<= alpha^3 / 6 EE_G norm(diff_alpha ((A) + (B) + (C) + (D) + (E) + (F))|_(alpha = alpha_star))_1 \
+        &<= alpha^3 / 6 (EE_G norm(diff_alpha (A)|_(alpha = alpha_star))_1 + ... + EE_G norm(diff_alpha (F)|_(alpha = alpha_star))_1).
+    $
+    We will demonstrate how this can be computed for the first term $diff_alpha (A)$. Using @eq_second_deriv_alpha_first_term and letting $H_alpha = H + alpha G$ for brevity we can write
+    $
+        diff_alpha (A) = -t^2 diff_alpha integral_0^1 integral_0^1 underbrace(e^(i s_1 s_2 H_alpha t), "(A.1)") G underbrace(e^(i s_1(1-s_2) H_alpha t), "(A.2)") G underbrace(e^(i(1 - s_1) H_alpha t), "(A.3)") rho underbrace(e^(-i H_alpha t), "(A.4)") s_1 d s_1 d s_2,
+    $
+    where there are four spots for the derivative to act via Duhamel's formula. We will show only one of these terms, starting with (A.1)
+    #set math.equation(number-align: horizon)
+    $
+        &"(A.1)" = -t^2 integral_0^1 integral_0^1 diff_alpha (e^(i s_1 s_2 H_alpha t)) G e^(i s_1(1-s_2) H_alpha t) G e^(i(1 - s_1) H_alpha t) rho e^(-i H_alpha t) s_1 d s_1 d s_2 \
+        &= (i t)^3 integral_0^1 integral_0^1 integral_0^1 e^(i s_1 s_2 s_3 H_alpha t) G e^(i s_1 s_2 (1 - s_3) H_alpha t) G e^(i s_1 (1 - s_2) H_alpha t) G e^(i (1-s_1) H_alpha t ) rho e^(-i H_alpha t) s_1^2 s_2 d s_1 d s_2 d s_3.
+    $
+    #set math.equation(number-align: bottom)
+    Our goal is to compute the 1-norm of the above expression at $alpha = alpha_star$. We can do so using the triangle inequality to move the norms into the integrand and then use submultiplicativity and unitary invariance to achieve
+    $
+        &norm(e^(i s_1 s_2 s_3 H_alpha_star t) G e^(i s_1 s_2 (1 - s_3) H_alpha_star t) G e^(i s_1 (1 - s_2) H_alpha_star t) G e^(i (1-s_1) H_alpha_star t ) rho e^(-i H_alpha_star t))_1 \
+        &<= norm(e^(i s_1 s_2 s_3 H_alpha_star t) G)_1 norm(e^(i s_1 s_2 (1 - s_3) H_alpha_star t) G)_1 norm(e^(i s_1 (1 - s_2) H_alpha_star t) G)_1 norm(e^(i (1-s_1) H_alpha_star t ) rho e^(-i H_alpha_star t))_1 \
+        &<= norm(G)_1^3 norm(rho)_1 = norm(G)_1^3.
+    $
+    Similar computations can be carried out for the other three terms (A.2) - (A.4). In total these yield the inequality
+    $
+        alpha^3 / 6 integral norm(diff_alpha (A))_1 d G &<= (alpha t)^3 / 6 EE_G integral_0^1 integral_0^1 integral_0^1 norm(G)_1^3 (s_1^2 s_2 + s_1^2(1 - s_2) + s_1(2 - s_1)) d s_1 d s_2 d s_3 \
+        &<= 4 / 6 (alpha t)^3 EE_G norm(G)_1^3.
+    $ <eq_remainder_bound_on_A>
+
+    #h(5mm) Now that we have computed a bound for the norm of the derivative acting on $(A)$ we only have terms $(B)$ through $(F)$ to compute. These can all be checked to satisfy the same bound on $(A)$ from @eq_remainder_bound_on_A, and as there are six terms in total we have the inequality
+    $
+        norm(R_Phi)_1 <= 4 (alpha t)^3 EE_G norm(G)_1^3,
+    $
+    which holds for all inputs $rho$.
+
+    Our last remaining problem is to compute the expected norm of $G$. Using the decomposition of our interaction $G = U_"haar" D U_"haar"^dagger$ to get
+    $
+        EE_G norm(G)_1^3 = EE_D EE_"haar" norm(U_"haar" D U_"haar"^dagger)_1^3 = 2 dim_S integral_(-oo)^(+oo) abs(e^(-x^2 / 2) )^3 1 / sqrt(2 pi) d x ,
+    $
+    where $x$ is a normal Gaussian random variable. This last integral evaluates to $2 sqrt(2 / pi)$ and gives the final inequality
+    $
+        norm(R_Phi)_1 <= 16 sqrt(2/pi) dim_S (alpha t)^3.
+    $
 ]

@@ -227,7 +227,7 @@ where we will use the environment qubit probabilities $q(0)$ and $q(1)$ in calcu
     bra(i) cal(T)(ketbra(i,i)) ket(i) = - sum_(j != i) bra(j) cal(T) (ketbra(i,i)) ket(j),
   $ which follows from $tr cal(T)(rho) = 0$ as shown in @lem_tsp_transitions.
     + There are no coherences, or off-diagonal density matrix elements, introduced in the system up to $O(alpha^2)$, or mathematically $ j != k ==> bra(j) cal(T) (ketbra(i,i)) ket(k) = 0. $
-]<thm_tsp_second_order_expansion>
+] <thm_tsp_second_order_expansion>
 Before we prove this result we will introduce the concept of on- and off-resonant transitions which we give below.
 #definition([On and Off Resonant Transitions])[
     The transition elements in @eq_transition_terms_total can be divided into on-resonance and off-resonance transitions based on the arguments to the $sinc$ function. We define the on-resonance transitions as
