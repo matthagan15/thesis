@@ -43,6 +43,6 @@
     },
 )
 
-#bibliography("references.bib", style: "american-physics-society")
-
 #include "appendix.typ"
+
+#bibliography("references.bib", style: "american-physics-society")
