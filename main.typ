@@ -45,4 +45,4 @@
 
 #include "appendix.typ"
 
-#bibliography("references.bib", style: "american-physics-society")
+#bibliography("bib.bib", style: "american-physics-society")

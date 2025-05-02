@@ -85,7 +85,7 @@
 = Haar Integrals <sec_tsp_appendix>
 
 #lemma([Sinc Function Bounds])[
-    For $sinc^2(x t/2)$ and $delta_min$ as defined in @eq_delta_min_def, we will make significant use of the following Bounds
+    For $sinc^2(x t / 2)$ and $delta_min$ as defined in @eq_delta_min_def, we will make significant use of the following Bounds
     $
         |x| >= delta_"min" ==> sinc^2 ( frac(x t, 2) ) &<= frac(4, delta_"min"^2 t^2) \
         |x| <= frac(sqrt(2), t) ==> sinc^2(frac(x t, 2) ) &>= 1 - frac(|x|^2 t^2, 2).
@@ -97,10 +97,10 @@
         "sinc"^2 ((x t) / 2) = (sin^2((x t) / 2) ) / ((x t) / 2)^2 <= 4 / (x^2 t^2) <= frac(4, delta_"min"^2 t^2).
     $
 
-    The second involves a Taylor Series for $"sinc"^2$, which we compute using the expression of $"sinc"$ as $"sinc"((x t)/ 2) = ("sin" (x t) /2) / ((x t) / 2) = integral_0^1 "cos"(s (x t)/2) d s$. The first two derivatives can then be computed easily
+    The second involves a Taylor Series for $"sinc"^2$, which we compute using the expression of $"sinc"$ as $"sinc"((x t) / 2) = ("sin" (x t) / 2) / ((x t) / 2) = integral_0^1 "cos"(s (x t) / 2) d s$. The first two derivatives can then be computed easily
     $
-        frac(d "sinc"^2((x t) /2), d x) &= - t integral_0^1 "sin"(s x) s " "d s integral_0^1 "cos"(s x) d s \
-        frac(d^2 "sinc"^2((x t) /2), d x^2) &= -t^2 / 2 integral_0^1 "cos"(s x) s^2 d s integral_0^1 "cos"(s x) d s + t^2 / 2 integral_0^1 "sin"(s x) s d s integral_0^1 "sin"(s x) s d s.
+        frac(d "sinc"^2((x t) / 2), d x) &= - t integral_0^1 "sin"(s x) s " "d s integral_0^1 "cos"(s x) d s \
+        frac(d^2 "sinc"^2((x t) / 2), d x^2) &= -t^2 / 2 integral_0^1 "cos"(s x) s^2 d s integral_0^1 "cos"(s x) d s + t^2 / 2 integral_0^1 "sin"(s x) s d s integral_0^1 "sin"(s x) s d s.
     $
 
     We can evaluate each of these derivatives about the origin using continuity of the derivatives along with the limits $lim_(x -> 0) "cos"(s x) = 1$ and $lim_(x -> 0) "sin"(s x) = 0$. We can now compute the mean-value version Taylor series as
@@ -110,20 +110,20 @@
     $
 
     where $x_star in [0,1]$.
-    Plugging in $"sinc"^2(0) = 1$ and $frac(d"sinc"^2(x t /2), d x)|_(x = 0) = 0$ then yields
+    Plugging in $"sinc"^2(0) = 1$ and $frac(d"sinc"^2(x t / 2), d x)|_(x = 0) = 0$ then yields
     $
         abs("sinc"^2((x t) / 2) - 1) = frac(|x|^2, 2) abs((d^2"sinc"^2(x t / 2)) / (d x^2) |_(x = x_star)).
     $
     We make use of the rather simplistic bound
 
     $
-        abs(frac(d^2"sinc"^2(s x t/2), d x^2)|_(x = x_star)) &<= t^2 / 2 abs(integral_0^1 "cos"(s x_star t/ 2) s^2 d s integral_0^1 "cos"(s x_star t/ 2) d s) + t^2 / 2 abs(integral_0^1 "sin"(s x_star t/ 2) s d s integral_0^1 "sin"(s x_star t/ 2) s d s) \
-        &<= t^2 / 2 integral_0^1 abs("cos"(s x_star t/2)) s^2 d s integral_0^1 abs("cos"(s x_star t /2 )) d s + t^2 / 2 (integral_0^1 abs("sin"(s x_star t /2)) |s| d s)^2 \
+        abs(frac(d^2"sinc"^2(s x t / 2), d x^2)|_(x = x_star)) &<= t^2 / 2 abs(integral_0^1 "cos"(s x_star t / 2) s^2 d s integral_0^1 "cos"(s x_star t / 2) d s) + t^2 / 2 abs(integral_0^1 "sin"(s x_star t / 2) s d s integral_0^1 "sin"(s x_star t / 2) s d s) \
+        &<= t^2 / 2 integral_0^1 abs("cos"(s x_star t / 2)) s^2 d s integral_0^1 abs("cos"(s x_star t / 2 )) d s + t^2 / 2 (integral_0^1 abs("sin"(s x_star t / 2)) |s| d s)^2 \
         &<= t^2 / 2 integral_0^1 s^2 d s + t^2 / 2 (integral_0^1 s d s)^2 \
         &<= t^2.
     $
 
-    This yields the final inequality $|"sinc"^2((x t) /2 ) - 1| <= frac(|x|^2 t^2, 2)$ which yields @eq_sinc_bounds.
+    This yields the final inequality $|"sinc"^2((x t) / 2 ) - 1| <= frac(|x|^2 t^2, 2)$ which yields @eq_sinc_bounds.
 ]
 
 == Haar Integral Proofs <sec_appendix_haar>
@@ -199,13 +199,13 @@ In this section we present the more technical work needed to state our results i
 #lemma()[
     Given a system Hamiltonian $H_S$, an environment Hamiltonian $H_E$, a simulation time $t$, and coupling coefficient $alpha$, let $Phi_G$ denote the time evolution channel under a fixed interaction term $G$ as given in @eq_phi_g_definition, let $chi$ denote the following coherence prefactor
     $
-        chi(i,j) := sum_(a,b: Delta (i,j,|a,b) != 0) (1 - i Delta (i,j|a,b)t - e^(-i Delta (i,j|a,b) t)) / (Delta (i,j|a,b)^2),
+        chi(i, j) := sum_(a,b: Delta (i,j,|a,b) != 0) (1 - i Delta (i,j|a,b)t - e^(-i Delta (i,j|a,b) t)) / (Delta (i,j|a,b)^2),
     $
-    and let $eta(i,j)$ denote the degeneracy of the $(i,j)^"th"$ eigenvalue of $H = H_S + H_E$. Then the $O(alpha^2)$ term of $Phi_G$ in a weak-coupling expansion is given by
+    and let $eta(i, j)$ denote the degeneracy of the $(i,j)^"th"$ eigenvalue of $H = H_S + H_E$. Then the $O(alpha^2)$ term of $Phi_G$ in a weak-coupling expansion is given by
     $
         &alpha^2 / 2 EE_G [diff^2 / (diff alpha^2) Phi_G (ketbra(i \,j, k \,l))|_(alpha = 0) ] \
-        =& - (alpha^2 e^(i Delta (i,j|k,l) t)) / (dim + 1) (chi(i,j) + chi(k,l)^* + t^2 / 2 (eta(i,j) + eta(k,l)) )ketbra(i\,j, k\,l) \
-        &+ angle.l i,j|k,l angle.r (alpha^2 t^2) / (dim + 1) sum_(a,b) sinc^2 ( Delta(i,j|a,b) t / 2) ketbra(a\,b, a\,b)
+        =& - (alpha^2 e^(i Delta (i,j|k,l) t)) / (dim + 1) (chi(i, j) + chi(k, l)^* + t^2 / 2 (eta(i, j) + eta(k, l)) )ketbra(i\,j, k\,l) \
+        &+ angle.l i,j|k,l angle.r (alpha^2 t^2) / (dim + 1) sum_(a,b) sinc^2 ( Delta(i, j|a, b) t / 2) ketbra(a\,b, a\,b)
     $
     For $ket(i \, j) = ket(k \, l)$ the above expression simplifies to
     $
@@ -239,9 +239,9 @@ In this section we present the more technical work needed to state our results i
 
     $
         (C) &= i t integral_0^1 e^(i s (H + alpha G)t) G e^(i(1-s) (H + alpha G) t) d s " "rho " " frac(partial, partial alpha) ( e^(-i (H + alpha G) t) ) |_(alpha = 0) \
-        &= (i t) (-i t) integral_0^1 e^(i s (H + alpha G)t) G e^(i (1 - s) (H + alpha G)t) d s ~ rho ~ ( integral_0^1 e^(-i s (H + alpha G)t) G e^(-i (1- s) ( H + alpha G)t ) d s)|_(alpha = 0) \
+        &= (i t) (-i t) integral_0^1 e^(i s (H + alpha G)t) G e^(i (1 - s) (H + alpha G)t) d s " " rho " " ( integral_0^1 e^(-i s (H + alpha G)t) G e^(-i (1- s) ( H + alpha G)t ) d s)|_(alpha = 0) \
         &= + t^2 (integral_0^1 e^(i s H t) G e^(-i s H t) d s) e^(i H t) rho e^(-i H t) (integral_0^1 e^(i (1-s) H t) G e^(-i (1-s) H t) d s) \
-        &= + t^2 integral_0^1 G(s t) d s ~ rho(t) integral_0^1 G((1-s)t) d s
+        &= + t^2 integral_0^1 G(s t) d s " " rho(t) integral_0^1 G((1-s)t) d s
     $
 
     $
@@ -269,32 +269,32 @@ In this section we present the more technical work needed to state our results i
     $
         integral (A) d G &= -t^2 integral_0^1 integral_0^1 integral G(s_1 s_2 t) G(s_1 t) d G s_1 d s_1 d s_2 rho(t) \
         &= frac(-t^2, dim + 1) integral_0^1 integral_0^1 (sum_(i,j) e^(i (lambda(i) - lambda(j)) (s_1 s_2 t - s_1 t)) ket(i)bra(i) + identity) s_1 d s_1 d s_2 rho(t) \
-        &= frac(- t^2, dim + 1) (sum_(i) sum_(j : lambda(i) != lambda(j)) integral_0^1 integral_0^1 e^(i(lambda(i) - lambda(j))t (s_1 s_2 - s_1)) s_1 d s_1 d s_2 ket(i)bra(i) + sum_(i) sum_(j : lambda(i) = lambda(j))frac(1,2) ket(i)bra(i) + frac(1,2) identity) rho(t) \
-        &= frac(- t^2, dim + 1) (sum_i sum_(j : lambda(i) != lambda(j)) frac(1 - i (lambda(i) - lambda(j))t - e^(-i (lambda(i) - lambda(j))t), t^2 (lambda(i) - lambda(j))^2) ket(i)bra(i) + frac(1,2) sum_(i) (eta(i) + 1) ket(i)bra(i) ) rho(t) \
-        &= frac(- 1, dim + 1)(sum_(i) sum_(j: Delta_(i j) != 0) frac(1 - i Delta_(i j)t - e^(-i Delta_(i j) t), Delta_(i j)^2) ket(i)bra(i) + frac(t^2,2) sum_(i) (eta(i) + 1)ket(i)bra(i) ) rho(t)
+        &= frac(- t^2, dim + 1) (sum_(i) sum_(j : lambda(i) != lambda(j)) integral_0^1 integral_0^1 e^(i(lambda(i) - lambda(j))t (s_1 s_2 - s_1)) s_1 d s_1 d s_2 ket(i)bra(i) + sum_(i) sum_(j : lambda(i) = lambda(j))frac(1, 2) ket(i)bra(i) + frac(1, 2) identity) rho(t) \
+        &= frac(- t^2, dim + 1) (sum_i sum_(j : lambda(i) != lambda(j)) frac(1 - i (lambda(i) - lambda(j))t - e^(-i (lambda(i) - lambda(j))t), t^2 (lambda(i) - lambda(j))^2) ket(i)bra(i) + frac(1, 2) sum_(i) (eta(i) + 1) ket(i)bra(i) ) rho(t) \
+        &= frac(- 1, dim + 1)(sum_(i) sum_(j: Delta_(i j) != 0) frac(1 - i Delta_(i j)t - e^(-i Delta_(i j) t), Delta_(i j)^2) ket(i)bra(i) + frac(t^2, 2) sum_(i) (eta(i) + 1)ket(i)bra(i) ) rho(t)
     $
 
     We can similarly compute the averaged $(B)$ term:
     $
         integral (B) d G &= -t^2 integral_0^1 integral_0^1 integral G(s_1 t) G((s_1 + s_2 - s_1 s_2) t) d G (1-s_1) d s_1 d s_2 ~ rho(t) \
         &= frac(- t^2, dim + 1) integral_0^1 integral_0^1 (sum_(i,j) e^(i (lambda(i) - lambda(j))(s_1 s_2 - s_2) t) ket(i)bra(i) + identity) (1 -s_1) d s_1 d s_2 rho \
-        &= frac(- t^2, dim + 1) (sum_(i) sum_(j : lambda(i) != lambda(j)) integral_0^1 integral_0^1 e^(i(lambda(i) - lambda(j))t (s_1 s_2 - s_2)} (1 - s_1) d s_1 d s_2 ket(i)bra(i) + sum_(i) sum_(j : lambda(i) = lambda(j))frac(1,2) ket(i)bra(i) + frac(1,2) identity) rho(t) \
-        &= frac(- t^2, dim + 1) (sum_i sum_(j : lambda(i) != lambda(j)) frac(1 - i (lambda(i) - lambda(j))t - e^(-i (lambda(i) - lambda(j))t), t^2 (lambda(i) - lambda(j))^2) ket(i)bra(i) + frac(1,2) sum_(i) (eta(i) + 1) ket(i)bra(i) ) rho(t) \
-        &= frac(-1, dim + 1)(sum_(i) sum_(j: Delta_(i j) != 0) frac(1 - i Delta_(i j)t - e^(-i Delta_(i j) t), Delta_(i j)^2) ket(i)bra(i) + frac(t^2,2) sum_(i) (eta(i) + 1)ket(i)bra(i) ) rho(t),
+        &= frac(- t^2, dim + 1) (sum_(i) sum_(j : lambda(i) != lambda(j)) integral_0^1 integral_0^1 e^(i(lambda(i) - lambda(j))t (s_1 s_2 - s_2)} (1 - s_1) d s_1 d s_2 ket(i)bra(i) + sum_(i) sum_(j : lambda(i) = lambda(j))frac(1, 2) ket(i)bra(i) + frac(1, 2) identity) rho(t) \
+        &= frac(- t^2, dim + 1) (sum_i sum_(j : lambda(i) != lambda(j)) frac(1 - i (lambda(i) - lambda(j))t - e^(-i (lambda(i) - lambda(j))t), t^2 (lambda(i) - lambda(j))^2) ket(i)bra(i) + frac(1, 2) sum_(i) (eta(i) + 1) ket(i)bra(i) ) rho(t) \
+        &= frac(-1, dim + 1)(sum_(i) sum_(j: Delta_(i j) != 0) frac(1 - i Delta_(i j)t - e^(-i Delta_(i j) t), Delta_(i j)^2) ket(i)bra(i) + frac(t^2, 2) sum_(i) (eta(i) + 1)ket(i)bra(i) ) rho(t),
     $
     which we note is identical to $integral (A) d G$. As terms $(C)$ and $(D)$ involve a different method of computation we skip them for now and compute $(E)$ and $(F)$.
     $
         integral (E) d G &= -t^2 rho(t) integral_0^1 integral_0^1 integral G((1- s_1 s_2) t) G((1-s_1)t) d G s_1 d s_1 d s_2 \
         &= frac(- t^2, dim + 1) rho(t) integral_0^1 integral_0^1 (sum_(i,j) e^(i(lambda(i) - lambda(j)) t (s_1 - s_1 s_2)) ket(i)bra(i) + identity ) s_1 d s_1 d s_2 \
-        &= frac(- t^2, dim + 1) rho(t) (sum_i sum_(j : lambda(i) != lambda(j)) frac(1 + i (lambda(i) - lambda(j))t - e^(i(lambda(i) - lambda(j))t), t^2 (lambda(i) - lambda(j))^2)ket(i)bra(i) + frac(1,2) sum_(i) (eta(i) + 1 )ket(i)bra(i)) \
-        &= frac(- 1, dim + 1) rho(t) (sum_i sum_(j: (Delta_(i j) != 0)) frac(1 + i Delta_(i j)t - e^(i Delta_(i j)t), Delta_(i j)^2) ket(i)bra(i) + frac(t^2,2)sum_i (eta(i) + 1) ket(i)bra(i)).
+        &= frac(- t^2, dim + 1) rho(t) (sum_i sum_(j : lambda(i) != lambda(j)) frac(1 + i (lambda(i) - lambda(j))t - e^(i(lambda(i) - lambda(j))t), t^2 (lambda(i) - lambda(j))^2)ket(i)bra(i) + frac(1, 2) sum_(i) (eta(i) + 1 )ket(i)bra(i)) \
+        &= frac(- 1, dim + 1) rho(t) (sum_i sum_(j: (Delta_(i j) != 0)) frac(1 + i Delta_(i j)t - e^(i Delta_(i j)t), Delta_(i j)^2) ket(i)bra(i) + frac(t^2, 2)sum_i (eta(i) + 1) ket(i)bra(i)).
     $
     Computing $(F)$ yields
     $
         integral (F) d G &= -t^2 rho(t) integral_0^1 integral_0^1 integral G((1-s_1)t) G((1-s_1)(1 - s_2) t) d G (1-s_1)d s_1 d s_2 \
-        &= frac(- t^2 sigma ^2, dim + 1) rho(t) integral_0^1 integral_0^1 (sum_(i,j) e^(i(lambda(i) - lambda(j))t (s_2 - s_1 s_2))ket(i)bra(i) + identity) (1-s_1) d s_1 d s_2 \
-        &= frac(- t^2, dim + 1) rho(t) (sum_(i) sum_(j : lambda(i) != lambda(j)) frac(1 + i (lambda(i) - lambda(j))t - e^(i (lambda(i) - lambda(j))t), t^2 (lambda(i) - lambda(j))^2) ket(i)bra(i) +frac(1,2) sum_(i) (eta(i) + 1) ket(i)bra(i)) \
-        &= frac(- 1, dim + 1) rho(t) (sum_i sum_(j: (Delta_(i j) != 0)) frac(1 + i Delta_(i j)t - e^(i Delta_(i j)t), Delta_(i j)^2) ket(i)bra(i) + frac(t^2,2)sum_i (eta(i) + 1) ket(i)bra(i))
+        &= frac(- t^2 sigma^2, dim + 1) rho(t) integral_0^1 integral_0^1 (sum_(i,j) e^(i(lambda(i) - lambda(j))t (s_2 - s_1 s_2))ket(i)bra(i) + identity) (1-s_1) d s_1 d s_2 \
+        &= frac(- t^2, dim + 1) rho(t) (sum_(i) sum_(j : lambda(i) != lambda(j)) frac(1 + i (lambda(i) - lambda(j))t - e^(i (lambda(i) - lambda(j))t), t^2 (lambda(i) - lambda(j))^2) ket(i)bra(i) +frac(1, 2) sum_(i) (eta(i) + 1) ket(i)bra(i)) \
+        &= frac(- 1, dim + 1) rho(t) (sum_i sum_(j: (Delta_(i j) != 0)) frac(1 + i Delta_(i j)t - e^(i Delta_(i j)t), Delta_(i j)^2) ket(i)bra(i) + frac(t^2, 2)sum_i (eta(i) + 1) ket(i)bra(i))
     $
     which is identical to $integral (E) d G$.
 
@@ -309,43 +309,43 @@ In this section we present the more technical work needed to state our results i
     We can now combine each of these terms to offer the full picture of the output of the channel to second order. We make two modifications to the results from each sum: first, we will switch to double index notation to make for easier use in other areas, and secondly we let $rho = ket(i\, j)bra(k\, l)$. We note that the first term in the following equation is provided by $(A) + (B)$, the second through $(E) + (F)$, and the last two through $(C) + (D)$.
     $
         &integral frac(partial^2, partial alpha^2) Phi_G(ket(i\, j)bra(k\, l))|_(alpha = 0) d G \
-        &= -frac(2  e^(i Delta(i,j|k,l) t), dim + 1) (sum_((a,b): Delta(i,j|a,b) != 0) frac(1 - i Delta(i,j|a,b)t - e^(-i Delta(i,j|a,b) t), Delta(i,j|a,b)^2) \
-            &+ sum_((a,b): Delta(k,l|a,b) != 0) frac(1 + i Delta(k,l|a,b) t - e^(i Delta(k,l|a,b) t), Delta(k,l|a,b)^2) + frac(t^2,2)(eta(i,j) + eta(k,l)) ) ket(i\,j)bra(k\,l) \
-        & +delta_(i,k) delta_(j,l) frac(2 e^(i Delta(i,j|k,l)t), dim+1) ( sum_((a,b): Delta(i,j|a,b) != 0 ) frac(2(1- cos (Delta(i,j|a,b)t)), Delta(i,j|a,b)^2) ket(a\,b)bra(a\,b) + t^2 sum_((a,b) : Delta(i,j|a,b) = 0) ket(a\,b)bra(a\,b))
+        &= -frac(2 e^(i Delta(i, j|k, l) t), dim + 1) (sum_((a,b): Delta(i, j|a, b) != 0) frac(1 - i Delta(i, j|a, b)t - e^(-i Delta(i, j|a, b) t), Delta(i, j|a, b)^2) \
+            &+ sum_((a,b): Delta(k, l|a, b) != 0) frac(1 + i Delta(k, l|a, b) t - e^(i Delta(k, l|a, b) t), Delta(k, l|a, b)^2) + frac(t^2, 2)(eta(i, j) + eta(k, l)) ) ket(i\,j)bra(k\,l) \
+        & +delta_(i,k) delta_(j,l) frac(2 e^(i Delta(i, j|k, l)t), dim+1) ( sum_((a,b): Delta(i, j|a, b) != 0 ) frac(2(1- cos (Delta(i, j|a, b)t)), Delta(i, j|a, b)^2) ket(a\,b)bra(a\,b) + t^2 sum_((a,b) : Delta(i, j|a, b) = 0) ket(a\,b)bra(a\,b))
     $ <eq_second_order_output>
 
     The last step we need is to use the half angle formula to change the cosine to a sine
     $
-        frac(2(1 - cos(Delta(i,j| a,b)t)), Delta(i,j|a,b)^2) &= frac(2(1 - (1 - 2 sin^2(frac(Delta(i,j|a,b)t, 2)))), Delta(i,j|a,b)^2) \
-        &= t^2 frac(sin^2 (frac(Delta(i,j|a,b) t, 2)), frac(Delta(i,j|a,b)^2 t^2, 4)) \
-        &= t^2 sinc^2 (frac(Delta(i,j|a,b) t, 2)),
+        frac(2(1 - cos(Delta(i, j| a, b)t)), Delta(i, j|a, b)^2) &= frac(2(1 - (1 - 2 sin^2(frac(Delta(i, j|a, b)t, 2)))), Delta(i, j|a, b)^2) \
+        &= t^2 frac(sin^2 (frac(Delta(i, j|a, b) t, 2)), frac(Delta(i, j|a, b)^2 t^2, 4)) \
+        &= t^2 sinc^2 (frac(Delta(i, j|a, b) t, 2)),
     $ <eq_trig_end>
     which yields the statement.
 
     We can compute these by plugging in to Eq. @eq_el_gigante again, which yields
     $
         &integral bra(i'\, j') cal(T) ( ket(i\, j)bra(i\, j) ) ket(i'\, j') " " d G = cases(
-    tilde(alpha)^2 sinc^2(Delta(i,j | i', j') t /2) & (i, j) != (i', j') \
-    -tilde(alpha)^2 sum_((a,b) != (i, j)) sinc^2(Delta(a,b|i,j) t / 2) & (i,j) = (i', j')
-    ).
+            tilde(alpha)^2 sinc^2(Delta(i, j | i', j') t / 2) & (i, j) != (i', j') \
+            -tilde(alpha)^2 sum_((a,b) != (i, j)) sinc^2(Delta(a, b|i, j) t / 2) & (i,j) = (i', j')
+        ).
     $ <eq_system_environment_transitions>
 
     The $(i, j) != (i', j')$ case should be apparent, the first term with the coherence factors $chi$ are zero and the second term is what remains. The $(i,j) = (i', j')$ case can be seen as follows. For the first term we have
     $
-        - frac(alpha^2 e^(i Delta(i,j| i,j) t), dim + 1)(chi(i,j) + chi(i,j)^* + frac(t^2,2)(eta(i,j) + eta(i,j))) ket(i\,j)bra(i\,j).
+        - frac(alpha^2 e^(i Delta(i, j| i, j) t), dim + 1)(chi(i, j) + chi(i, j)^* + frac(t^2, 2)(eta(i, j) + eta(i, j))) ket(i\,j)bra(i\,j).
     $
     We first compute the sum $chi (i,j) + chi (i,j)^*$ as
     $
-        chi(i,j) + chi(i,j)^* &= sum_(a,b: Delta(i,j,|a,b) != 0) frac(1 - i Delta(i,j|a,b)t - e^(-i Delta(i,j|a,b) t), Delta(i,j|a,b)^2) \
-        &quad+ sum_(a,b: Delta(i,j,|a,b) != 0) frac(1 + i Delta(i,j|a,b)t - e^(+i Delta(i,j|a,b) t), Delta(i,j|a,b)^2) \
-        &= sum_(a,b: Delta(i,j| a,b) != 0) frac(2 - e^(-i Delta(i,j| a,b) t) - e^(+i Delta(i,j| a,b) t), Delta(i,j|a,b)^2) \
-        &= sum_(a,b: Delta(i,j| a,b) != 0) t^2 sinc^2 ( frac(Delta(i,j| a,b) t, 2) ),
+        chi(i, j) + chi(i, j)^* &= sum_(a,b: Delta(i, j, |a, b) != 0) frac(1 - i Delta(i, j|a, b)t - e^(-i Delta(i, j|a, b) t), Delta(i, j|a, b)^2) \
+        &quad+ sum_(a,b: Delta(i, j, |a, b) != 0) frac(1 + i Delta(i, j|a, b)t - e^(+i Delta(i, j|a, b) t), Delta(i, j|a, b)^2) \
+        &= sum_(a,b: Delta(i, j| a, b) != 0) frac(2 - e^(-i Delta(i, j| a, b) t) - e^(+i Delta(i, j| a, b) t), Delta(i, j|a, b)^2) \
+        &= sum_(a,b: Delta(i, j| a, b) != 0) t^2 sinc^2 ( frac(Delta(i, j| a, b) t, 2) ),
     $
-    where the last step follows from a trigonometric identity (see @eq_trig_end in @sec_appendix_haar for details). Since $sinc(0) = 1$ the $eta(i,j)$ term can be expressed as $eta(i,j) = sum_(a,b : Delta(i,j|a,b) = 0) sinc^2 ( frac(Delta(i,j| a,b) t, 2) )$. Plugging this into Eq. @eq_el_gigante gives
+    where the last step follows from a trigonometric identity (see @eq_trig_end in @sec_appendix_haar for details). Since $sinc(0) = 1$ the $eta(i, j)$ term can be expressed as $eta(i, j) = sum_(a,b : Delta(i, j|a, b) = 0) sinc^2 ( frac(Delta(i, j| a, b) t, 2) )$. Plugging this into Eq. @eq_el_gigante gives
     $
         &integral bra(i\,j) cal(T) (ket(i\,j)bra(i\,j)) ket(i\,j) d G \
-        &= bra(i\,j) (-frac(alpha^2 t^2, dim + 1) sum_(a,b) sinc^2 ( frac(Delta(i,j| a,b) t, 2) ) ket(i\,j)bra(i\,j) + sum_(a,b) sinc^2( frac(Delta(i,j | a,b)t, 2) ) ket(a\,b)bra(a\,b) ) ket(i\,j) \
-        &= -frac(alpha^2 t^2, dim + 1) sum_((a,b) != (i,j)) sinc^2 ( frac(Delta(i,j| a,b) t, 2) ).
+        &= bra(i\,j) (-frac(alpha^2 t^2, dim + 1) sum_(a,b) sinc^2 ( frac(Delta(i, j| a, b) t, 2) ) ket(i\,j)bra(i\,j) + sum_(a,b) sinc^2( frac(Delta(i, j | a, b)t, 2) ) ket(a\,b)bra(a\,b) ) ket(i\,j) \
+        &= -frac(alpha^2 t^2, dim + 1) sum_((a,b) != (i,j)) sinc^2 ( frac(Delta(i, j| a, b) t, 2) ).
     $
     As a by-product of this computation we have just shown that $tr(cal(T)(rho)) = 0$ and that our mapping is trace preserving to $O(alpha^2)$.
 
@@ -354,8 +354,8 @@ In this section we present the more technical work needed to state our results i
 #proof([of @thm_remainder_bound])[
     First we note that although $R_Phi (rho) = alpha^3 / 6 diff_alpha^3 Phi(rho) |_(alpha = alpha_star)$ for a specific value $alpha_star > 0$ our proof will actually hold for any value of $alpha_star > 0$. To compute the trace norm we will use the triangle inequality, unitary invariance of the Schätten norms, and submultiplicativity. To start,
     $
-        norm(diff_alpha^3 Phi(rho))_1 &= norm((diff^3)/(diff alpha^3) EE_G tr_E e^(i (H + alpha G)t) rho tp rho_E e^(-i (H + alpha G)t))_1 \
-        &<= EE_G norm((diff^3)/(diff alpha^3) e^(i (H + alpha G)t) rho tp rho_E e^(-i (H + alpha G)t) )_1,
+        norm(diff_alpha^3 Phi(rho))_1 &= norm((diff^3) / (diff alpha^3) EE_G tr_E e^(i (H + alpha G)t) rho tp rho_E e^(-i (H + alpha G)t))_1 \
+        &<= EE_G norm((diff^3) / (diff alpha^3) e^(i (H + alpha G)t) rho tp rho_E e^(-i (H + alpha G)t))_1,
     $
     where we can take $EE_G$ out of the norm via the triangle inequality and we can remove the trace via Proposition 1 of @rastegin2012relations, which proves $norm(tr_E [X])_1 <= norm(X)_(dim_E) <= norm(X)_1$. To proceed we use the decomposition of the second derivatives from the proof of @lem_tsp_transitions, specifically @eq_second_derivative_labels. This gives the following
     $
@@ -393,10 +393,10 @@ In this section we present the more technical work needed to state our results i
 
     Our last remaining problem is to compute the expected norm of $G$. Using the decomposition of our interaction $G = U_"haar" D U_"haar"^dagger$ to get
     $
-        EE_G norm(G)_1^3 = EE_D EE_"haar" norm(U_"haar" D U_"haar"^dagger)_1^3 = 2 dim_S integral_(-oo)^(+oo) abs(e^(-x^2 / 2) )^3 1 / sqrt(2 pi) d x ,
+        EE_G norm(G)_1^3 = EE_D EE_"haar" norm(U_"haar" D U_"haar"^dagger)_1^3 = 2 dim_S integral_(-oo)^(+oo) abs(e^(-x^2 / 2))^3 1 / sqrt(2 pi) d x ,
     $
     where $x$ is a normal Gaussian random variable. This last integral evaluates to $2 sqrt(2 / pi)$ and gives the final inequality
     $
-        norm(R_Phi)_1 <= 16 sqrt(2/pi) dim_S (alpha t)^3.
+        norm(R_Phi)_1 <= 16 sqrt(2 / pi) dim_S (alpha t)^3.
     $
 ]
