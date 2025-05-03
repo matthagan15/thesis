@@ -109,6 +109,18 @@
         #outline(title: "List of Tables", target: figure.where(kind: table))
     ]
 
+    page[
+        #show <the-outline>: it => {
+            it
+            context for (el, meta) in query(figure.where(kind: "thmenv")).zip(query(<meta:thmenvcounter>)) {
+                if meta.value == "lemma" {
+                    outline.entry(1, el)
+                }
+            }
+        }
+        #outline(target: figure.where(kind: "non existent")) <the-outline>
+    ]
+
 
     counter(page).update(1)
     set page(
@@ -164,3 +176,64 @@
     )
     body
 }
+
+#let todo = x => { text([TODO: #x], fill: red, weight: "bold") }
+
+#let ket(psi) = $lr(|#psi angle.r)$
+#let bra(psi) = $lr(angle.l #psi|)$
+#let ketbra(a, b) = $|#a angle.r angle.l #b|$
+#let braket(a, b) = $angle.l #a|#b angle.r$
+#let bracket(a, b, c) = $angle.l #a|#b|#c angle.r$
+#let tp = $times.circle$
+#let id = $bb(1)$
+#let dmd = $diamond.medium$
+#let hilb = $cal(H)$
+#let partfun = $cal(Z)$
+#let identity = $bb(1)$
+#let gue = $"GUE"$
+#let sinc = math.op("sinc")
+#let hermMathOp = math.op("Herm")
+#let im = math.op("Im")
+#let diag = math.op("diag")
+#let herm(x) = $hermMathOp parens(#x)$
+#let tpose = sym.top
+#let on = $"on"$
+
+
+#import "@preview/ctheorems:1.1.3": *
+#let proof = thmproof("proof", "Proof", inset: (x: 0cm))
+
+#let lemma = thmbox(
+    "lemma",
+    "Lemma",
+    stroke: 1pt,
+    base_level: 1,
+    bodyfmt: x => text(x, style: "italic"),
+    fill: rgb("e8887377"),
+)
+
+#let theorem = thmbox(
+    "lemma",
+    "Theorem",
+    stroke: 1pt,
+    base_level: 1,
+    bodyfmt: x => text(x, style: "italic"),
+    fill: rgb("#c8f6ad"),
+)
+
+#let definition = thmbox(
+    "lemma",
+    "Definition",
+    stroke: 1pt,
+    base_level: 1,
+    bodyfmt: x => text(x, style: "italic"),
+    fill: rgb("#62b6cb44"),
+)
+
+#let corollary = thmbox(
+    "lemma",
+    "Corollary",
+    stroke: 1pt,
+    bodyfmt: x => text(x, style: "italic"),
+    fill: rgb("#c4c67d"),
+)

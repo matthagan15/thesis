@@ -1,39 +1,14 @@
 // #import "macros.typ": *
-#let ket(psi) = $lr(|#psi angle.r)$
-#let bra(psi) = $lr(angle.l #psi|)$
-#let ketbra(a, b) = $|#a angle.r angle.l #b|$
-#let tp = $times.circle$
-#let id = $bb(1)$
-#let dmd = $diamond.medium$
+
 
 #set math.equation(number-align: bottom)
 
 #import "@preview/ctheorems:1.1.3": *
-// #let lemma_og = thmbox("lemma", "Lemma", stroke: 1pt, bodyfmt: x => text(x, style: "italic"))
-#let proof_og = thmproof("proof", "Proof", inset: (x: 0cm))
-// #let theorem_og = thmbox("theorem", "Theorem", stroke: 1pt, bodyfmt: x => text(x, style: "italic"))
-// #let definition_og = thmbox("definition", "Definition", stroke: 1pt, bodyfmt: x => text(x, style: "italic"))
 
-#let lemma_og = thmbox("lemma", "Lemma", stroke: 1pt, bodyfmt: x => text(x, style: "italic"), fill: rgb("e8887377"))
-#let theorem_og = thmbox(
-    "theorem",
-    "Theorem",
-    stroke: 1pt,
-    bodyfmt: x => text(x, style: "italic"),
-    fill: rgb("#c8f6ad"),
-)
-#let definition_og = thmbox(
-    "definition",
-    "Definition",
-    stroke: 1pt,
-    bodyfmt: x => text(x, style: "italic"),
-    fill: rgb("#62b6cb44"),
-)
+#import "conf.typ": *
 
-#let todo = x => { text([TODO: #x], fill: red, weight: "bold") }
 
 #show: thmrules.with(qed-symbol: $square$)
-#import "conf.typ": *
 
 #heading("Composite Simulations", level: 1, supplement: [Chapter]) <ch:composite_simulations>
 
@@ -47,7 +22,7 @@ One of the main drawbacks of Trotter-Suzuki formulas is that each term in the Ha
 to a circuit with a depth that scales at least linearly with the number of terms in $H$, typically denoted $L$. QDrift avoids this by randomly choosing which
 term to implement next in the product formula according to an importance sampling scheme in which higher weight terms have larger probabilities. The
 downside to QDrift is that it has the same asymptotic scaling with $t / epsilon$ as a first-order Trotter formula, meaning it is outperformed at large
-$t/ epsilon$ by even a second-order Trotter formula.
+$t / epsilon$ by even a second-order Trotter formula.
 
 In this paper we present a framework for combining simulation channels in a way that allows one to flexibly interpolate the gate cost tradeoffs between the individual channels. The primary example we study is the composition of Trotter-Suzuki and QDrift channels. This is motivated in some part as an effort to extend
 randomized compilers to include conditional probabilities and in some part to encapsulate progress in chemistry simulations of dropping small
@@ -83,7 +58,7 @@ Although much of the literature for Trotter-Suzuki formulas is written in terms 
 
 We now show how to implement basic product formulas, namely Trotter-Suzuki or just Trotter formulas as well as QDrift, assuming access to arbitrary single qubit unitaries and controlled NOT gates. We will first show how to implement an arbitrary Pauli rotation $e^(i P t)$ for some Pauli string $P$ using no additional ancilla qubits. Then we will define the Trotter-Suzuki construction and give heuristic evidence for the first order scaling. We avoid giving a rigorous proof and instead refer the reader to the canonical paper by Childs et. al @childs2021theory. Lastly, we will present the construction of QDrift by Campbell @qdriftCampbell, providing a heuristic proof of correctness.
 
-#definition_og("Trotter-Suzuki Formulae")[
+#definition("Trotter-Suzuki Formulae")[
     Given a Hamiltonian $H$, let $S^((1))(t)$ denote the first-order Trotter-Suzuki time evolution operator and channel as
     $
         S^((1))(t) &:= e^(i h_L H_L t) dots e^(i h_1 H_1 t) = product_(i = 1)^(L) e^(i h_i H_i t), \
@@ -96,7 +71,7 @@ We now show how to implement basic product formulas, namely Trotter-Suzuki or ju
         S^((2k))(t) &:= S^((2k - 2))(u_k t) dot S^((2k - 2))(u_k t) dot S^((2k - 2)) ((1-4 u_k)t) dot S^((2k - 2))(u_k t) dot S^((2k - 2))(u_k t) \
         cal(S)^((2k))(rho;t) &:= S^((2k))(t) dot rho dot S^((2k))(t)^dagger,
     $ <eq:trotter_high_order>
-    where $u_k := 1 / (4-4^(1/(2k - 1)))$. In addition we define $Upsilon_k := 2 dot 5^(k-1)$ as the number of "stages" in the higher-order product formula, although we will typically just write $Upsilon$ when the order is apparent.
+    where $u_k := 1 / (4-4^(1 / (2k - 1)))$. In addition we define $Upsilon_k := 2 dot 5^(k-1)$ as the number of "stages" in the higher-order product formula, although we will typically just write $Upsilon$ when the order is apparent.
 ] <def:trotter_suzuki>
 Despite their simplicity, Trotter-Suzuki formulas are fiendishly difficult to analyze. For decades the only error analysis that existed was worst-case analysis that often drastically overestimated the actual error. It was known that the first order expression depended on the commutator structure among the terms, but this was not generalized until 2021 in @childs2021theory, 25 years after Lloyd's original work @lloyd1996universal. We will follow @childs2021theory and denote the expression that captures this commutator scaling as $alpha_"comm"$, and sometimes when space is needed this may be abbreviated to $alpha_"C"$ when the context is clear, which we define as
 $
@@ -126,7 +101,7 @@ $
 $ <eq_alpha_comm_upper_bound_3>
 
 This allows us to give the error associated with a a Trotter-Suzuki formula in the following theorem.
-#theorem_og([Trotter-Suzuki @childs2021theory])[
+#theorem([Trotter-Suzuki @childs2021theory])[
     Let $S^((2k))$ be the Trotter-Suzuki unitary as given in @def:trotter_suzuki for the Hamiltonian $H = sum_(i =1)^L h_i H_i$. Then the spectral norm of the difference between the Trotter-Suzuki formulas $S^((1))(t\/r)$ and $S^((2k))(t\/r)$ and the ideal evolution $U(t\/r)$ is given by
     $
         norm(U(t\/r) - S^((1))(t\/r))_oo &<= t^2 / (2 r^2) " " alpha_"comm" (H,1), \
@@ -134,8 +109,8 @@ This allows us to give the error associated with a a Trotter-Suzuki formula in t
     $
     The associated operator exponential cost can be computed via standard time-slicing arguments as
     $
-        C_"Trot"^((1))(H, t, epsilon) &= L ceil(t^2 /(2 epsilon) sum_(i,j) norm([H_i, H_j])) \
-        C_"Trot"^((2k))(H, t, epsilon)&= Upsilon L ceil( (Upsilon t)^(1 + 1\/2k) / epsilon^(1\/2k) (4 alpha_"comm" (H, 2k)^(1\/2k) / (2k + 1)) )
+        C_"Trot"^((1))(H, t, epsilon) &= L ceil(t^2 / (2 epsilon) sum_(i,j) norm([H_i, H_j])) \
+        C_"Trot"^((2k))(H, t, epsilon)&= Upsilon L ceil((Upsilon t)^(1 + 1\/2k) / epsilon^(1\/2k) (4 alpha_"comm" (H, 2k)^(1\/2k) / (2k + 1)))
     $
 ] <thm_trotter_error>
 The complete proof of the above theorem is very nontrivial and beyond the scope of this thesis. See @childs2021theory for complete details, the proof of the higher order bounds can be found in Appendix E and the first order expression is found in Proposition 9 in Section V. Instead, we provide a heuristic proof for the first order error for completeness.
@@ -143,7 +118,7 @@ The complete proof of the above theorem is very nontrivial and beyond the scope 
 #todo()[Probably should include a proof that spectral norm bounds on a unitary channel imply a diamond distance bound that is different only by a factor of 2.]
 
 #todo[Also probably should do a bit better proof below, can use a heuristic that all Taylor series of the exponential have the same special time t? or maybe just produce a bound?]
-#proof_og("Heuristic First Order")[
+#proof("Heuristic First Order")[
     Compute a Taylor Series for the Trotter formula and the ideal evolution. First the ideal evolution:
     $
         U(t\/r) &= e^(i H t / r) = id + (i t) / r H + O((t\/r)^2).
@@ -157,8 +132,8 @@ The complete proof of the above theorem is very nontrivial and beyond the scope 
 
 === Randomized Product Formulas
 We now introduce QDrift @qdriftCampbell, one of the first randomized compilers for quantum simulation. The main idea of QDrift is that instead of iterating through each term in the Hamiltonian to construct a product formula, or even a random ordering of terms as in @childs2019faster, each exponential is chosen randomly from the list of terms in $H$. Each term is selected with probability proportional to it's spectral weight, the probability of choosing $H_i$ is $h_i / (sum_j h_j) =: h_i / norm(h)$, and then simulated for a time $tau = norm(h) t$. This is the protocol for a single sample. As we will denote the portion of the Hamiltonian that we simulate with QDrift in later sections as $B$ we let $N_B$ denote the number of samples used.
-#definition_og("QDrift Channel")[
-    Let $N_B$ denote the number of samples, $norm(h) = sum_(i = 1)^L h_i$, and $tau := (norm(h) t)/ N_B$. The QDrift channel for a single sample is given as
+#definition("QDrift Channel")[
+    Let $N_B$ denote the number of samples, $norm(h) = sum_(i = 1)^L h_i$, and $tau := (norm(h) t) / N_B$. The QDrift channel for a single sample is given as
     $
         cal(Q) (rho; t, 1) := sum_(i = 1)^L h_i / norm(h) e^(- i H_i norm(h) t) dot rho dot e^(+ i H_i norm(h) t),
     $
@@ -168,18 +143,18 @@ We now introduce QDrift @qdriftCampbell, one of the first randomized compilers f
     $
 ] <def:qdrift>
 #h(1cm) Once we have the channel defined we can then state the main results of @qdriftCampbell.
-#theorem_og("QDrift Cost")[
+#theorem("QDrift Cost")[
     Given a Hamiltonian $H$, time $t$, and error bound $epsilon$, the ideal time evolution channel $cal(U)(t)$ can be approximated using $N_B = (4 t^2 norm(h)^2) / epsilon$ samples of a QDrift channel. This approximation is given by the diamond distance
     $
         norm(cal(U)(t) - cal(Q) (t, N_B))_(dmd) <= (4 t^2 norm(h)^2) / N_B .
     $
     The number of operator exponentials $N_B$ is then given as
     $
-        C_"QD" (H, t, epsilon) = N_B = ceil( (4 t^2 norm(h)^2) / epsilon).
+        C_"QD" (H, t, epsilon) = N_B = ceil((4 t^2 norm(h)^2) / epsilon).
     $
 ] <thm:qdrift_cost>
 
-#proof_og([@thm:qdrift_cost])[
+#proof([@thm:qdrift_cost])[
     This one is also a Taylor's Series
     $
         cal(U)_"QD" (t)
@@ -199,17 +174,17 @@ $
     cal(C)^((1))(t) &:= cal(Q)_B (t, N_B) compose cal(S)_A^((1))(t).
 $
 We will first bound the error of this approximation to the ideal evolution. This error bound will then allow us to bound the number of exponentials needed to approximate the ideal dynamics.
-#lemma_og("First-Order Composite Error")[
+#lemma("First-Order Composite Error")[
     Given a Hamiltonian $H$ partitioned into a first order Trotter term $A$ and QDrift term $B$ such that $H = A + B$, the first order Composite Channel $cal(C)^((1))$ has an error of at most
     $
-        norm(cal(U)(t) - cal(C)^((1))(t) )_(dmd) <= t^2 (sum_(i,j) a_i a_j norm([A_i, A_j]) + sum_(i,j) norm([A_i, B_j ]) + (4 norm(h_B)^2) / N_B).
+        norm(cal(U)(t) - cal(C)^((1))(t))_(dmd) <= t^2 (sum_(i,j) a_i a_j norm([A_i, A_j]) + sum_(i,j) norm([A_i, B_j ]) + (4 norm(h_B)^2) / N_B).
     $
 ] <lem:composite_error_first_order>
-#proof_og()[
+#proof()[
     #set math.equation(number-align: bottom)
     We will first use an outer-loop decomposition to get the error associated by our partitioning, note we temporarily supress arguments of $(t)$ for clarity,
     $
-        norm(cal(U) - cal(C)^((1)))_dmd &= norm(cal(U) - cal(U)_B compose cal(U)_A  + cal(U)_B  compose cal(U)_A  - cal(C)^((1)) ) \
+        norm(cal(U) - cal(C)^((1)))_dmd &= norm(cal(U) - cal(U)_B compose cal(U)_A + cal(U)_B compose cal(U)_A - cal(C)^((1))) \
         &<= norm(cal(U) - cal(U)_B compose cal(U)_A)_dmd + norm(cal(U)_B compose cal(U)_A - cal(C)^((1)))_dmd.
     $<tmp_composite_0>
     We then can bound the leftmost term using the error decomposition
@@ -219,7 +194,7 @@ We will first bound the error of this approximation to the ideal evolution. This
     And the rightmost term can be bounded using the subadditivity of the diamond distance
 
     $
-        norm(cal(U)_B compose cal(U)_A - cal(C)^((1)) )_dmd &= norm(cal(U)_B compose cal(U)_A - cal(Q)_B compose cal(S)^((1))_A)_dmd \
+        norm(cal(U)_B compose cal(U)_A - cal(C)^((1)))_dmd &= norm(cal(U)_B compose cal(U)_A - cal(Q)_B compose cal(S)^((1))_A)_dmd \
         &<= norm(cal(U)_B - cal(Q)_B)_dmd + norm(cal(U)_A - cal(S)_A^((1)))_dmd \
         &<= (4 norm(h_B) t^2) / N_B + t^2 sum_(i,j) a_i a_j norm([A_i, A_j])_oo.
     $ <tmp:composite_2>
@@ -230,14 +205,14 @@ $
     lim_(r -> oo) (e^(i A t / r) e^(i B t / r))^r = e^(i (A + B) t).
 $
 The following theorem utilizes a quantitative variant of the above, along with the error bounds we just proved, to provide the first order Composite cost Theorem.
-#theorem_og("First-Order Composite Cost")[
+#theorem("First-Order Composite Cost")[
     Given a time $t$, error bound $epsilon$, and a partitioned Hamiltonian $H = A + B$, the first order Composite Channel $cal(C)^((1))$ approximates the ideal time evolution operator $norm(cal(U)(t) - cal(C)^((1))(t\/r)^(compose r))_dmd <= epsilon$ using no more than
     $
-        C_"Comp"^((1)) = (L_A + N_B) ceil(t^2/epsilon (sum_(i,j) a_i a_j norm([A_i, A_j]) + sum_(i,j) norm([A_i, B_j ]) + (4 norm(h_B)^2) / N_B))
+        C_"Comp"^((1)) = (L_A + N_B) ceil(t^2 / epsilon (sum_(i,j) a_i a_j norm([A_i, A_j]) + sum_(i,j) norm([A_i, B_j ]) + (4 norm(h_B)^2) / N_B))
     $
     operator exponential queries.
 ] <thm_composite_first_order_cost>
-#proof_og()[
+#proof()[
     We first will use the fact that since $H$ commutes with itself the time evolution operator can be decomposed into $r$ steps as $cal(U)(t) = cal(U)(t\/r)^(compose r)$. Then we can use the sub-additivity of the diamond norm with respect to channel composition to get the bound
     $
         norm(cal(U)(t) - cal(C)^((1))(t\/r)^(compose r))_dmd &= norm(cal(U)(t\/r)^(compose r) - cal(C)^((1))(t\/r)^(compose r))_dmd <= r norm(cal(U)(t\/r) - cal(C)^((1))(t\/r))_dmd .
@@ -260,14 +235,14 @@ $
     tilde(C)_"Comp"^((1)) := (L_A + N_B) t^2 / epsilon (sum_(i,j) a_i a_j norm([A_i, A_j]) + sum_(i,j) norm([A_i, B_j ]) + (4 norm(h_B)^2) / N_B).
 $
 This is the same as $C_"Comp"^((1))$ but without the ceiling operation $ceil(dot)$. Although a user could use any value of $N_B$ they want, such as always setting $N_B = 1$, we provide the following setting for $N_B$ that is optimal with respect to the continuous variant of the gate cost.
-#lemma_og()[
+#lemma()[
     Let $tilde(C)_"Comp"^((1))$ denote the continuous relaxtion to the cost of a first-order Composite channel with a given partitioning $H = A + B$. The optimal assignment of the number of QDrift samples $N_B$ with respect to $tilde(C)_"Comp"^((1))$ is given by
     $
-        N_B = (2 norm(h_B) sqrt(L_A)) / sqrt(  (sum_(i,j) a_i a_j norm([A_i, A_j]) + sum_(i,j) a_i b_j norm([A_i, B_j]) )).
+        N_B = (2 norm(h_B) sqrt(L_A)) / sqrt((sum_(i,j) a_i a_j norm([A_i, A_j]) + sum_(i,j) a_i b_j norm([A_i, B_j]) )).
     $ <eq_composite_first_order_nb>
     This assignment is not valid if both $[A_i, A_j] = 0$ for all $A_i, A_j$ and $[A_i, B_j] = 0$ for all $A_i$ and $B_j$.
 ] <lem_composite_first_order_optimal_nb>
-#proof_og()[
+#proof()[
     We first compute the derivative of $tilde(C)_"Comp"^((1))$ with respect to $N_B$ as
     $
         (diff tilde(C)_"Comp") / (diff N_B) = t^2 / epsilon [sum_(i,j) a_i a_j norm([A_i, A_j]) + sum_(i,j) a_i b_j norm([A_i, B_j]) - (4 norm(h_B)^2 L_A) / N_B^2].
@@ -287,7 +262,7 @@ $
 $
 Then our partitioning is just $A = sum_i w_i h_i H_i$ and $B = sum_i (1 - w_i) h_i H_i$. We also would like to keep our interpretation of $w_i h_i$ and $(1 - w_i) h_i$ as spectral norms of the respective term in $A$ and $B$, so we restrict $w_i in [0,1]$. In this sense the weights could be thought of as probabilities, but we will not make use of any expectations or other probabilistic notions here so they should just be thought of as weight parameters. We will make use of a probabilistic variant of this scheme in @sec:composite_higher_order.
 
-Once an initial weighting of each term is chosen, say $w_i = 1$ for the term with the largest spectral norm $h_"max"$ and $w_i = 0$ for every other term or maybe $w_i = 1/2$ for all $i$, we propose a greedy algorithm for computing a new set of weights $w_i '$. This greedy algorithm is based on the following gradient calculation of the weighted first order Composite channel cost
+Once an initial weighting of each term is chosen, say $w_i = 1$ for the term with the largest spectral norm $h_"max"$ and $w_i = 0$ for every other term or maybe $w_i = 1 / 2$ for all $i$, we propose a greedy algorithm for computing a new set of weights $w_i '$. This greedy algorithm is based on the following gradient calculation of the weighted first order Composite channel cost
 $
     (diff tilde(C)_"Comp"^((1))) / (diff w_m) = (L_A + N_B) t^2 / epsilon (h_m sum_j h_j norm([H_j, H_m]) - (8 h_m sum_i (1 - w_i) h_i) / N_B ) .
 $
@@ -310,7 +285,7 @@ later sections we are able to show more generic conditions in which asymptotic i
 
 To start, let $H$ be a Hamiltonian that has a partitioning into $A$ and $B$ such that the following conditions hold.
 + The number of non-zero commutators between terms in $A$ scales with the square root of $L_A$. Mathematically, $ |{(i,j): norm([A_i, A_j]) != 0}| =: N_"nz"^2 in o(L_A). $
-+ The strength of the $B$ terms, $norm(h_B) = sum_i b_i$, is asymtotically less than the maximum commutator norm divided by the number of terms in $A$ $ norm(h_B) <= (a_"max" N_"nz"^2) / L_A,  $ <tmp_composite_3> where $a_"max" = max_i a_i$.
++ The strength of the $B$ terms, $norm(h_B) = sum_i b_i$, is asymtotically less than the maximum commutator norm divided by the number of terms in $A$ $ norm(h_B) <= (a_"max" N_"nz"^2) / L_A, $ <tmp_composite_3> where $a_"max" = max_i a_i$.
 + The number of terms in the $A$ partition is vanishingly small compared to the total number of terms: $L_A in o(L)$.
 Next, we can use the optimal $N_B$ value from @lem_composite_first_order_optimal_nb and @tmp_composite_3 to show that
 $
@@ -339,11 +314,11 @@ Although this example may be a little contrived, it does show in a completely ri
 
 == Higher Order Composite Channels <sec:composite_higher_order>
 
-We now move on from first-order Trotter formulas to arbitrary higher-order Trotter formulas. To analyze this case there are a few distinct differences with the first-order channels. The first is that we now have a choice for what order formula we would like to use for the outer-loop decomposition. Previously, for the first-order decomposition we used $cal(U)_B compose cal(U)_A$, but it will prove useful in our analysis to match the outer-loop order with the inner-loop Trotter order. For example, a second order outer-loop decomposition would look like $cal(U)_A (t\/2) compose cal(U)_B (t) compose cal(U)_A (t\/2)$, where we combined the two innermost $cal(U)_B (t\/2)$ for compactness. The next difference is that the time scaling between QDrift, Trotter, and the outer-loop errors could all be of different orders in $t/r$ which leads to a non-analytically solvable polynomial in $r$. The last issue that we address is that the commutator structure is no longer quadratic with respect to the Hamiltonian spectral norms, so we cannot follow the term weighting partitioning scheme from the first-order case. We will follow the same organizational structure as the first-order case and first set up our definitions and bound the diamond distance error, then compute the number of $e^(i H_i t)$ queries, followed by developing a partitioning scheme, and finally discuss the cost comparisons between our Composite channel and its constituents.
+We now move on from first-order Trotter formulas to arbitrary higher-order Trotter formulas. To analyze this case there are a few distinct differences with the first-order channels. The first is that we now have a choice for what order formula we would like to use for the outer-loop decomposition. Previously, for the first-order decomposition we used $cal(U)_B compose cal(U)_A$, but it will prove useful in our analysis to match the outer-loop order with the inner-loop Trotter order. For example, a second order outer-loop decomposition would look like $cal(U)_A (t\/2) compose cal(U)_B (t) compose cal(U)_A (t\/2)$, where we combined the two innermost $cal(U)_B (t\/2)$ for compactness. The next difference is that the time scaling between QDrift, Trotter, and the outer-loop errors could all be of different orders in $t / r$ which leads to a non-analytically solvable polynomial in $r$. The last issue that we address is that the commutator structure is no longer quadratic with respect to the Hamiltonian spectral norms, so we cannot follow the term weighting partitioning scheme from the first-order case. We will follow the same organizational structure as the first-order case and first set up our definitions and bound the diamond distance error, then compute the number of $e^(i H_i t)$ queries, followed by developing a partitioning scheme, and finally discuss the cost comparisons between our Composite channel and its constituents.
 
 === Query Complexity
 In order to determine the number of queries needed for a Composite channel to approximate $cal(U)$ we first need to bound the diamond distance error for a single iteration. We will then use time-slicing arguments similar to the proof of @thm_composite_first_order_cost to compute the number of operator exponentials required for an accurate approximation. First, we need to give a rigorous definition of the higher order Composite channel.
-#definition_og([Higher Order Composite Channel])[
+#definition([Higher Order Composite Channel])[
     Given a Hamiltonian $H$ partitioned into two terms $A$ and $B$, let $cal(C)^((2k, 2l))$ denote the associated Composite channel that utilizes a $2k^"th"$ order inner-loop for the Trotter-Suzuki partition $cal(S)_A^((2k))$ and has a $2l^"th"$ order outer-loop. The outer-loop construction for the Composite channel can be constructed recursively from the base case for $l = 1$, which is given by
     $
         cal(C)^((2k, 2))(t) := cal(Q)_B (t\/2) compose cal(S)_A^((2 k)) (-t\/2)^dagger compose cal(S)_A^((2 k)) (t\/2) compose cal(Q)_B (t\/2),
@@ -355,7 +330,7 @@ In order to determine the number of queries needed for a Composite channel to ap
     where $u_l$ and the number of stages $Upsilon$ are the same as in @def:trotter_suzuki. We will typically ignore the distinction between inner and outer loops and use $cal(C)^((2k)) = cal(C)^((2k, 2k))$.
 ]
 
-#lemma_og("Higher-Order Composite Error")[
+#lemma("Higher-Order Composite Error")[
     The diamond distance of a single higher-order Composite channel to the ideal time evolution channel is upper bounded as
     $
         norm(cal(U)(t) - cal(C)^((2k))(t))_dmd <= 2 (Upsilon t)^(2k + 1) / (k + 1 \/ 2) (alpha_"C" ({A, B}, 2k) + Upsilon alpha_"C" (A, 2k)) + Upsilon (4 norm(h_B)^2 t^2) / N_B.
@@ -366,36 +341,36 @@ In order to determine the number of queries needed for a Composite channel to ap
         Q(t) &:= t^2 (4 Upsilon norm(h_B)^2) / N_B.
     $ <eq_composite_p_n_q_def>
 ] <lem_composite_higher_order_error>
-#proof_og([of @lem_composite_higher_order_error])[
+#proof([of @lem_composite_higher_order_error])[
     $
         norm(cal(U)(t) - cal(C)^((2k))(t))_dmd &<= norm(cal(U)(t) - cal(S)^((2k))({A, B}, t))_dmd + norm(cal(S)^((2k))({A,B}, t) - cal(C)^((2k))(t))_dmd \
         &<= 2 norm(e^(i H t) - S^((2k))({A, B}, t)) + norm(cal(S)^((2k))({A,B}, t) - cal(C)^((2k))(t))_dmd.
     $
     We can use @thm_trotter_error to bound the outer-loop error on the left as
     $
-        norm(e^(i H t) -  S^((2k))({A, B}, t)) <= (Upsilon t)^(2 k + 1) / (k + 1\/ 2) alpha_"comm" ({A, B}, 2k).
+        norm(e^(i H t) - S^((2k))({A, B}, t)) <= (Upsilon t)^(2 k + 1) / (k + 1\/ 2) alpha_"comm" ({A, B}, 2k).
     $
     We then use an inductive proof to argue that the inner-loop errors can be bounded as
     $
         norm(cal(S)^((2l))({A,B}, t) - cal(C)^((2k, 2l))(t))_dmd <= Upsilon (norm(cal(U)_A (t) - cal(S)_A^((2k))(t))_dmd + norm(cal(U)_B (t) - cal(Q)_B (t))_dmd),
     $ <tmp_composite_4>
     where the induction is over the outer-loop indexing of $2l$.
-    - *Base Case ($2l = 1$):* $
-        &norm(cal(C)^((2k,2))(t) - cal(S)^((2))({A, B})(t))_dmd \
-        =& norm( cal(Q)_B (t\/2) compose cal(S)_A^((2k))(-t\/2)^dagger compose cal(S)_A^((2k))(t\/2) compose cal(Q)_B (t\/2) - cal(U)_B (t\/2) compose cal(U)_A (-t\/2)^dagger compose cal(U)_A (t\/2) compose cal(U)_B ( t\/ 2) )_dmd \
-        <=& 2 norm(cal(U)_A (t\/2) - S_A^((2)) (t\/2))_dmd + 2 norm(cal(U)_B (t\/2) - cal(Q)_B (t\/2))_dmd.
-    $ Since $Upsilon_1 = 2$ this matches the induction hypothesis.
+    - *Base Case ($2l = 1$):* $ &norm(cal(C)^((2k,2))(t) - cal(S)^((2))({A, B})(t))_dmd \
+        =& norm(cal(Q)_B (t\/2) compose cal(S)_A^((2k))(-t\/2)^dagger compose cal(S)_A^((2k))(t\/2) compose cal(Q)_B (t\/2) - cal(U)_B (t\/2) compose cal(U)_A (-t\/2)^dagger compose cal(U)_A (t\/2) compose cal(U)_B ( t\/ 2))_dmd \
+        <=& 2 norm(cal(U)_A (t\/2) - S_A^((2)) (t\/2))_dmd + 2 norm(cal(U)_B (t\/2) - cal(Q)_B (t\/2))_dmd. $ Since $Upsilon_1 = 2$ this matches the induction hypothesis.
     - *Inductive Step: * In this scenario we assume that the hypothesis in @tmp_composite_4 holds for $2l - 2$ and we would like to show it holds for $2l$. We do so via the recursive structure given in @eq_composite_higher_order_def and @def:trotter_suzuki, which allows us to express the hypothesis as
     $
         &norm(cal(C)^((2k, 2l))(t) - cal(S)^((2l))({A,B}, t))_dmd \
-      =& norm( cal(C)^((2k, 2l - 2)) (u_l t)^(compose 2) compose cal(C)^((2k, 2l-2))((1-4 u_l) t) compose cal(C)^((2k, 2l - 2)) (u_l t)^(compose 2) \
-      &  - cal(S)^((2l - 2))({A,B}, u_l t)^(compose 2) compose cal(S)^((2l -2))({A, B}, (1 - 4 u_l) t) compose cal(S)^((2l - 2))({A,B}, u_l t)^(compose 2)) #place($diamond.small$, dy: +1mm, dx: -0mm)   \
-      <=& 4 norm(cal(C)^((2k, 2l -2))(u_l t) - cal(S)^((2l - 2))({A,B}, u_l t))_dmd \
-      &" " +norm(cal(C)^((2k, 2l -2))((1 - 4 u_l) t) - cal(S)^((2l - 2))({A,B}, (1 - 4 u_l) t))_dmd \
-      <=& 4 Upsilon_(l - 1) (norm(cal(U)_A (t) - cal(S)_A^((2k))(t))_dmd + norm(cal(U)_B (t) - cal(Q)_B (t))_dmd) \
-      &+ Upsilon_(l - 1) (norm(cal(U)_A (t) - cal(S)_A^((2k))(t))_dmd + norm(cal(U)_B (t) - cal(Q)_B (t))_dmd) \
-      &= 5 Upsilon_(l - 1) (norm(cal(U)_A (t) - cal(S)_A^((2k))(t))_dmd + norm(cal(U)_B (t) - cal(Q)_B (t))_dmd) \
-      =& Upsilon_l (norm(cal(U)_A (t) - cal(S)_A^((2k))(t))_dmd + norm(cal(U)_B (t) - cal(Q)_B (t))_dmd).
+        =& norm(
+            cal(C)^((2k, 2l - 2)) (u_l t)^(compose 2) compose cal(C)^((2k, 2l-2))((1-4 u_l) t) compose cal(C)^((2k, 2l - 2)) (u_l t)^(compose 2) \
+            & - cal(S)^((2l - 2))({A,B}, u_l t)^(compose 2) compose cal(S)^((2l -2))({A, B}, (1 - 4 u_l) t) compose cal(S)^((2l - 2))({A,B}, u_l t)^(compose 2)
+        ) #place($diamond.small$, dy: +1mm, dx: -0mm) \
+        <=& 4 norm(cal(C)^((2k, 2l -2))(u_l t) - cal(S)^((2l - 2))({A,B}, u_l t))_dmd \
+        &" " +norm(cal(C)^((2k, 2l -2))((1 - 4 u_l) t) - cal(S)^((2l - 2))({A,B}, (1 - 4 u_l) t))_dmd \
+        <=& 4 Upsilon_(l - 1) (norm(cal(U)_A (t) - cal(S)_A^((2k))(t))_dmd + norm(cal(U)_B (t) - cal(Q)_B (t))_dmd) \
+        &+ Upsilon_(l - 1) (norm(cal(U)_A (t) - cal(S)_A^((2k))(t))_dmd + norm(cal(U)_B (t) - cal(Q)_B (t))_dmd) \
+        &= 5 Upsilon_(l - 1) (norm(cal(U)_A (t) - cal(S)_A^((2k))(t))_dmd + norm(cal(U)_B (t) - cal(Q)_B (t))_dmd) \
+        =& Upsilon_l (norm(cal(U)_A (t) - cal(S)_A^((2k))(t))_dmd + norm(cal(U)_B (t) - cal(Q)_B (t))_dmd).
     $
     Therefore the inductive step holds.
 
@@ -414,10 +389,10 @@ In order to determine the number of queries needed for a Composite channel to ap
 ]
 
 #h(5mm) Now that we have bounded the diamond distance error for a single time step we can proceed with our time-slicing arguments to produce a controllable error bound. This will lead us to our final expression for the query cost of a higher order composite method.
-#theorem_og("Higher-Order Composite Cost")[
+#theorem("Higher-Order Composite Cost")[
     Given a time $t$, error bound $epsilon$, and a partitioned Hamiltonian $H = A + B$ the $2k^"th"$ order Composite channel $cal(C)^((2k))$ utilizes at most
     $
-        C_"Comp"^((2k)) <= Upsilon (Upsilon L_A + N_B) ceil( (4^(1/(2k)) (Upsilon t)^(1 + 1/2k)) / ((2k + 1) epsilon)^(1/(2k)) (alpha_"C" ({A,B}) + Upsilon alpha_"C" (A)) + (4 Upsilon norm(h_B)^2 t^2) / (N_B epsilon) ),
+        C_"Comp"^((2k)) <= Upsilon (Upsilon L_A + N_B) ceil((4^(1 / (2k)) (Upsilon t)^(1 + 1 / 2k)) / ((2k + 1) epsilon)^(1 / (2k)) (alpha_"C" ({A,B}) + Upsilon alpha_"C" (A)) + (4 Upsilon norm(h_B)^2 t^2) / (N_B epsilon)),
     $ <eq_composite_higher_order_cost>
     gates,where the $alpha_"C"$ are both of order $2k$, to meet the error budget given by
     $
@@ -429,10 +404,10 @@ In order to determine the number of queries needed for a Composite channel to ap
     $
     to capture the amount of "commutator structure" of $H$ that is contained in $B$, we can rewrite this upper bound as
     $
-        C_"Comp"^((2k)) <= Upsilon (Upsilon L_A + N_B) ceil((C_"Trot"^((2k))(H, t, epsilon) )/ Upsilon^(1 - 1\/2k) (1 - q_B)^(1\/2k) / ( L) + C_"QD" (H, t, epsilon) Upsilon / N_B (norm(h_B) / norm(h))^2).
+        C_"Comp"^((2k)) <= Upsilon (Upsilon L_A + N_B) ceil((C_"Trot"^((2k))(H, t, epsilon) ) / Upsilon^(1 - 1\/2k) (1 - q_B)^(1\/2k) / ( L) + C_"QD" (H, t, epsilon) Upsilon / N_B (norm(h_B) / norm(h))^2).
     $ <eq_composite_higher_order_cost_constituents>
 ] <thm_composite_higher_order_cost>
-#proof_og()[
+#proof()[
     We start off by utilizing standard time-slicing arguments to bound our single step distance
     $
         norm(cal(U)(t) - cal(C)^((2k))(t\/r)^(compose r))_dmd = norm(cal(U)(t\/r)^(compose r) - cal(C)^((2k))(t\/r)^(compose r))_dmd <= r norm(cal(U)(t\/r) - cal(C)^((2k))(t\/r))_dmd.
@@ -469,7 +444,7 @@ In order to determine the number of queries needed for a Composite channel to ap
     $
     This matches the intuition developed from Trotter-Suzuki formulas in which the error decreases rapidly with the order of the formula, but leads to overall higher gate counts due to exponentially increasing constant factors, namely $Upsilon_k$. We now can write down the number of operator exponentials explicitly. As we have $Upsilon$ stages of interleaved product formulas and each stage has one application of a $2k$ order Trotter-Suzuki formula and one QDrift channel with $N_B$ samples we have $Upsilon (Upsilon L_A + N_B)$ operator exponentials per time-slice. By taking the ceiling of the derived bound on $r$ we arrive at
     $
-        C_"Comp"^((2k)) <= Upsilon (Upsilon L_A + N_B) ceil( (P(t) / epsilon)^(1\/2k) + Q(t) / epsilon),
+        C_"Comp"^((2k)) <= Upsilon (Upsilon L_A + N_B) ceil((P(t) / epsilon)^(1\/2k) + Q(t) / epsilon),
     $
     plugging in the definitions of $P(t)$ and $Q(t)$ from @eq_composite_p_n_q_def yields @eq_composite_higher_order_cost in the theorem statement. @eq_composite_higher_order_cost_constituents is derived from the following inequalities
     $
@@ -480,9 +455,9 @@ In order to determine the number of queries needed for a Composite channel to ap
 ]
 
 === Conditions for Improvement
-Now that we have bounded the Composite channel error and computed the query cost we ask the natural question: "When is a Composite channel better than just using Trotter?" Our first answer to this question will be analytic and can be found in @thm_composite_higher_order_improvements and are summarized in @table_composite_advantages. We will be able to derive asymptotic conditions when a fixed partitioning can outperform either Trotter or QDrift. One issue that arises when making these comparisons is that we are comparing a Composite channel to _two_ different simulation methods, each with their own query cost. The relative performance of Trotter to QDrift is dependent on the simulation time $t$ and the error $epsilon$. It turns out that the ratio $C_"QD" / C_"Trot" $ depends on a power of the ratio $t/ epsilon$. For very accurate and long simulations we observe that Trotter has superior cost, but whenever error requirements are not high or the simulation time is relatively short QDrift is the more efficient simulation method. One thought experiment to illuminate this is the limit as $t << 1$, in which case QDrift can replicate the exact time evolution statistics with a single sample whereas Trotter-Suzuki methods need to implement one operator exponential per term of the Hamiltonian.
+Now that we have bounded the Composite channel error and computed the query cost we ask the natural question: "When is a Composite channel better than just using Trotter?" Our first answer to this question will be analytic and can be found in @thm_composite_higher_order_improvements and are summarized in @table_composite_advantages. We will be able to derive asymptotic conditions when a fixed partitioning can outperform either Trotter or QDrift. One issue that arises when making these comparisons is that we are comparing a Composite channel to _two_ different simulation methods, each with their own query cost. The relative performance of Trotter to QDrift is dependent on the simulation time $t$ and the error $epsilon$. It turns out that the ratio $C_"QD" / C_"Trot"$ depends on a power of the ratio $t / epsilon$. For very accurate and long simulations we observe that Trotter has superior cost, but whenever error requirements are not high or the simulation time is relatively short QDrift is the more efficient simulation method. One thought experiment to illuminate this is the limit as $t << 1$, in which case QDrift can replicate the exact time evolution statistics with a single sample whereas Trotter-Suzuki methods need to implement one operator exponential per term of the Hamiltonian.
 
-#theorem_og([Conditions for Composite Channel Improvements])[
+#theorem([Conditions for Composite Channel Improvements])[
     Let $H$ be a family of Hamiltonians along with a partitioning scheme to generate a partition $H = A + B$ that varies with $L$. For a simulation time $t$ and diamond distance error bound of $epsilon$, let $xi$ be the number such that $C_"QD"^xi = C_"Trott"^((2k))$. There exists asymptotic regimes for the parameters $L_A$, $norm(h_B)$, and $N_B$ such that
     $
         C_"Comp"^((2k)) in o(min{C_"Trot"^((2k)), C_"QD" }),
@@ -491,8 +466,8 @@ Now that we have bounded the Composite channel error and computed the query cost
 
     For the case when $C_"Trott"^((2k)) < C_"QD"$, corresponding to $0 < xi < 1$, if the following are satisfied
     + $L_A (1 - q_B)^(1\/2k) in o(L)$,
-    + $norm(h_B) in o(norm(h)^xi (sqrt(epsilon) /t)^(1 - xi))$,
-    + $N_B in Omega (L_A)$ and $N_B in o(L /(1 - q_B)^(1\/2k))$,
+    + $norm(h_B) in o(norm(h)^xi (sqrt(epsilon) / t)^(1 - xi))$,
+    + $N_B in Omega (L_A)$ and $N_B in o(L / (1 - q_B)^(1\/2k))$,
     then we have that $C_"Comp"^((2k)) in o(C_"Trot"^((2k))) = o(min{C_"Trot"^((2k)), C_"QD"})$.
 
     For the case when $C_"QD" <= C_"Trot"^((2k))$, corresponding to $xi >= 1$, if the following are satisfied
@@ -505,10 +480,10 @@ Now that we have bounded the Composite channel error and computed the query cost
 
     Note that for $xi = 1$ the conditions on $L_A$ and $norm(h_B)$ are the same in both cases: $L_A in o(L)$ and $norm(h_B) in o(norm(h))$. The conditions on $N_B$ are satisfied by $N_B in Theta(L_A)$ as the condition $N_B in o(L / (1-q_B)^(1\/2k))$ is not valid when $xi = 1$.
 ]<thm_composite_higher_order_improvements>
-#proof_og()[
+#proof()[
     We start with the expression for the Composite channel cost from @thm_composite_higher_order_cost repeated here for clarity
     $
-        C_"Comp"^((2k)) <= Upsilon (Upsilon L_A + N_B) ceil((C_"Trot"^((2k))(H, t, epsilon) )/ Upsilon^(1 - 1\/2k) (1 - q_B)^(1\/2k) / ( L) + C_"QD" (H, t, epsilon) Upsilon / N_B (norm(h_B) / norm(h))^2).
+        C_"Comp"^((2k)) <= Upsilon (Upsilon L_A + N_B) ceil((C_"Trot"^((2k))(H, t, epsilon) ) / Upsilon^(1 - 1\/2k) (1 - q_B)^(1\/2k) / ( L) + C_"QD" (H, t, epsilon) Upsilon / N_B (norm(h_B) / norm(h))^2).
     $
     We will split our analysis up into the two cases outlined in the theorem statement.
     - $0 < xi < 1$
@@ -526,7 +501,7 @@ Now that we have bounded the Composite channel error and computed the query cost
     $
         Upsilon^3 C_"QD"^(1 - xi) ( norm(h_B)^2) / (norm(h)^2) L_A / N_B.
     $
-    Using the QDrift cost expression we have that $C_"QD"^(1 - xi) <= 4^(1 - xi) (t^2 / epsilon)^(1 - xi) norm(h)^(2(1-xi))$. This tells us that $C_"QD"^(1-xi) norm(h_B)^2 /(norm(h)^2) in o(1)$ given the assumption $norm(h_B) in o(norm(h)^(xi/ 2) (sqrt(epsilon)/t)^(1 - xi) ) $. The total term above is then in $o(1)$ given the assumption that $N_B in Omega(L_A)$. As this is the last term in the expansion we have completed the $0 < xi < 1$ case.
+    Using the QDrift cost expression we have that $C_"QD"^(1 - xi) <= 4^(1 - xi) (t^2 / epsilon)^(1 - xi) norm(h)^(2(1-xi))$. This tells us that $C_"QD"^(1-xi) norm(h_B)^2 / (norm(h)^2) in o(1)$ given the assumption $norm(h_B) in o(norm(h)^(xi / 2) (sqrt(epsilon) / t)^(1 - xi) )$. The total term above is then in $o(1)$ given the assumption that $N_B in Omega(L_A)$. As this is the last term in the expansion we have completed the $0 < xi < 1$ case.
     - $xi >= 1$
     In this scenario we have $C_"Trot"^((2k)) / C_"QD" = (C_"Trot"^((2k)))^(1-xi)$ which allows us to write
     $
@@ -591,14 +566,14 @@ where we use $II [ "Proposition"]$ to denote the standard indicator function whe
 `chop` will prove to be a very useful partitioning scheme both analytically and numerically. Analytically we will be able to show that it satisfies the conditions outlined in @thm_composite_higher_order_improvements for specific Hamiltonians. Numerically, it is very simple to create a specified partition from a Hamiltonian and further it is straightforward to optimize as the partition can be adjusted with a a single parameter $h_"chop"$. This still leaves open the problem of choosing the right number of QDrift samples $N_B$, but we did not find this parameter an issue to optimize analytically or numerically. In @hagan2023composite we provided a proababilistic partitioning scheme that is tuned solely through $N_B$. This scheme was very flexble, we were able to show that it saturates to the Trotter and QDrift costs in the appropriate limits as well as asymptotic cost improvements for very specific scenarios with high probability, but it's complicated analysis makes it an unfit candidate for inclusion in this thesis. Instead, we will focus on showing how `chop` can outperform Trotter or QDrift with rapidly decaying Hamiltonians in the theorem below.
 
 #todo[Make sure that the conditions below are not flipped. ]
-#theorem_og("Simulation Improvements for Exponentially Decaying Hamiltonians")[
+#theorem("Simulation Improvements for Exponentially Decaying Hamiltonians")[
     Let $H$ be a Hamiltonian $H = sum_i h_i H_i$ such that the spectral norms decay exponentially $h_i = 2^(-i)$. Then the `chop` partitioning scheme that places the largest $log L$ terms into Trotter and the remaining terms into QDrift, which corresponds to a norm cutoff of $h_"chop" = 1 / L$, satisfy the conditions for asymptotic improvement outlined in @thm_composite_higher_order_improvements whenever the following hold.
     + $N_B = L_A = log(L)$.
-    + If $0 < xi < 1$ ($C_"QD" > C_"Trot"^((2k))$), then the simulation time is bounded from above by $t in o(L^(1/(1-xi)) sqrt(epsilon))$.
-    + If $xi >= 1$ ($C_"QD" <= C_"Trot"^((2k))$), then $t^(1 + 1\/2k) >= epsilon^(1\/2k)$ and the commutator structure is bounded from _below_ by $ alpha_"C" (H, 2k)^(1\/2k) in omega (log(L)^(1/xi) / L). $
+    + If $0 < xi < 1$ ($C_"QD" > C_"Trot"^((2k))$), then the simulation time is bounded from above by $t in o(L^(1 / (1-xi)) sqrt(epsilon))$.
+    + If $xi >= 1$ ($C_"QD" <= C_"Trot"^((2k))$), then $t^(1 + 1\/2k) >= epsilon^(1\/2k)$ and the commutator structure is bounded from _below_ by $ alpha_"C" (H, 2k)^(1\/2k) in omega (log(L)^(1 / xi) / L). $
 ] <thm_composite_probabilistic_improvements>
 
-#proof_og()[
+#proof()[
     As the conditions for improvement depend on $L_A, norm(h_B),$ and $N_B$, but we know that $L_A = N_B = log(L)$, all we need to compute is $norm(h_B)$. This is done using straightforward sums:
     $
         norm(h_B) = sum_(i = log(L) + 1)^(L) 2^(-i) = 2^(1 - (log(L) + 1)) - 2^(-L) = 1 / L - 2^(-L) in Theta(L^(-1)).
@@ -615,24 +590,24 @@ where we use $II [ "Proposition"]$ to denote the standard indicator function whe
     $
         norm(h_B) = Theta(L^(-1)) in o( (sqrt(epsilon) / t )^(1 - xi)) <==> t in o(L^(1 / (1-xi)) sqrt(epsilon)).
     $
-    This makes intuitive sense, as $xi -> 1$ we have $L^(1/(1 - xi)) -> oo$ and our requirement then holds for all $t$. This follows from the fact that the original requirement, in this limit, boils down to $norm(h_B) in o(norm(h))$ which is true.
+    This makes intuitive sense, as $xi -> 1$ we have $L^(1 / (1 - xi)) -> oo$ and our requirement then holds for all $t$. This follows from the fact that the original requirement, in this limit, boils down to $norm(h_B) in o(norm(h))$ which is true.
 
     The last term we will need to address is $L_A$. For $0 < xi < 1$ we require $L_A in o(L)$, which is trivially satisfied. For $xi >= 1$ we need a couple results. The first will be a simplification of the requirements, if we assume that $t^(1 + 1\/2k) >= epsilon^(1\/2k)$, which should be true for simulations of interest, then we have
     $
         o(L^xi ( alpha_"C" (H)^(xi \/2k) ) / (alpha_"C" (A) + alpha_"C" ({A,B}))^(1\/2k)) in o(L^xi (t^(1 + 1\/2k) / epsilon^(1\/2k))^(xi - 1) ( alpha_"C" (H)^(xi \/2k) ) / (alpha_"C" (A) + alpha_"C" ({A,B}))^(1\/2k)).
     $
-    Using the simplification on the left, we then require $L_A = log(L) in o(L^xi  ( alpha_"C" (H)^(xi \/2k) ) / (alpha_"C" (A) + alpha_"C" ({A,B}))^(1\/2k))$. We could either turn this into a condition on $xi$ or on $alpha_"C" (H)$, but it will be simplest to present as a condition on $alpha_"C" (H)$.
+    Using the simplification on the left, we then require $L_A = log(L) in o(L^xi ( alpha_"C" (H)^(xi \/2k) ) / (alpha_"C" (A) + alpha_"C" ({A,B}))^(1\/2k))$. We could either turn this into a condition on $xi$ or on $alpha_"C" (H)$, but it will be simplest to present as a condition on $alpha_"C" (H)$.
 
 
     Now we can use the bounds on $alpha_"C" (A)$ and $alpha_"C" ({A,B})$ derived in @eq_alpha_comm_upper_bound_2 and @eq_alpha_comm_upper_bound_3 to argue
     $
         alpha_"C" (A) + alpha_"C" ({A,B}) <= 2^(2k) (norm(h_A)^(2k + 1) + 2k norm(h_A)^(2k + 1)) = (2k + 1) 2^(2k) norm(h_A)^(2k + 1).
     $
-    This, along with the fact that $norm(h_A) = 1 - 1/L <= 1$ implies
+    This, along with the fact that $norm(h_A) = 1 - 1 / L <= 1$ implies
     $
         1 / (2k+1)^(1\/2k) <= 1 / (alpha_"C" (A) + alpha_"C" ({A,B}))^(1\/2k).
     $
-    Moreover, $2k + 1 >= 1$ implies $1 <= 1/(2k+1)^(1\/2k)$. This means that
+    Moreover, $2k + 1 >= 1$ implies $1 <= 1 / (2k+1)^(1\/2k)$. This means that
     $
         L_A in o(L^xi alpha_"C" (H)^(xi \/ 2k))
     $ <tmp_composite_7>
@@ -650,7 +625,7 @@ $id / dim |-> e^(-beta H \/ 2) id / dim e^(-beta H \/ 2) = e^(-beta H) / dim$. T
 
 To analyze the performance of a Composite channel, real or imaginary, we constructed a library @compositeLibrary can be used to simulate the dynamics of a product formula channel with a given partitioning, number of QDrift terms $N_B$, time $t$, and error $epsilon$. Numerically we did not measure the diamond distance of the channel, as this involves a fairly costly maximization. This maximization can be computed via a semidefinite program, this becomes prohibitively costly when used to optimize the "hyperparameters" of the simulation, such as the partitioning. We instead used the trace distance which is easier to compute and avoids the issues of bias found when using infidelity. To find the exact gate count needed we used a search procedure over the minimal number of time steps, either $r$ for Trotter formulas or $N_B$ for QDrift, needed to meet the error threshold $epsilon$.
 
-The main metric we used to analyze the performance of Composite channels is the crossover ratio $r_"cross"$. As the cost of a QDrift channel scales as $O(t^2 / epsilon)$ and Trotter scales as $O(t^(1 + 1\/2k)/ epsilon^(1\/2k))$ there exists some time $t_"cross"$ such that $C_"QD" (H, t_"cross", epsilon) = C_"Trot"^((2k)) (H, t_"cross", epsilon)$. As this is the simulation time that we expect the most flexibility, and therefore cost improvements, for Composite channels we then define the crossover ratio as
+The main metric we used to analyze the performance of Composite channels is the crossover ratio $r_"cross"$. As the cost of a QDrift channel scales as $O(t^2 / epsilon)$ and Trotter scales as $O(t^(1 + 1\/2k) / epsilon^(1\/2k))$ there exists some time $t_"cross"$ such that $C_"QD" (H, t_"cross", epsilon) = C_"Trot"^((2k)) (H, t_"cross", epsilon)$. As this is the simulation time that we expect the most flexibility, and therefore cost improvements, for Composite channels we then define the crossover ratio as
 $
     r_"cross" := (C_"QD" (H, t_"cross", epsilon)) / (C_"comp" (H, t_"cross", epsilon)) = (C_"Trot"^((2k)) (H, t_"cross", epsilon)) / (C_"comp" (H, t_"cross", epsilon)).
 $ <eq_composite_crossover_ratio>
@@ -700,7 +675,7 @@ $
     H_"Jelly" =& 1 / 2 sum_(p, sigma) k_p^2 a^dagger_(p, sigma) a_(p, sigma) - (4 pi) / Omega sum_(p != q, j, sigma) (zeta_j e^(i k_(q - p) dot R_j) / k^2_(p - q)) a_(p, sigma)^dagger a_(q, sigma) \
     &+ (2 pi) / Omega sum_((p,sigma) != (q, sigma'), nu != 0) a^dagger_(p, sigma) a^dagger_(q, sigma') a_(q + nu, sigma') a_(p - nu, sigma) / k_nu^2,
 $ <eq_composite_jellium_ham>
-where $sigma$ represents a spin, $p, q$ denote momentum eigenvalues, $R_j$ the position of the $j^"th"$ nuclei, $zeta_j$ the atomic number, $k_nu = 2 pi nu \/ Omega^(1/3)$, and $Omega$ denotes the cell volume. We then use the Jordan-Wigner encoding to represent the creation and annihilation operators as Pauli strings on qubits. For a derivation of this Hamiltonian see Appendix B of @babbush2018low.
+where $sigma$ represents a spin, $p, q$ denote momentum eigenvalues, $R_j$ the position of the $j^"th"$ nuclei, $zeta_j$ the atomic number, $k_nu = 2 pi nu \/ Omega^(1 / 3)$, and $Omega$ denotes the cell volume. We then use the Jordan-Wigner encoding to represent the creation and annihilation operators as Pauli strings on qubits. For a derivation of this Hamiltonian see Appendix B of @babbush2018low.
 
 This Hamiltonian serves as a useful benchmark for Composite simulations as there are a lot of terms and the distribution of the spectral norm of each term fits our intuition for Composite channel advantages derived earlier. @fig_composite_jelly_norms demonstrates not only the increase in the number of terms as we increase the number of sites used but also how the norms are sharply peaked about the strongest few terms.
 #figure(
@@ -761,4 +736,4 @@ In this section we briefly discuss the application of our Composite simulation a
 
 == Discussion <sec:composite_discussion>
 
-In this chapter we rigorously showed how to simulate the time evolution of a time-independent Hamiltonian using product formulas. These product formulas are easily implementable on a quantum computer using only single qubit rotations and CNOTs for Hamiltonians that are given as a sum of Pauli operators. We showed how various chemical systems, such as Hydrogen chains and the UEG (Jellium) are naturally expressed in these forms via Jordan-Wigner encodings. The main contribution of this chapter however is the demonstration that splitting these resulting Hamiltonians into two pieces and simulating these two partitions using different product formulas can lead to provably better perfomance. We showed this analytically for systems in which the spectral norm decays exponentially (i.e. $h_i = 2^(-i)$) and gave an explicit partitioning of the terms based on spectral weight, which we denoted `chop`. We verified that these results are not just analytic musings and provided concrete numeric comparisons between each of the methods, Trotter-Suzuki, QDrift, and Composite, on standard quantum chemistry benchmark systems. We found a range of cost improvements ranging from $2 - 18 $ fold reductions in the number of operator exponentials required.
+In this chapter we rigorously showed how to simulate the time evolution of a time-independent Hamiltonian using product formulas. These product formulas are easily implementable on a quantum computer using only single qubit rotations and CNOTs for Hamiltonians that are given as a sum of Pauli operators. We showed how various chemical systems, such as Hydrogen chains and the UEG (Jellium) are naturally expressed in these forms via Jordan-Wigner encodings. The main contribution of this chapter however is the demonstration that splitting these resulting Hamiltonians into two pieces and simulating these two partitions using different product formulas can lead to provably better perfomance. We showed this analytically for systems in which the spectral norm decays exponentially (i.e. $h_i = 2^(-i)$) and gave an explicit partitioning of the terms based on spectral weight, which we denoted `chop`. We verified that these results are not just analytic musings and provided concrete numeric comparisons between each of the methods, Trotter-Suzuki, QDrift, and Composite, on standard quantum chemistry benchmark systems. We found a range of cost improvements ranging from $2 - 18$ fold reductions in the number of operator exponentials required.
