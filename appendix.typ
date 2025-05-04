@@ -1,48 +1,8 @@
 #import "macros.typ": *
 #import "conf.typ": *
 
-#let ket(psi) = $lr(|#psi angle.r)$
-#let bra(psi) = $lr(angle.l #psi|)$
-#let ketbra(a, b) = $|#a angle.r angle.l #b|$
-#let braket(a, b) = $angle.l #a|#b angle.r$
-#let tp = $times.circle$
-#let id = $bb(1)$
-#let dmd = $diamond.medium$
-// Common objects
-#let hilb = $cal(H)$
-#let partfun = $cal(Z)$
-#let identity = $bb(1)$
-#let gue = $"GUE"$
-#let sinc = math.op("sinc")
-#let hermMathOp = math.op("Herm")
-#let im = math.op("Im")
-#let diag = math.op("diag")
-#let herm(x) = $hermMathOp parens(#x)$
-
-
 #import "@preview/ctheorems:1.1.3": *
-// #let lemma_og = thmbox("lemma", "Lemma", stroke: 1pt, bodyfmt: x => text(x, style: "italic"))
-#let proof = thmproof("proof", "Proof", inset: (x: 0cm))
-// #let theorem_og = thmbox("theorem", "Theorem", stroke: 1pt, bodyfmt: x => text(x, style: "italic"))
-// #let definition_og = thmbox("definition", "Definition", stroke: 1pt, bodyfmt: x => text(x, style: "italic"))
 
-#let lemma = thmbox("lemma", "Lemma", stroke: 1pt, bodyfmt: x => text(x, style: "italic"), fill: rgb("e8887377"))
-#let theorem = thmbox(
-    "theorem",
-    "Theorem",
-    stroke: 1pt,
-    bodyfmt: x => text(x, style: "italic"),
-    fill: rgb("#c8f6ad"),
-)
-#let definition = thmbox(
-    "definition",
-    "Definition",
-    stroke: 1pt,
-    bodyfmt: x => text(x, style: "italic"),
-    fill: rgb("#62b6cb44"),
-)
-
-#let todo = x => { text([TODO: #x], fill: red, weight: "bold") }
 
 #let q0 = $1 / (1 + e^(-beta gamma))$
 #let q1 = $e^(-beta gamma) / (1 + e^(-beta gamma))$
@@ -79,8 +39,147 @@
         ]
     },
 )
+
 #set math.equation(number-align: bottom)
-= Trotter Bounds
+= Alternative Randomized interactions
+
+For this section I want to explore an alternative randomized interaction ensemble by changing the eigenvalues from I.I.D Gaussian eigenvalues to I.I.D Rademacher variables, which are $plus.minus 1$ with equal probability. Let $Lambda_R$ denote the Rademacher eigenvalues. There are a few lemmas we need to replace
+- The first moment calculation, @thm_tsp_first_order_phi but that follows from $EE_R Lambda_R = 0$.
+- The heisenberg evolution @lem_two_heisenberg_interactions
+- The sandwiched evolution @lem_sandwiched_interaction
+- The remainder bound @thm_remainder_bound.
+
+#theorem([First Order $Phi$])[
+    Let $Phi$ be the thermalizing quantum channel given by @eq:PhiDef and $G$ the randomly chosen interaction term as given by @eq_interaction_def. The $O(alpha)$ term in the weak-coupling expansion in @eq_tsp_phi_taylor_series vanishes
+    $ frac(partial, partial alpha) Phi (rho; alpha) |_(alpha = 0) = 0. $
+]
+#proof()[
+    We start by moving the $alpha$ derivative through the linear operations of partial tracing and integrals so that it can act on the fixed interaction map $Phi_G$
+    $
+        frac(partial, partial alpha) Phi (rho) |_(alpha = 0) &= frac(partial, partial alpha) tr_(cal(H)_E)(integral Phi_G (rho) d G) |_(alpha = 0) \
+        &= tr_(cal(H)_E)(integral frac(partial, partial alpha) Phi_G(rho) d G |_(alpha = 0)) .
+    $
+    Now we use the expression for $Phi_G$ in Eq. @eq_phi_g_definition to compute the derivatives,
+    $
+        frac(partial, partial alpha) Phi_G (rho) =& (frac(partial, partial alpha) e^(+ i (H + alpha G)t)) rho tp rho_E e^(-i (H + alpha G) t) + e^(+i (H + alpha G)t) rho tp rho_E (frac(partial, partial alpha) e^(- i (H + alpha G)t)) \
+        =& (integral_(0)^(1) e^(i s (H+alpha G)t) (i t G) e^(i (1-s) (H+alpha G)t) d s) rho tp rho_E e^(-i(H+alpha G)t) \
+        &+ e^(i(H+alpha G)t) rho tp rho_E (integral_(0)^1 e^(-i s (H+alpha G) t) (- i t G) e^(-i (1-s) (H+alpha G)t) d s).
+    $
+    We can set $alpha = 0$ in the above and introduce the expectation over $G$ that will be required
+    $
+        EE_G [ frac(partial, partial alpha) Phi_G(rho) |_(alpha = 0)] &= i t bb(E)_G integral_0^1 e^(i s H t) G e^(-i s H t) d s e^(i H t) rho tp rho_E e^(-i H t) \
+        &- i t e^(+i H t) rho tp rho_E bb(E)_G integral_0^1 e^(-i s H t) G e^(-i(1-s) H t) d s \
+        &= i t integral_0^1 e^(i s H t) bb(E)_G [G] e^(-i s H t) d s e^(i H t) rho tp rho_E e^(-i H t) \
+        &- i t e^(+i H t) rho tp rho_E integral_0^1 e^(-i s H t) bb(E)_G [G] e^(-i(1-s) H t) d s.
+    $
+    Since our eigenvalues, $D_(i i)$, are mean zero ($EE_D D = 0$) we can compute $bb(E)_G [G]$ and arrive at the lemma statement
+    $
+        EE_G [G] = EE_"haar" EE_D [U_"haar" D U_"haar"^dagger] = EE_"haar" [U_"haar" EE_D [D] U_"haar"^dagger] = 0.
+    $
+]
+
+Ok so this proof follows trivially. Now the next one might be harder, but it actually also just follows from the fact that $EE_R lambda_R (i) lambda_R (j) = delta_(i,j)$.
+
+#lemma()[
+    Let $G(t)$ denote the Heisenberg evolved random interaction $G(t) = e^(i H t) G e^(-i H t)$ for a total Hamiltonian $H$. After averaging over the interaction measure the product $G(x) G(y)$ can be computed as
+    $
+        integral G(x) G(y) d G = 1 / (dim + 1) (sum_((i,j), (k,l)) e^(Delta (i, j | k, l) (x - y)) ketbra(i\, j, i\, j) + id ).
+    $
+]
+#proof()[
+    The overall structure of this proof is to evaluate the product in the Hamiltonian eigenbasis and split the product into three factors: a phase contribution from the time evolution, a Haar integral from the eigenvalues of the random interaction, and the eigenvalue contribution of the random interaction. Since this involves the use of multiple indices, it will greatly simplify the proof to use a single index over the total Hilbert space $hilb$ as opposed to two indices over $hilb_S tp hilb_E$. For example, the index $a$ should be thought of as a pair $(a_s, a_e)$, and functions $lambda (a)$ should be thought of as $lambda (a_s, a_e)$. Once the final form of the expression is reached we will substitute in pairs of indices for easier use of the lemma in other places.
+    $
+        integral G(x) G(y) d G &= integral e^(+i H x) U_G D U_G^dagger e^(-i H x) e^(+i H y) U_G D U_G^dagger e^(-i H y) d U_G d D \
+        &= integral [sum_a e^(+i lambda(a)x) ket(a) bra(a) U_G sum_b D(b) ket(b) bra(b) U_G^dagger \
+            &quad sum_c e^(-i lambda(c) (x - y)) ket(c) bra(c) U_G sum_d D(d) ket(d) bra(d) U_G^dagger sum_e e^(-i lambda(e) y) ket(e) bra(e) ] d U_G d D \
+        &= sum_(a,b,c,d,e) ket(a) bra(e) e^(-i (lambda(c) - lambda(a))x) e^(-i (lambda(e) - lambda(c))y) \
+        &quad times integral bra(a) U_G ket(b) bra(c) U_G ket(d) bra(b) U_G^(dagger) ket(c) bra(d) U_G^dagger ket(e) d U_G integral D(b) D(d) d D \
+        &= sum_(a, b, c, d, e) delta_(b d) ket(a) bra(e) e^(-i (lambda(c) - lambda(a))x) e^(-i (lambda(e) - lambda(c))y) \
+        &quad times integral bra(a) U_G ket(b) bra(c) U_G ket(d) bra(b) U_G^(dagger) ket(c) bra(d) U_G^dagger ket(e) d U_G.
+    $
+
+    Now the summation over $d$ fixes $d=b$ and we use @lem_haar_two_moment to compute the Haar integral, which simplifies greatly due to the repeated $b$ index. Plugging the result into the above yields the following
+
+    $
+        &= frac(1, "dim"^2 - 1) sum_(a, b, c, e) ket(a) bra(e) e^(-i (lambda(c) - lambda(a))x) e^(-i (lambda(e) - lambda(c))y) (delta_(a c) delta_(c e) + delta_(a e) - frac(1, "dim") (delta_(a c) delta_(c e) + delta_(a e))) \
+        &= frac(1, "dim"^2 - 1) (1 - frac(1, "dim")) sum_(a, b, c, e) ket(a) bra(e) e^(-i (lambda(c) - lambda(a))x) e^(-i (lambda(e) - lambda(c))y) delta_(a e) (1 + delta_(a c)) \
+        &= frac(1, "dim"^2 - 1) (1 - frac(1, "dim")) sum_(a, b, c) ket(a) bra(a) e^(i (lambda(a) - lambda(c))(x-y)) (1 + delta_(a c)) \
+        &= frac(1 ("dim" - 1), "dim"^2 - 1) sum_(a,c) ket(a) bra(a) e^(i (lambda(a) - lambda(c))(x - y)) (1 + delta_(a c)) \
+        &= frac(1, "dim" + 1) (sum_(a,c) e^(i (lambda(a) - lambda(c))(x-y)) ket(a) bra(a) + identity).
+    $
+
+    Reindexing by $a |-> i,j$, $c |-> k,l$, and plugging in the definition of $Delta$ yields the statement of the lemma.
+]
+
+this is the second to last one
+#lemma()[
+    Given two Heisenberg evolved random interactions $G(x)$ and $G(y)$ we can compute their action on the outer product $ketbra(i\, j, k\, l)$ as
+    $
+        integral G(x) ketbra(i\, j, k\, l) G(y) d G = 1 / (dim + 1) (ketbra(i\, j, k\, l) + braket(i\, j, k\, l) sum_(m,n) e^(Delta (m,n | i,j) (x - y)) ketbra(m\, n, m\, n)).
+    $
+]
+#proof()[
+    This proof is structured the same as @lem_two_heisenberg_interactions and similarly we will use a single index of the total Hilbert space $hilb$ and switch to two indices to match the rest of the exposition.
+
+    $
+        integral G(x) ket(a) bra(b) G(y) d G &= integral e^(i H x) U_G D U_G^(dagger) e^(-i H x) ket(a) bra(b) e^(i H y) U_G D U_G^dagger e^(-i H y) d G \
+        &= sum_(c, d, e, f) e^(i (lambda(c) - lambda(a))x) e^(i (lambda(b) - lambda(f))y) \
+        &quad times integral ket(c) bra(c) U_G D(d) ket(d) bra(d) U_G^dagger ket(a) bra(b) U_G D(e) ket(e) bra(e) U_G^dagger ket(f) bra(f) d G \
+        &= sum_(c, d, e, f) e^(i (lambda(c) - lambda(a))x) e^(i (lambda(b) - lambda(f))y) ket(c) bra(f) \
+        &quad times integral D(d) D(e) d D integral bra(c) U_G ket(d) bra(b) U_G ket(e) bra(d) U_G^dagger ket(a) bra(e) U_G^dagger ket(f) d U_G \
+        &= sum_(c,d,f) e^(i (lambda(c) - lambda(a))x) e^(i (lambda(b) - lambda(f))y) ket(c) bra(f) \
+        &quad times integral bra(c) U_G ket(d) bra(b) U_G ket(d) bra(a) overline(U_G) ket(d) bra(f) overline(U_G) ket(d) d U_G \
+        &= frac(1, "dim"^2 - 1) sum_(c,d,f) e^(i (lambda(c) - lambda(a))x) e^(i (lambda(b) - lambda(f))y) ket(c) bra(f) (delta_(c a) delta_(b f) + delta_(c f) delta_(a b))(1 - frac(1, "dim")) \
+        &= frac(1, "dim" + 1) sum_(c,f) e^(i (lambda(c) - lambda(a))x) e^(i (lambda(b) - lambda(f))y) ket(c) bra(f) (delta_(c a) delta_(b f) + delta_(c f) delta_(a b)) \
+        &= frac(1, "dim" + 1) (ket(a) bra(b) + delta_(a b) sum_(c) e^(i(lambda(c) - lambda(a))(x-y)) ket(c) bra(c)).
+    $
+
+    Now re-indexing by $a |-> (i,j)$, $b |-> (k,l)$ and $c |-> (m,n)$ results in the expression given in the statement of the lemma.
+]
+
+So all four of these results follow trivially from I.I.D and that the absolute value of the third moment of the Rademacher distribution is bounded.
+
+Now I can get to the really difficult thing, which is showing that random $Z$ rotations can approximate the rotations.
+
+Need to come up with a circuit for $e^(i G alpha t)$. Call $theta = alpha t$ for fun right now. Then we do the following
+$
+    e^(i U Lambda_R U^dagger theta) &= U e^(i Lambda theta) U^dagger \
+    &= U (sum_(i = 1)^(dim) e^(i lambda_R (i) theta) ) U^dagger
+$
+
+Actually at the end of the day I need to approximate the channel $EE_G e^(i (H + alpha G) t) rho e^(-i (H + alpha G) t)$ using a composite simulation. We let $H$ be simulated via a Trotter formula and $G$ a QDrift expression. But that would yield:
+$
+    EE_G e^(i (H + alpha G) t) rho e^(-i (H + alpha G) t) &= EE_G e^(i G theta) rho e^(-i G theta)\
+    &= EE_U EE_R U e^(i Lambda_R theta) U^dagger rho U e^(- i Lambda_R theta) U^dagger.
+$
+Letting $C$ denote the Clifford distribution and let $Z$ denote a randomly chosen string of $Z$ pauli strings then I think
+$
+    EE_U EE_R U e^(i Lambda_R theta) U^dagger rho U e^(- i Lambda_R theta) U^dagger = EE_C EE_Z C e^(i Z theta) C^dagger rho C e^(-i Z theta) C^dagger
+$
+The Clifford equality follows from the 3-design property. I will need a new proof for the $Z$ argument. I'll try the following
+$
+    EE_R bra(i) e^(i Lambda_R theta) ketbra(j, k) e^(-i Lambda_R theta) ket(l) &= EE_R sum_(a, b) e^(i (lambda_R (a) - lambda_R (b) theta )) braket(i, a) braket(a, j) braket(k, b) braket(b, l) \
+    &= EE_R delta_(i,j) delta_(k,l) e^(i (lambda_R (j) - lambda_R (k)) theta) \
+    &= 1 / 2 dot 1 + 1 / 4 dot e^(i theta) + 1 / 4 dot e^(- i theta) \
+    &= 1 / 2 (1 + cos(theta) ).
+$
+Actually the above only holds for $j != k$, for $j = k$ then it is just 1.
+Now to show the $Z$ expectation. For this let $w(k)$ denote the Hamming weight of the computational state $k$. No we actually need the agreement between the bitstring $k$ and the bitstring $z$, which has a 0 if the sampled value for $Z$ at that site is $I$ and a 1 if the sampled value is $Z$. AKA $Z = Z_1^(z_1) tp Z_2^(z_2) tp ... tp Z_n^(z_n)$, where each $z_i$ is a Bernoulli random variable. Then we have that
+$
+    e^(i Z theta) ket(k) &= cos(theta) ket(k) + i sin(theta) Z ket(k) \
+    &= cos(theta) ket(k) + i sin(theta) (-1)^(z dot k) ket(k).
+$
+Now the question then becomes what is $EE_Z (-1)^(z dot k)$? Since this splits, it's not too bad
+$
+    EE_Z (-1)^(z dot k) = product EE_(z_i) (-1)^(z_i k_i) = product (1 / 2 + 1 / 2 (-1)^(k_i))
+$
+We have
+$
+    &EE_Z bra(i) e^(i Z theta) ketbra(j, k) e^(-i Z theta) ket(l) \
+    &= EE_Z braket(i, j) braket(k, l) (cos(theta) + i sin(theta) (-1)^(z dot j)) ( cos(theta) - i sin(theta) (-1)^(z dot l)) \
+    &delta_(i,j) delta_(k,l) (cos^2(theta) + i cos(theta) sin(theta) EE_Z (-1)^(z dot j) - i cos(theta) sin(theta) EE_Z (-1)^(z dot l) + sin^2(theta) EE_Z (-1)^(z dot j + z dot l))
+$
+
 
 = Haar Integrals <sec_tsp_appendix>
 
