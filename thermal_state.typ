@@ -111,7 +111,7 @@ $
 
 We then see that if $[ rho, H] = 0$ then $Phi (rho; 0) = id (rho)$, and as we restrict ourselves to such input states we will use this throughout the remainder of the paper. The next order correction is the $O(alpha^1)$ term.
 #theorem([First Order $Phi$])[
-    Let $Phi$ be the thermalizing quantum channel given by @eq:PhiDef and $G$ the randomly chosen interaction term as given by @eq_interaction_def. The $O(alpha)$ term in the weak-coupling expansion in @eq_tsp_phi_taylor_series vanishes
+    Let $Phi$ be the thermalizing quantum channel given by @eq:PhiDef and $G$ a randomly chosen interaction term such that $EE_G [G] = 0$. The $O(alpha)$ term in the weak-coupling expansion in @eq_tsp_phi_taylor_series vanishes
     $ frac(partial, partial alpha) Phi (rho; alpha) |_(alpha = 0) = 0. $
 ] <thm_tsp_first_order_phi>
 #proof()[
@@ -128,15 +128,12 @@ We then see that if $[ rho, H] = 0$ then $Phi (rho; 0) = id (rho)$, and as we re
     $ <eq_first_order_alpha_derivative>
     We can set $alpha = 0$ in the above and introduce the expectation over $G$ that will be required
     $
-        EE_G [ frac(partial, partial alpha) Phi_G(rho) |_(alpha = 0)] &= i t bb(E)_G integral_0^1 e^(i s H t) G e^(-i s H t) d s e^(i H t) rho tp rho_E e^(-i H t) \
-        &- i t e^(+i H t) rho tp rho_E bb(E)_G integral_0^1 e^(-i s H t) G e^(-i(1-s) H t) d s \
-        &= i t integral_0^1 e^(i s H t) bb(E)_G [G] e^(-i s H t) d s e^(i H t) rho tp rho_E e^(-i H t) \
-        &- i t e^(+i H t) rho tp rho_E integral_0^1 e^(-i s H t) bb(E)_G [G] e^(-i(1-s) H t) d s.
+        &EE_G [ frac(partial, partial alpha) Phi_G(rho) |_(alpha = 0)] \
+        &= i t bb(E)_G integral_0^1 e^(i s H t) G e^(-i s H t) d s rho tp rho_E - i t e^(+i H t) rho tp rho_E bb(E)_G integral_0^1 e^(-i s H t) G e^(-i(1-s) H t) d s \
+        &= i t integral_0^1 e^(i s H t) bb(E)_G [G] e^(-i s H t) d s rho tp rho_E - i t e^(+i H t) rho tp rho_E integral_0^1 e^(-i s H t) bb(E)_G [G] e^(-i(1-s) H t) d s \
+        &= 0,
     $
-    Since our eigenvalues, $D_(i i)$, are mean zero ($EE_D D = 0$) we can compute $bb(E)_G [G]$ and arrive at the lemma statement
-    $
-        EE_G [G] = EE_"haar" EE_D [U_"haar" D U_"haar"^dagger] = EE_"haar" [U_"haar" EE_D [D] U_"haar"^dagger] = 0.
-    $
+    where the last step follows from our assumption that $EE_G [G] = 0$.
 ]
 
 #h(5mm) Now we move on to the $O(alpha^2)$ term in the weak-coupling expansion of $Phi$. We first will compute the combined system-environment output of a generic system-environment basis state and we note that this result holds for an arbitrary dimension environment. We will use this to draw two results: the first being for a single qubit environment the transition amplitudes of just the system can be split into on-resonance and off-resonance terms based on the tuning of the environment qubit Hamiltonian. The second result is that coherences are not introduced to the state at this order of $Phi$, meaning if an input density matrix $rho$ is diagonal then $(id + cal(T))(rho)$ will also be diagonal. This will be crucial for our later understanding of the channel as a Markov chain.

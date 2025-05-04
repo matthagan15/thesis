@@ -1,7 +1,6 @@
 #import "conf.typ": ut-thesis, is-chapter-page
 // #import("conf.typ")
 #import "@preview/hydra:0.6.1": hydra
-#include "macros.typ"
 
 // Example Usage
 #show: ut-thesis.with(

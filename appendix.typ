@@ -1,4 +1,3 @@
-#import "macros.typ": *
 #import "conf.typ": *
 
 #import "@preview/ctheorems:1.1.3": *
@@ -43,7 +42,48 @@
 #set math.equation(number-align: bottom)
 = Alternative Randomized interactions
 
-For this section I want to explore an alternative randomized interaction ensemble by changing the eigenvalues from I.I.D Gaussian eigenvalues to I.I.D Rademacher variables, which are $plus.minus 1$ with equal probability. Let $Lambda_R$ denote the Rademacher eigenvalues. There are a few lemmas we need to replace
+For this section I want to show that the following random matrix should satisfy the thermal state prep conditions that I need. The random matrix is a randomly chosen string of Pauli $Z$ operators and a random phase
+$
+    Z = (-1)^(z_0) Z_1^(z_1) tp ... tp Z_n^(z_n).
+$
+Where $"Pr"[z_i = 0] = "Pr"[z_i = 1] = 1 / 2$. Then we need
+$
+    EE_Z Z = 0
+$
+and
+$
+    EE_Z bra(i) Z ket(i) bra(j) Z ket(j) = delta_(i,j).
+$
+First the expectation.
+$
+    EE_Z Z &= EE_(z_0) (-1)^(z_0) product_(i=1)^n EE_(z_i) tp Z_i^(z_i) = 1 / 2 dot (+1) product_(i=1)^n EE_(z_i) tp Z_i^(z_i) + 1 / 2 dot (-1) product_(i=1)^n EE_(z_i) tp Z_i^(z_i) = 0. "    "
+$
+Now the correlation. First we let $z dot k = z_0 + z_1 k_1 + ... + z_n k_n$. Then
+$
+    EE_Z bra(i) Z ket(i) bra(j) Z ket(j) &= EE_Z (-1)^(z dot i) (-1)^(z dot j) \
+    &= EE_Z (-1)^(z dot (i + j)) \
+    &= EE_(z_0) (-1)^(2 z_0) product_(k = 1)^n EE_(z_k) (-1)^(z_k (i_k + j_k)) \
+    &= product_(k = 1)^n EE_(z_k) (-1)^(z_k (i_k + j_k)).
+$
+Now we just need to compute a single one:
+$
+    EE_(z_k) (-1)^(z_k (i_k + j_k)) &= 1 / 2 dot (1) + 1 / 2 dot (-1)^(i_k + j_k) \
+    &= cases(
+        1 " if " i_k = 0\, j_k = 0,
+        0 " if " i_k = 0 \, j_k =1,
+        0 " if " i_k = 1 \, j_k =0,
+        1 " if " i_k = 1\, j_k = 1,
+    ) \
+    &= delta_(i_k , j_k).
+$
+Then we have that the total product is
+$
+    EE_Z bra(i) Z ket(i) bra(j) Z ket(j) = product_(k = 1)^n delta_(i_k , j_k) = delta_(i,j).
+$
+
+The absolute last thing I would need is that $EE_Z |lambda_k (Z)|^3 = 1$, which is trivial.
+
+
 - The first moment calculation, @thm_tsp_first_order_phi but that follows from $EE_R Lambda_R = 0$.
 - The heisenberg evolution @lem_two_heisenberg_interactions
 - The sandwiched evolution @lem_sandwiched_interaction
@@ -164,21 +204,9 @@ $
     &= 1 / 2 (1 + cos(theta) ).
 $
 Actually the above only holds for $j != k$, for $j = k$ then it is just 1.
-Now to show the $Z$ expectation. For this let $w(k)$ denote the Hamming weight of the computational state $k$. No we actually need the agreement between the bitstring $k$ and the bitstring $z$, which has a 0 if the sampled value for $Z$ at that site is $I$ and a 1 if the sampled value is $Z$. AKA $Z = Z_1^(z_1) tp Z_2^(z_2) tp ... tp Z_n^(z_n)$, where each $z_i$ is a Bernoulli random variable. Then we have that
-$
-    e^(i Z theta) ket(k) &= cos(theta) ket(k) + i sin(theta) Z ket(k) \
-    &= cos(theta) ket(k) + i sin(theta) (-1)^(z dot k) ket(k).
-$
-Now the question then becomes what is $EE_Z (-1)^(z dot k)$? Since this splits, it's not too bad
-$
-    EE_Z (-1)^(z dot k) = product EE_(z_i) (-1)^(z_i k_i) = product (1 / 2 + 1 / 2 (-1)^(k_i))
-$
-We have
-$
-    &EE_Z bra(i) e^(i Z theta) ketbra(j, k) e^(-i Z theta) ket(l) \
-    &= EE_Z braket(i, j) braket(k, l) (cos(theta) + i sin(theta) (-1)^(z dot j)) ( cos(theta) - i sin(theta) (-1)^(z dot l)) \
-    &delta_(i,j) delta_(k,l) (cos^2(theta) + i cos(theta) sin(theta) EE_Z (-1)^(z dot j) - i cos(theta) sin(theta) EE_Z (-1)^(z dot l) + sin^2(theta) EE_Z (-1)^(z dot j + z dot l))
-$
+Now to show the $Z$ expectation. For this let $w(k)$ denote the Hamming weight of the computational state $k$. No we actually need the agreement between the bitstring $k$ and the bitstring $z$, which has a 0 if the sampled value for $Z$ at that site is $I$ and a 1 if the sampled value is $Z$. AKA $Z = Z_1^(z_1) tp Z_2^(z_2) tp ... tp Z_n^(z_n)$, where each $z_i$ is a Bernoulli random variable.
+
+Wait, why not just use $G ~ U_"haar" Z U_"haar"^dagger$?
 
 
 = Haar Integrals <sec_tsp_appendix>
@@ -230,9 +258,9 @@ $
 In this section we present the more technical work needed to state our results in @sec_tsp_weak_coupling. @lem_two_heisenberg_interactions and @lem_sandwiched_interaction are used to compute the effects of the randomized interactions in a form that are usable in the main result of @lem_tsp_transitions. @lem_haar_two_moment can be derived from Appendix C in @brandao2021complexity.
 
 #lemma()[
-    Let $integral (dot) d U$ denote the expectation over the Haar measure over the set of unitary matrices acting on a $dim$ dimensional Hilbert space. Then for $ket(i_1), ket(i_2), ..., ket(k_2)$ drawn from an orthonormal basis
+    Let $EE_U$ denote the expectation over the Haar measure over the set of unitary matrices acting on a $dim$ dimensional Hilbert space. Then for $ket(i_1), ket(i_2), ..., ket(k_2)$ drawn from an orthonormal basis
     $
-        &integral bra(i_1) U ket(j_1) bra(i_2) U ket(j_2) bra(k_1) U^dagger ket(l_1) bra(k_12) U^dagger ket(l_2) \
+        &EE_U [ bra(i_1) U ket(j_1) bra(i_2) U ket(j_2) bra(k_1) U^dagger ket(l_1) bra(k_12) U^dagger ket(l_2) ] \
         =& 1 / (dim^2 - 1) (delta_(i_1, l_1) delta_(j_1, k_1) delta_(i_2, l_2) delta_(j_2, k_2) + delta_(i_1, l_2) delta_(j_1, k_2) delta_(i_2, l_1) delta_(j_2, k_1)) \
         &- 1 / (dim(dim^2 - 1)) (delta_(i_1, l_2) delta_(j_1, k_1) delta_(i_2, l_1) delta_(j_2, k_2) + delta_(i_1, l_1) delta_(j_1, k_2) delta_(i_2, l_2) delta_(j_2, k_1)).
     $ <eq_haar_two_moment_integral>
@@ -241,22 +269,26 @@ In this section we present the more technical work needed to state our results i
 #lemma()[
     Let $G(t)$ denote the Heisenberg evolved random interaction $G(t) = e^(i H t) G e^(-i H t)$ for a total Hamiltonian $H$. After averaging over the interaction measure the product $G(x) G(y)$ can be computed as
     $
-        integral G(x) G(y) d G = 1 / (dim + 1) (sum_((i,j), (k,l)) e^(Delta (i, j | k, l) (x - y)) ketbra(i\, j, i\, j) + id ).
+        EE_G [G(x) G(y)] = 1 / (dim + 1) (sum_((i,j), (k,l)) e^(Delta (i, j | k, l) (x - y)) ketbra(i\, j, i\, j) + id ).
     $
 ] <lem_two_heisenberg_interactions>
 #proof()[
-    The overall structure of this proof is to evaluate the product in the Hamiltonian eigenbasis and split the product into three factors: a phase contribution from the time evolution, a Haar integral from the eigenvalues of the random interaction, and the eigenvalue contribution of the random interaction. Since this involves the use of multiple indices, it will greatly simplify the proof to use a single index over the total Hilbert space $hilb$ as opposed to two indices over $hilb_S tp hilb_E$. For example, the index $a$ should be thought of as a pair $(a_s, a_e)$, and functions $lambda (a)$ should be thought of as $lambda (a_s, a_e)$. Once the final form of the expression is reached we will substitute in pairs of indices for easier use of the lemma in other places.
+    The overall structure of this proof is to evaluate the product in the Hamiltonian eigenbasis and split the product into three factors: a phase contribution from the time evolution, a Haar expectation from the eigenvectors of the random interaction, and the eigenvalue expectation of the random interaction. Since this involves the use of multiple indices, it will greatly simplify the proof to use a single index over the total Hilbert space $hilb$ as opposed to two indices over $hilb_S tp hilb_E$. For example, the index $a$ should be thought of as a pair $(a_s, a_e)$, and functions $lambda (a)$ should be thought of as $lambda (a_s, a_e)$. Once the final form of the expression is reached we will substitute in pairs of indices for easier use of the lemma in other places.
     $
-        integral G(x) G(y) d G &= integral e^(+i H x) U_G D U_G^dagger e^(-i H x) e^(+i H y) U_G D U_G^dagger e^(-i H y) d U_G d D \
-        &= integral [sum_a e^(+i lambda(a)x) ket(a) bra(a) U_G sum_b D(b) ket(b) bra(b) U_G^dagger \
-            &quad sum_c e^(-i lambda(c) (x - y)) ket(c) bra(c) U_G sum_d D(d) ket(d) bra(d) U_G^dagger sum_e e^(-i lambda(e) y) ket(e) bra(e) ] d U_G d D \
+        EE_G [ G(x) G(y) ] &= EE_(Lambda_G) EE_(U_G) e^(+i H x) U_G Lambda_G U_G^dagger e^(-i H x) e^(+i H y) U_G Lambda_G U_G^dagger e^(-i H y) \
+        &= EE_(Lambda_G) EE_(U_G) [sum_a e^(+i lambda(a)x) ket(a) bra(a) U_G sum_b Lambda_G (b) ket(b) bra(b) U_G^dagger \
+            &quad sum_c e^(-i lambda(c) (x - y)) ket(c) bra(c) U_G sum_d Lambda_G (d) ket(d) bra(d) U_G^dagger sum_e e^(-i lambda(e) y) ket(e) bra(e) ] \
         &= sum_(a,b,c,d,e) ket(a) bra(e) e^(-i (lambda(c) - lambda(a))x) e^(-i (lambda(e) - lambda(c))y) \
-        &quad times integral bra(a) U_G ket(b) bra(c) U_G ket(d) bra(b) U_G^(dagger) ket(c) bra(d) U_G^dagger ket(e) d U_G integral D(b) D(d) d D \
+        &quad times EE_(U_G) [ bra(a) U_G ket(b) bra(c) U_G ket(d) bra(b) U_G^(dagger) ket(c) bra(d) U_G^dagger ket(e) ] EE_(Lambda_G) [ Lambda_G (b) Lambda_G (d) ] \
         &= sum_(a, b, c, d, e) delta_(b d) ket(a) bra(e) e^(-i (lambda(c) - lambda(a))x) e^(-i (lambda(e) - lambda(c))y) \
-        &quad times integral bra(a) U_G ket(b) bra(c) U_G ket(d) bra(b) U_G^(dagger) ket(c) bra(d) U_G^dagger ket(e) d U_G.
+        &quad times EE_(U_G) [ bra(a) U_G ket(b) bra(c) U_G ket(d) bra(b) U_G^(dagger) ket(c) bra(d) U_G^dagger ket(e) ].
+    $
+    We used the fact that the eigenvalues of $G$ are I.I.D with variance 1 to make the substitution $EE_(Lambda_G) [Lambda_G (b) Lambda_G (d)] = delta_(a,b)$. This allows us to reduce the sum over $d$ to the condition when $d=b$, which greatly simplifies the Haar expectation we have to take. Using @lem_haar_two_moment we have
+    $
+        &EE_(U_G) [bra(a) U_G ket(b) bra(c) U_G ket(b) bra(b) U_G^(dagger) ket(c) bra(b) U_G^dagger ket(e) ] = 1 / (dim^2 - 1) (delta_(a c) delta_(c e) + delta_(a e) - frac(1, "dim") (delta_(a c) delta_(c e) + delta_(a e))). "      "
     $
 
-    Now the summation over $d$ fixes $d=b$ and we use @lem_haar_two_moment to compute the Haar integral, which simplifies greatly due to the repeated $b$ index. Plugging the result into the above yields the following
+    and we use @lem_haar_two_moment to compute the Haar integral, which simplifies greatly due to the repeated $b$ index. Plugging the result into the above yields the following
 
     $
         &= frac(1, "dim"^2 - 1) sum_(a, b, c, e) ket(a) bra(e) e^(-i (lambda(c) - lambda(a))x) e^(-i (lambda(e) - lambda(c))y) (delta_(a c) delta_(c e) + delta_(a e) - frac(1, "dim") (delta_(a c) delta_(c e) + delta_(a e))) \
@@ -272,26 +304,26 @@ In this section we present the more technical work needed to state our results i
 #lemma()[
     Given two Heisenberg evolved random interactions $G(x)$ and $G(y)$ we can compute their action on the outer product $ketbra(i\, j, k\, l)$ as
     $
-        integral G(x) ketbra(i\, j, k\, l) G(y) d G = 1 / (dim + 1) (ketbra(i\, j, k\, l) + braket(i\, j, k\, l) sum_(m,n) e^(Delta (m,n | i,j) (x - y)) ketbra(m\, n, m\, n)).
+        &EE_(G) [ G(x) ketbra(i\, j, k\, l) G(y) d G] \
+        &= 1 / (dim + 1) (ketbra(i\, j, k\, l) + braket(i\, j, k\, l) sum_(m,n) e^(Delta (m,n | i,j) (x - y)) ketbra(m\, n, m\, n)).
     $
 ] <lem_sandwiched_interaction>
 #proof()[
     This proof is structured the same as @lem_two_heisenberg_interactions and similarly we will use a single index of the total Hilbert space $hilb$ and switch to two indices to match the rest of the exposition.
 
     $
-        integral G(x) ket(a) bra(b) G(y) d G &= integral e^(i H x) U_G D U_G^(dagger) e^(-i H x) ket(a) bra(b) e^(i H y) U_G D U_G^dagger e^(-i H y) d G \
+        EE_G [ G(x) ket(a) bra(b) G(y) ] &= EE_G [ e^(i H x) U_G D U_G^(dagger) e^(-i H x) ket(a) bra(b) e^(i H y) U_G D U_G^dagger e^(-i H y) ] \
         &= sum_(c, d, e, f) e^(i (lambda(c) - lambda(a))x) e^(i (lambda(b) - lambda(f))y) \
-        &quad times integral ket(c) bra(c) U_G D(d) ket(d) bra(d) U_G^dagger ket(a) bra(b) U_G D(e) ket(e) bra(e) U_G^dagger ket(f) bra(f) d G \
+        &quad times EE_G [ ket(c) bra(c) U_G D(d) ket(d) bra(d) U_G^dagger ket(a) bra(b) U_G D(e) ket(e) bra(e) U_G^dagger ket(f) bra(f) ] \
         &= sum_(c, d, e, f) e^(i (lambda(c) - lambda(a))x) e^(i (lambda(b) - lambda(f))y) ket(c) bra(f) \
-        &quad times integral D(d) D(e) d D integral bra(c) U_G ket(d) bra(b) U_G ket(e) bra(d) U_G^dagger ket(a) bra(e) U_G^dagger ket(f) d U_G \
+        &quad times EE_(Lambda_G) [Lambda_G (d) Lambda_G (e) ] EE_(U_G) [ bra(c) U_G ket(d) bra(b) U_G ket(e) bra(d) U_G^dagger ket(a) bra(e) U_G^dagger ket(f) ] \
         &= sum_(c,d,f) e^(i (lambda(c) - lambda(a))x) e^(i (lambda(b) - lambda(f))y) ket(c) bra(f) \
-        &quad times integral bra(c) U_G ket(d) bra(b) U_G ket(d) bra(a) overline(U_G) ket(d) bra(f) overline(U_G) ket(d) d U_G \
+        &quad times EE_(U_G) [ bra(c) U_G ket(d) bra(b) U_G ket(d) bra(a) overline(U_G) ket(d) bra(f) overline(U_G) ket(d) ] \
         &= frac(1, "dim"^2 - 1) sum_(c,d,f) e^(i (lambda(c) - lambda(a))x) e^(i (lambda(b) - lambda(f))y) ket(c) bra(f) (delta_(c a) delta_(b f) + delta_(c f) delta_(a b))(1 - frac(1, "dim")) \
         &= frac(1, "dim" + 1) sum_(c,f) e^(i (lambda(c) - lambda(a))x) e^(i (lambda(b) - lambda(f))y) ket(c) bra(f) (delta_(c a) delta_(b f) + delta_(c f) delta_(a b)) \
         &= frac(1, "dim" + 1) (ket(a) bra(b) + delta_(a b) sum_(c) e^(i(lambda(c) - lambda(a))(x-y)) ket(c) bra(c)).
     $
-
-    Now re-indexing by $a |-> (i,j)$, $b |-> (k,l)$ and $c |-> (m,n)$ results in the expression given in the statement of the lemma.
+    We used the fact that $EE_(Lambda_G) [Lambda_G (d) Lambda_G (e)] = delta_(d, e)$ to eliminate the sum over $e$. Re-indexing by $a |-> (i,j)$, $b |-> (k,l)$ and $c |-> (m,n)$ results in the expression given in the statement of the lemma.
 ]
 
 #todo[Need to update the lemma number for this to essentially be a manual "restatable."]
@@ -366,7 +398,7 @@ In this section we present the more technical work needed to state our results i
 
     Now our goal is to compute the effects of averaging over the interaction $G$ on the above terms, starting with $(A)$. As this involves a lot of index manipulations, similarly to the proofs of Lemmas @lem_two_heisenberg_interactions and @lem_sandwiched_interaction we will use a single index for the total system-environment Hilbert space and switch back to a double index to state the results. We will make heavy use of Lemma @lem_two_heisenberg_interactions.
     $
-        integral (A) d G &= -t^2 integral_0^1 integral_0^1 integral G(s_1 s_2 t) G(s_1 t) d G s_1 d s_1 d s_2 rho(t) \
+        EE_G (A) &= -t^2 integral_0^1 integral_0^1 EE_G [ G(s_1 s_2 t) G(s_1 t) ] s_1 d s_1 d s_2 rho(t) \
         &= frac(-t^2, dim + 1) integral_0^1 integral_0^1 (sum_(i,j) e^(i (lambda(i) - lambda(j)) (s_1 s_2 t - s_1 t)) ket(i)bra(i) + identity) s_1 d s_1 d s_2 rho(t) \
         &= frac(- t^2, dim + 1) (sum_(i) sum_(j : lambda(i) != lambda(j)) integral_0^1 integral_0^1 e^(i(lambda(i) - lambda(j))t (s_1 s_2 - s_1)) s_1 d s_1 d s_2 ket(i)bra(i) + sum_(i) sum_(j : lambda(i) = lambda(j))frac(1, 2) ket(i)bra(i) + frac(1, 2) identity) rho(t) \
         &= frac(- t^2, dim + 1) (sum_i sum_(j : lambda(i) != lambda(j)) frac(1 - i (lambda(i) - lambda(j))t - e^(-i (lambda(i) - lambda(j))t), t^2 (lambda(i) - lambda(j))^2) ket(i)bra(i) + frac(1, 2) sum_(i) (eta(i) + 1) ket(i)bra(i) ) rho(t) \
@@ -375,22 +407,22 @@ In this section we present the more technical work needed to state our results i
 
     We can similarly compute the averaged $(B)$ term:
     $
-        integral (B) d G &= -t^2 integral_0^1 integral_0^1 integral G(s_1 t) G((s_1 + s_2 - s_1 s_2) t) d G (1-s_1) d s_1 d s_2 ~ rho(t) \
-        &= frac(- t^2, dim + 1) integral_0^1 integral_0^1 (sum_(i,j) e^(i (lambda(i) - lambda(j))(s_1 s_2 - s_2) t) ket(i)bra(i) + identity) (1 -s_1) d s_1 d s_2 rho \
+        EE_G (B) &= -t^2 integral_0^1 integral_0^1 EE_G [ G(s_1 t) G((s_1 + s_2 - s_1 s_2) t) ] (1-s_1) d s_1 d s_2 " " rho(t) \
+        &= frac(- t^2, dim + 1) integral_0^1 integral_0^1 (sum_(i,j) e^(i (lambda(i) - lambda(j))(s_1 s_2 - s_2) t) ket(i)bra(i) + identity) (1 -s_1) d s_1 d s_2 " " rho \
         &= frac(- t^2, dim + 1) (sum_(i) sum_(j : lambda(i) != lambda(j)) integral_0^1 integral_0^1 e^(i(lambda(i) - lambda(j))t (s_1 s_2 - s_2)} (1 - s_1) d s_1 d s_2 ket(i)bra(i) + sum_(i) sum_(j : lambda(i) = lambda(j))frac(1, 2) ket(i)bra(i) + frac(1, 2) identity) rho(t) \
         &= frac(- t^2, dim + 1) (sum_i sum_(j : lambda(i) != lambda(j)) frac(1 - i (lambda(i) - lambda(j))t - e^(-i (lambda(i) - lambda(j))t), t^2 (lambda(i) - lambda(j))^2) ket(i)bra(i) + frac(1, 2) sum_(i) (eta(i) + 1) ket(i)bra(i) ) rho(t) \
         &= frac(-1, dim + 1)(sum_(i) sum_(j: Delta_(i j) != 0) frac(1 - i Delta_(i j)t - e^(-i Delta_(i j) t), Delta_(i j)^2) ket(i)bra(i) + frac(t^2, 2) sum_(i) (eta(i) + 1)ket(i)bra(i) ) rho(t),
     $
-    which we note is identical to $integral (A) d G$. As terms $(C)$ and $(D)$ involve a different method of computation we skip them for now and compute $(E)$ and $(F)$.
+    which we note is identical to $EE_G (A)$. As terms $(C)$ and $(D)$ involve a different method of computation we skip them for now and compute $(E)$ and $(F)$.
     $
-        integral (E) d G &= -t^2 rho(t) integral_0^1 integral_0^1 integral G((1- s_1 s_2) t) G((1-s_1)t) d G s_1 d s_1 d s_2 \
+        EE_G (E) &= -t^2 rho(t) integral_0^1 integral_0^1 EE_G [ G((1- s_1 s_2) t) G((1-s_1)t) ] s_1 d s_1 d s_2 \
         &= frac(- t^2, dim + 1) rho(t) integral_0^1 integral_0^1 (sum_(i,j) e^(i(lambda(i) - lambda(j)) t (s_1 - s_1 s_2)) ket(i)bra(i) + identity ) s_1 d s_1 d s_2 \
         &= frac(- t^2, dim + 1) rho(t) (sum_i sum_(j : lambda(i) != lambda(j)) frac(1 + i (lambda(i) - lambda(j))t - e^(i(lambda(i) - lambda(j))t), t^2 (lambda(i) - lambda(j))^2)ket(i)bra(i) + frac(1, 2) sum_(i) (eta(i) + 1 )ket(i)bra(i)) \
         &= frac(- 1, dim + 1) rho(t) (sum_i sum_(j: (Delta_(i j) != 0)) frac(1 + i Delta_(i j)t - e^(i Delta_(i j)t), Delta_(i j)^2) ket(i)bra(i) + frac(t^2, 2)sum_i (eta(i) + 1) ket(i)bra(i)).
     $
     Computing $(F)$ yields
     $
-        integral (F) d G &= -t^2 rho(t) integral_0^1 integral_0^1 integral G((1-s_1)t) G((1-s_1)(1 - s_2) t) d G (1-s_1)d s_1 d s_2 \
+        EE_G (F) &= -t^2 rho(t) integral_0^1 integral_0^1 EE_G [ G((1-s_1)t) G((1-s_1)(1 - s_2) t) ] (1-s_1)d s_1 d s_2 \
         &= frac(- t^2 sigma^2, dim + 1) rho(t) integral_0^1 integral_0^1 (sum_(i,j) e^(i(lambda(i) - lambda(j))t (s_2 - s_1 s_2))ket(i)bra(i) + identity) (1-s_1) d s_1 d s_2 \
         &= frac(- t^2, dim + 1) rho(t) (sum_(i) sum_(j : lambda(i) != lambda(j)) frac(1 + i (lambda(i) - lambda(j))t - e^(i (lambda(i) - lambda(j))t), t^2 (lambda(i) - lambda(j))^2) ket(i)bra(i) +frac(1, 2) sum_(i) (eta(i) + 1) ket(i)bra(i)) \
         &= frac(- 1, dim + 1) rho(t) (sum_i sum_(j: (Delta_(i j) != 0)) frac(1 + i Delta_(i j)t - e^(i Delta_(i j)t), Delta_(i j)^2) ket(i)bra(i) + frac(t^2, 2)sum_i (eta(i) + 1) ket(i)bra(i))
@@ -398,35 +430,36 @@ In this section we present the more technical work needed to state our results i
     which is identical to $integral (E) d G$.
 
     The last two terms $(C) = (D)$ are computed as follows:
+    #set math.equation(number-align: top)
     $
-        integral (C) d G &= t^2 integral_0^1 integral_0^1 integral G(s_1 t) rho(t) G((1-s_2)t) " "d G " " d s_1 d s_2 \
-        &= t^2 sum_(i,j) rho_(i j) e^(i(lambda(i) - lambda(j))t) integral_0^1 integral_0^1 integral G(s_1 t) ket(i)bra(j) G((1-s_2)t) " " d G " " d s_1 d s_2 \
+        EE_G (C) &= t^2 integral_0^1 integral_0^1 EE_G [ G(s_1 t) rho(t) G((1-s_2)t) ] " " d s_1 d s_2 \
+        &= t^2 sum_(i,j) rho_(i j) e^(i(lambda(i) - lambda(j))t) integral_0^1 integral_0^1 EE_G [ G(s_1 t) ket(i)bra(j) G((1-s_2)t) ] " " d s_1 d s_2 \
         &= frac(t^2, dim + 1) sum_(i,j) rho_(i j) e^(i(lambda(i) - lambda(j))t) ( ket(i)bra(j) + delta_(i j) sum_(a) integral_0^1 integral_0^1 e^(i(lambda(a) - lambda(i))(s_1 + s_2 - 1)t) d s_1 d s_2 ket(a)bra(a)) \
         &= frac(t^2, dim + 1) sum_(i,j) rho_(i j) e^(i Delta_(i j) t) (ket(i)bra(j) + delta_(i j) sum_(a : Delta_(a i) != 0) frac(2(1- cos (Delta_(a i) t)), Delta_(a i)^2 t^2) ket(a)bra(a) + delta_(i j) sum_(a : Delta_(a i) = 0) ket(a)bra(a))
     $
 
+
     We can now combine each of these terms to offer the full picture of the output of the channel to second order. We make two modifications to the results from each sum: first, we will switch to double index notation to make for easier use in other areas, and secondly we let $rho = ket(i\, j)bra(k\, l)$. We note that the first term in the following equation is provided by $(A) + (B)$, the second through $(E) + (F)$, and the last two through $(C) + (D)$.
     $
-        &integral frac(partial^2, partial alpha^2) Phi_G(ket(i\, j)bra(k\, l))|_(alpha = 0) d G \
+        &EE_G [ frac(partial^2, partial alpha^2) Phi_G(ket(i\, j)bra(k\, l))|_(alpha = 0) ] \
         &= -frac(2 e^(i Delta(i, j|k, l) t), dim + 1) (sum_((a,b): Delta(i, j|a, b) != 0) frac(1 - i Delta(i, j|a, b)t - e^(-i Delta(i, j|a, b) t), Delta(i, j|a, b)^2) \
             &+ sum_((a,b): Delta(k, l|a, b) != 0) frac(1 + i Delta(k, l|a, b) t - e^(i Delta(k, l|a, b) t), Delta(k, l|a, b)^2) + frac(t^2, 2)(eta(i, j) + eta(k, l)) ) ket(i\,j)bra(k\,l) \
         & +delta_(i,k) delta_(j,l) frac(2 e^(i Delta(i, j|k, l)t), dim+1) ( sum_((a,b): Delta(i, j|a, b) != 0 ) frac(2(1- cos (Delta(i, j|a, b)t)), Delta(i, j|a, b)^2) ket(a\,b)bra(a\,b) + t^2 sum_((a,b) : Delta(i, j|a, b) = 0) ket(a\,b)bra(a\,b))
     $ <eq_second_order_output>
+    #set math.equation(number-align: bottom)
 
     The last step we need is to use the half angle formula to change the cosine to a sine
     $
-        frac(2(1 - cos(Delta(i, j| a, b)t)), Delta(i, j|a, b)^2) &= frac(2(1 - (1 - 2 sin^2(frac(Delta(i, j|a, b)t, 2)))), Delta(i, j|a, b)^2) \
-        &= t^2 frac(sin^2 (frac(Delta(i, j|a, b) t, 2)), frac(Delta(i, j|a, b)^2 t^2, 4)) \
-        &= t^2 sinc^2 (frac(Delta(i, j|a, b) t, 2)),
+        frac(2(1 - cos(Delta(i, j| a, b)t)), Delta(i, j|a, b)^2) = frac(2(1 - (1 - 2 sin^2(frac(Delta(i, j|a, b)t, 2)))), Delta(i, j|a, b)^2) = t^2 sinc^2 (frac(Delta(i, j|a, b) t, 2)), "     "
     $ <eq_trig_end>
     which yields the statement.
 
     We can compute these by plugging in to Eq. @eq_el_gigante again, which yields
     $
-        &integral bra(i'\, j') cal(T) ( ket(i\, j)bra(i\, j) ) ket(i'\, j') " " d G = cases(
+        &EE_G [ bra(i'\, j') cal(T) ( ket(i\, j)bra(i\, j) ) ket(i'\, j') ] = cases(
             tilde(alpha)^2 sinc^2(Delta(i, j | i', j') t / 2) & (i, j) != (i', j') \
             -tilde(alpha)^2 sum_((a,b) != (i, j)) sinc^2(Delta(a, b|i, j) t / 2) & (i,j) = (i', j')
-        ).
+        ). "  "
     $ <eq_system_environment_transitions>
 
     The $(i, j) != (i', j')$ case should be apparent, the first term with the coherence factors $chi$ are zero and the second term is what remains. The $(i,j) = (i', j')$ case can be seen as follows. For the first term we have
@@ -442,7 +475,7 @@ In this section we present the more technical work needed to state our results i
     $
     where the last step follows from a trigonometric identity (see @eq_trig_end in @sec_appendix_haar for details). Since $sinc(0) = 1$ the $eta(i, j)$ term can be expressed as $eta(i, j) = sum_(a,b : Delta(i, j|a, b) = 0) sinc^2 ( frac(Delta(i, j| a, b) t, 2) )$. Plugging this into Eq. @eq_el_gigante gives
     $
-        &integral bra(i\,j) cal(T) (ket(i\,j)bra(i\,j)) ket(i\,j) d G \
+        &EE_G [ bra(i\,j) cal(T) (ket(i\,j)bra(i\,j)) ket(i\,j) ] \
         &= bra(i\,j) (-frac(alpha^2 t^2, dim + 1) sum_(a,b) sinc^2 ( frac(Delta(i, j| a, b) t, 2) ) ket(i\,j)bra(i\,j) + sum_(a,b) sinc^2( frac(Delta(i, j | a, b)t, 2) ) ket(a\,b)bra(a\,b) ) ket(i\,j) \
         &= -frac(alpha^2 t^2, dim + 1) sum_((a,b) != (i,j)) sinc^2 ( frac(Delta(i, j| a, b) t, 2) ).
     $

@@ -1,4 +1,4 @@
-#import "macros.typ": *
+
 #import "conf.typ": *
 
 #heading("Introduction", level: 1, supplement: "Chapter") <ch:intro>
