@@ -114,7 +114,7 @@ The absolute last thing I would need is that $EE_Z |lambda_k (Z)|^3 = 1$, which 
     $
     Since our eigenvalues, $D_(i i)$, are mean zero ($EE_D D = 0$) we can compute $bb(E)_G [G]$ and arrive at the lemma statement
     $
-        EE_G [G] = EE_"haar" EE_D [U_"haar" D U_"haar"^dagger] = EE_"haar" [U_"haar" EE_D [D] U_"haar"^dagger] = 0.
+        EE_G [G] = EE_"haar" EE_D [U_G D U_G^dagger] = EE_"haar" [U_G EE_D [D] U_G^dagger] = 0.
     $
 ]
 
@@ -155,7 +155,8 @@ this is the second to last one
 #lemma()[
     Given two Heisenberg evolved random interactions $G(x)$ and $G(y)$ we can compute their action on the outer product $ketbra(i\, j, k\, l)$ as
     $
-        integral G(x) ketbra(i\, j, k\, l) G(y) d G = 1 / (dim + 1) (ketbra(i\, j, k\, l) + braket(i\, j, k\, l) sum_(m,n) e^(Delta (m,n | i,j) (x - y)) ketbra(m\, n, m\, n)).
+        &integral G(x) ketbra(i\, j, k\, l) G(y) d G \
+        &= 1 / (dim + 1) (ketbra(i\, j, k\, l) + braket(i\, j, k\, l) sum_(m,n) e^(Delta (m,n | i,j) (x - y)) ketbra(m\, n, m\, n)).
     $
 ]
 #proof()[
@@ -206,7 +207,7 @@ $
 Actually the above only holds for $j != k$, for $j = k$ then it is just 1.
 Now to show the $Z$ expectation. For this let $w(k)$ denote the Hamming weight of the computational state $k$. No we actually need the agreement between the bitstring $k$ and the bitstring $z$, which has a 0 if the sampled value for $Z$ at that site is $I$ and a 1 if the sampled value is $Z$. AKA $Z = Z_1^(z_1) tp Z_2^(z_2) tp ... tp Z_n^(z_n)$, where each $z_i$ is a Bernoulli random variable.
 
-Wait, why not just use $G ~ U_"haar" Z U_"haar"^dagger$?
+Wait, why not just use $G ~ U_G Z U_G^dagger$?
 
 
 = Haar Integrals <sec_tsp_appendix>
@@ -479,7 +480,7 @@ In this section we present the more technical work needed to state our results i
         &= bra(i\,j) (-frac(alpha^2 t^2, dim + 1) sum_(a,b) sinc^2 ( frac(Delta(i, j| a, b) t, 2) ) ket(i\,j)bra(i\,j) + sum_(a,b) sinc^2( frac(Delta(i, j | a, b)t, 2) ) ket(a\,b)bra(a\,b) ) ket(i\,j) \
         &= -frac(alpha^2 t^2, dim + 1) sum_((a,b) != (i,j)) sinc^2 ( frac(Delta(i, j| a, b) t, 2) ).
     $
-    As a by-product of this computation we have just shown that $tr(cal(T)(rho)) = 0$ and that our mapping is trace preserving to $O(alpha^2)$.
+    As a by-product of this computation we have also shown that $tr(cal(T)(rho)) = 0$ and that our mapping is trace preserving to $O(alpha^2)$.
 
 ]
 
@@ -523,12 +524,32 @@ In this section we present the more technical work needed to state our results i
     $
     which holds for all inputs $rho$.
 
-    Our last remaining problem is to compute the expected norm of $G$. Using the decomposition of our interaction $G = U_"haar" D U_"haar"^dagger$ to get
+    Our last remaining problem is to compute the expected norm of $G$. Using the decomposition of our interaction $G = U_G Lambda_G U_G^dagger$ to get
     $
-        EE_G norm(G)_1^3 = EE_D EE_"haar" norm(U_"haar" D U_"haar"^dagger)_1^3 = 2 dim_S integral_(-oo)^(+oo) abs(e^(-x^2 / 2))^3 1 / sqrt(2 pi) d x ,
+        EE_G norm(G)_1^3 = EE_(Lambda_G) EE_(U_G) norm(U_G Lambda_G U_G^dagger)_1^3 = EE_(Lambda_G) norm(Lambda_G)_1^3 = EE_(Lambda_G) sum_(i = 1)^(dim) abs(Lambda_G (i))^3 = dim ,
     $
-    where $x$ is a normal Gaussian random variable. This last integral evaluates to $2 sqrt(2 / pi)$ and gives the final inequality
+    Since $Lambda_G$ is just $plus.minus 1$ times a Pauli $Z$ string each eigenvalue has norm 1. This gives the final inequality
     $
-        norm(R_Phi)_1 <= 16 sqrt(2 / pi) dim_S (alpha t)^3.
+        norm(R_Phi)_1 <= 4 dim (alpha t)^3.
     $
 ]
+
+= Scratch
+
+== Template Thermal State Prep Proof
+I'm thinking of including a "template" theorem that can be used to simplify the 4 proofs contained in the following section. Let $rho_"fix"$ denote the unique fixed point for a channel $EE_gamma [id + cal(T)_"on"^((gamma))]$ and $tilde(lambda_star)$ the spectral gap of the scaled transition matrix, so $tilde(alpha)^2 tilde(lambda_star) = lambda_star$. Then we have
+$
+    norm(rho_"fix" - (EE_gamma Phi_gamma)^(compose L) (rho))_1 &<= norm(rho_"fix" - (id + EE_gamma cal(T)_"on"^((gamma)))^(compose L))_1 + L norm(EE_gamma cal(T)_"off"^((gamma)) + R_Phi)_1 \
+    &<= norm(rho_"fix" - (id + EE_gamma cal(T)_"on"^((gamma)))^(compose L))_1 + L (norm(EE_gamma cal(T)_"off"^((gamma)))_1 + norm(R_Phi)_1) \
+    &<= norm(rho_"fix" - (id + EE_gamma cal(T)_"on"^((gamma)))^(compose L))_1 + L ((8 alpha^2) / delta_min^2 + (16 sqrt(2)) / sqrt(pi) dim_S (alpha t)^3).
+$
+So now in order to balance these terms we can set $alpha = 1\/(dim_S delta_min^2 t^3 )$ and the expression on the right becomes $L alpha^2 / delta_min^2 (8 + 16 sqrt(2 / pi)).$ Now using Jerison's theorem we can argue that
+$
+    L >= dim^2 / (alpha^2 t^2 tilde(lambda_star)) J
+$
+is sufficient to guarantee that the distance to the fixed point is $tilde(O)(epsilon)$.
+Now we note that the right hand side forces us to require $L alpha^2 / delta_min^2 in tilde(O)(epsilon)$ holds only if
+$
+    (dim^2) / (delta_min^2 t^2 tilde(lambda_star) ) in tilde(O)(epsilon)
+$
+can be satisfied if $t = dim / (delta_min sqrt(epsilon tilde(lambda_star)))$. and then we are done.

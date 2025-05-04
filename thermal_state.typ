@@ -62,24 +62,22 @@ Note that nothing in this definition prevents one of the summands, say $Delta_S 
 Currently our dynamics involved a system separated from the environment, so we need to fix this by adding an interaction term $G : hilb_S := hilb_E -> hilb_S tp hilb_E$. We will choose $G$ randomly via the eigendecomposition
 
 $
-    G = U_("haar") D U_("haar")^dagger, U_("haar") tilde "Haar"(hilb_S tp hilb_E) text(" and ") D_(i i) tilde cal(N)(0,1),
+    G = U_(G) Lambda_G U_(G)^dagger, U_(G) tilde "Haar"(hilb_S tp hilb_E) text(" and ") Lambda_G = (-1)^(z_0) Z_1^(z_1) tp ... tp Z_n^(z_n),
 $ <eq_interaction_def>
-
-where the eigenvectors are Haar distributed and the eigenvalues I.I.D. normal Gaussian variables. We then add this random interaction term to our system-environment dynamics with a coupling constant $alpha$, yielding a total dynamics governed by $H_S + H_E + alpha G$. We define the following rescaled coupling constant
+where the coefficients $z_i$ are sampled I.I.D via the distribution $"Pr"[z_i = 0] = "Pr"[z_i = 1] = 1 / 2$. We then add this random interaction term to our system-environment dynamics with a coupling constant $alpha$, yielding a total dynamics governed by $H_S + H_E + alpha G$. We define the following rescaled coupling constant
 
 $ tilde(alpha) := frac(alpha t, sqrt(dim + 1)), $ <eq_a_tilde_def>
 
 where the $dim$ is the total Hilbert space $hilb$ dimension. The rescaling with respect to $dim$ is to capture the factors of $1 / (dim + 1)$ in the transition amplitudes that appear later and leads to much more compact expressions.
 This gives a decomposition of expectation values over $G$ into two parts
+$
+    EE_G f(G) = EE_(U_G) EE_(Lambda_G) f(G) = EE_(Lambda_G) EE_(U_G) f(G).
+$
 
-$ EE_G f(G) = EE_("haar") EE_(D) f(G), $
-
-where the two expectations on the right commute with each other $bb(E)_("haar") bb(E)_(D) = bb(E)_(D) bb(E)_("haar")$.
-
-We will use this interaction term to couple our system to an environment prepared in the thermal state $rho_E(beta) = e^(-beta H_E) / partfun_E(beta)$, where $partfun_E(beta) = tr(e^(-beta H_E))$, and then trace out the environment. This gives the definition of our thermalizing channel $Phi : cal(L)(hilb_S) -> cal(L)(hilb_S)$ as
+#h(5mm) We will use this interaction term to couple our system to an environment prepared in the thermal state $rho_E (beta) = e^(-beta H_E) / partfun_E (beta)$, where $partfun_E (beta) = tr(e^(-beta H_E))$, and then trace out the environment. This gives the definition of our thermalizing channel $Phi : cal(L)(hilb_S) -> cal(L)(hilb_S)$ as
 
 $
-    Phi(rho \; alpha, beta, t) := tr_(hilb_E) bb(E)_(G) lr([ e^(+i(H + alpha G)t) rho tp rho_E(beta) e^(-i(H + alpha G) t)]) .
+    Phi(rho \; alpha, beta, t) := tr_(hilb_E) bb(E)_(G) lr([ e^(+i(H + alpha G)t) rho tp rho_E (beta) e^(-i(H + alpha G) t)]) .
 $ <eq:PhiDef>
 
 We will typically drop the implicit parameters of $alpha, beta$ and $t$. Our goal is to show how this channel can be used to prepare the system in the thermal state $rho(beta) = frac(e^(-beta H_S), partfun(beta))$. It will be useful to introduce a fixed-interaction channel $Phi_G : cal(L)(hilb_S tp hilb_E) -> cal(L)(hilb_S tp hilb_E)$ over the total Hilbert space $hilb$ as
@@ -88,8 +86,14 @@ $
     Phi_G (rho tp rho_E; alpha, t) := e^(+i(H + alpha t)) rho tp rho_E e^(- i(H + alpha G)t),
 $ <eq_phi_g_definition>
 
-giving us $Phi (rho\; alpha, beta, t) = tr_(hilb_E) bb(E)_G Phi_G (rho tp rho_E(beta); alpha, t)$. Another alternative notation for $Phi$ that we will use is whenever $hilb_E$ is a single qubit with energy gap $gamma$ we will use $Phi_gamma$ to draw attention to this specific energy gap. We will also make frequent use of indicator functions, denoted $bold(I)[P]$, which is 1 if the predicate $P$ is true and 0 if $P$ is false.
+giving us $Phi (rho\; alpha, beta, t) = tr_(hilb_E) bb(E)_G Phi_G (rho tp rho_E (beta); alpha, t)$. Another alternative notation for $Phi$ that we will use is whenever $hilb_E$ is a single qubit with energy gap $gamma$ we will use $Phi_gamma$ to draw attention to this specific energy gap. We will also make frequent use of indicator functions, denoted $II[P]$, which is 1 if the predicate $P$ is true and 0 if $P$ is false.
 
+=== Implementation
+In this section we discuss how to implement the channel $Phi$. First, to prepare the environment thermal state we simply start in the ground state $ketbra(0, 0)$ and then with probability $q1$ we apply an $X$ gate. Next we need to perform the time evolution $e^(i (H +alpha G)t) rho e^(-i(H + alpha G )t)$. For this we will essentially perform a Composite channel, with $H$ being simulated with Trotter and $G$ with QDrift with the number of samples $N_B$ set to 1. Let $cal(U)_H (t)$
+denote the time evolution channel by $H$ for time $t$ and $cal(U)_G (t)$ the same for $G$. The composite theorem tells us
+$
+    norm(cal(U) (t) - cal(U)_(G)(t) compose cal(U)_(H)(t))_dmd <=
+$
 === First and Second Order Expansion <sec_tsp_expansion_series>
 
 In order to understand our thermalizing channel $Phi$ we will compute a Taylor Series for the output of the channel with respect to the coupling constant $alpha$. We will perform the $alpha$ expansion about $alpha = 0$ and we will use the mean value form of the remainder, in which we are guaranteed a special value $alpha_(star) in (0, infinity)$ such that the final derivative evaluated at $alpha_(star)$ is the exact amount needed. We use a second-order expansion and will need to explicitly compute terms up to order $alpha^2$, which will give the following expansion
@@ -138,11 +142,11 @@ We then see that if $[ rho, H] = 0$ then $Phi (rho; 0) = id (rho)$, and as we re
 
 #h(5mm) Now we move on to the $O(alpha^2)$ term in the weak-coupling expansion of $Phi$. We first will compute the combined system-environment output of a generic system-environment basis state and we note that this result holds for an arbitrary dimension environment. We will use this to draw two results: the first being for a single qubit environment the transition amplitudes of just the system can be split into on-resonance and off-resonance terms based on the tuning of the environment qubit Hamiltonian. The second result is that coherences are not introduced to the state at this order of $Phi$, meaning if an input density matrix $rho$ is diagonal then $(id + cal(T))(rho)$ will also be diagonal. This will be crucial for our later understanding of the channel as a Markov chain.
 #lemma()[
-    Given a system Hamiltonian $H_S$, an environment Hamiltonian $H_E$, a simulation time $t$, and coupling coefficient $alpha$, let $Phi_G$ denote the time evolution channel under a fixed interaction term $G$ as given in @eq_phi_g_definition, let $chi$ denote the following coherence prefactor
+    Given a system Hamiltonian $H_S$, an environment Hamiltonian $H_E$, a simulation time $t$, and coupling coefficient $alpha$, let $Phi_G$ denote the time evolution channel under a fixed interaction term $G$, let $chi$ denote the following coherence prefactor
     $
         chi(i, j) := sum_(a,b: Delta (i,j,|a,b) != 0) (1 - i Delta (i,j|a,b)t - e^(-i Delta (i,j|a,b) t)) / (Delta (i,j|a,b)^2),
     $
-    and let $eta(i, j)$ denote the degeneracy of the $(i,j)^"th"$ eigenvalue of $H = H_S + H_E$. Then the $O(alpha^2)$ term of $Phi_G$ in a weak-coupling expansion is given by
+    and let $eta(i, j)$ denote the degeneracy of the $(i,j)^"th"$ eigenvalue of $H = H_S + H_E$. Then the $O(alpha^2)$ term of $EE_G Phi_G$, where $G$ is any random interaction with Haar random eigenvectors and random eigenvalues such that $EE_G [G] =0$ and the eigenvalues satisfy $EE_G [lambda_G (i) lambda_G (j)] = delta_(i,j)$, in a weak-coupling expansion is given by
     $
         &alpha^2 / 2 EE_G [diff^2 / (diff alpha^2) Phi_G (ketbra(i \,j, k \,l))|_(alpha = 0) ] \
         =& - (alpha^2 e^(i Delta (i,j|k,l) t)) / (dim + 1) (chi(i, j) + chi(k, l)^* + t^2 / 2 (eta(i, j) + eta(k, l)) )ketbra(i\,j, k\,l) \
@@ -268,17 +272,17 @@ Specifically, the Markov chain is dictated by the $Phi (rho; 0)$ and $cal(T)_"on
 #lemma([Quantum Dynamics to Classical Markov Chain])[
     Let $T$ be the matrix defined by
     $
-        e_i^tpose T e_j := bra(i) cal(T)_"on" (ketbra(j, j)) ket(i).
+        arrow(e)_i^tpose T arrow(e)_j := bra(i) cal(T)_"on" (ketbra(j, j)) ket(i).
     $
     The matrix $I + T$ is a column stochastic matrix and models the Markovian dynamics of our thermalizing channel up to $O(alpha^2 t^2)$,
     $
-        bra(j) (id + cal(T)_"on")^(compose L) (ketbra(i, i)) ket(j) = e_j^tpose (I + T)^L e_i.
+        bra(j) (id + cal(T)_"on")^(compose L) (ketbra(i, i)) ket(j) = arrow(e)_j^tpose (I + T)^L arrow(e)_i.
     $
     By linearity of $id + cal(T)_"on"$ this identity extends to any diagonal density matrix input $rho = sum_i p(i) ketbra(i, i)$.
 ] <lem_tsp_quantum_to_classical>
 #proof()[We prove this inductively on $L$. The base case of $L = 1$ is trivial from the defintion of $T$
     $
-        bra(j) (id + cal(T)_("on"))(ketbra(i, i)) ket(j) = delta_(i,j) + bra(j) cal(T)_("on")(ketbra(i, i)) ket(j) = e_j^tpose (I + T) e_i.
+        bra(j) (id + cal(T)_("on"))(ketbra(i, i)) ket(j) = delta_(i,j) + bra(j) cal(T)_("on")(ketbra(i, i)) ket(j) = arrow(e)_j^tpose (I + T) arrow(e)_i.
     $
 
     For the inductive step we will rely on the fact that there are no off-diagonal elements for diagonal inputs.
@@ -298,22 +302,22 @@ Specifically, the Markov chain is dictated by the $Phi (rho; 0)$ and $cal(T)_"on
     This argument points the way towards how we will prove the inductive step in our stochastic conversion, starting with
     $
         bra(j) (identity + cal(T)_(on))^(compose L)(ketbra(i, i)) ket(j) &= bra(j) ( (identity + cal(T)_(on))^(compose L - 1) (ketbra(i, i)) + cal(T)_(on) compose (identity + cal(T)_(on))^(compose L - 1) (ketbra(i, i)) ) ket(j) \
-        &= e_j^tpose (identity + T)^(L - 1) e_i + bra(j) cal(T)_(on) compose (identity + cal(T)_(on))^(compose L - 1) (ketbra(i, i)) ket(j).
+        &= arrow(e)_j^tpose (identity + T)^(L - 1) arrow(e)_i + bra(j) cal(T)_(on) compose (identity + cal(T)_(on))^(compose L - 1) (ketbra(i, i)) ket(j).
     $<eq_tsp_matrix_reloaded1>
 
     We can use the inductive hypothesis on the term on the left and we now have to break down the $cal(T)_(on)$ term.
     $
         bra(j) cal(T)_(on) compose (identity + cal(T)_on)^(compose L - 1) (ketbra(i, i)) ket(j) &= sum_(m, n) bra(j) cal(T)_(on) ( ketbra(m, m) (identity + cal(T)_(on))^(compose L - 1) (ketbra(i, i)) ketbra(n, n) ) ket(j) \
-        &= sum_(m) bra(j) cal(T)_(on) ( ketbra(m, m) ) ket(j) e_m^tpose (I + T)^(L - 1) e_i \
-        &= sum_m e_j^tpose T e_m e_m^tpose (I + T)^(L -1) e_i \
-        &= e_j^tpose T(I + T)^(L-1) e_i.
+        &= sum_(m) bra(j) cal(T)_(on) ( ketbra(m, m) ) ket(j) arrow(e)_m^tpose (I + T)^(L - 1) arrow(e)_i \
+        &= sum_m arrow(e)_j^tpose T arrow(e)_m arrow(e)_m^tpose (I + T)^(L -1) arrow(e)_i \
+        &= arrow(e)_j^tpose T(I + T)^(L-1) arrow(e)_i.
     $
 
     Substituting this into @eq_tsp_matrix_reloaded1 yields
-    $ bra(j) (identity + cal(T)_(on))^(compose L)(ketbra(i, i)) ket(j) = e_j^tpose (I + T)^(L) e_i. $
+    $ bra(j) (identity + cal(T)_(on))^(compose L)(ketbra(i, i)) ket(j) = arrow(e)_j^tpose (I + T)^(L) arrow(e)_i. $
 
     Our final step in the proof is to show that $I + T$ is column-stochastic. This is straightforward from our definition of $T$
-    $ sum_i e_i^tpose (I + T) e_j = 1 + sum_i bra(i) cal(T)_(on)(ketbra(j, j)) ket(i). $
+    $ sum_i arrow(e)_i^tpose (I + T) arrow(e)_j = 1 + sum_i bra(i) cal(T)_(on)(ketbra(j, j)) ket(i). $
 
     Now we use the fact that $bra(j) cal(T)_(on)(ketbra(j, j)) ket(j) = - sum_(i != j) bra(i) cal(T)_(on)(ketbra(j, j)) ket(i)$ from @eq_same_state_transition_resonances to conclude that $I + T$ is column stochastic.
 ]
@@ -409,27 +413,10 @@ Since we will be effectively reducing our quantum dynamics to classical dynamics
     of the quantum channel $Phi$ acting on an input state $rho$ about $alpha=0$ defined in @eq_tsp_phi_taylor_series
     where the Schätten 1-norm of the remainder operator is bounded by
     $
-        norm(R_(Phi) (rho ; alpha))_1 <= (16 sqrt(2)) / (sqrt(pi)) dim_S (alpha t)^3.
+        norm(R_(Phi) (rho ; alpha))_1 <= 4 dim (alpha t)^3.
     $
 ]<thm_remainder_bound>
 The proof of the remainder bound follows from the triangle inequality and remainder bounds on Taylor series and is given in @sec_appendix_haar.
-
-I'm thinking of including a "template" theorem that can be used to simplify the 4 proofs contained in the following section. Let $rho_"fix"$ denote the unique fixed point for a channel $EE_gamma [id + cal(T)_"on"^((gamma))]$ and $tilde(lambda_star)$ the spectral gap of the scaled transition matrix, so $tilde(alpha)^2 tilde(lambda_star) = lambda_star$. Then we have
-$
-    norm(rho_"fix" - (EE_gamma Phi_gamma)^(compose L) (rho))_1 &<= norm(rho_"fix" - (id + EE_gamma cal(T)_"on"^((gamma)))^(compose L))_1 + L norm(EE_gamma cal(T)_"off"^((gamma)) + R_Phi)_1 \
-    &<= norm(rho_"fix" - (id + EE_gamma cal(T)_"on"^((gamma)))^(compose L))_1 + L (norm(EE_gamma cal(T)_"off"^((gamma)))_1 + norm(R_Phi)_1) \
-    &<= norm(rho_"fix" - (id + EE_gamma cal(T)_"on"^((gamma)))^(compose L))_1 + L ((8 alpha^2) / delta_min^2 + (16 sqrt(2)) / sqrt(pi) dim_S (alpha t)^3).
-$
-So now in order to balance these terms we can set $alpha = 1\/(dim_S delta_min^2 t^3 )$ and the expression on the right becomes $L alpha^2 / delta_min^2 (8 + 16 sqrt(2 / pi)).$ Now using Jerison's theorem we can argue that
-$
-    L >= dim^2 / (alpha^2 t^2 tilde(lambda_star)) J
-$
-is sufficient to guarantee that the distance to the fixed point is $tilde(O)(epsilon)$.
-Now we note that the right hand side forces us to require $L alpha^2 / delta_min^2 in tilde(O)(epsilon)$ holds only if
-$
-    (dim^2) / (delta_min^2 t^2 tilde(lambda_star) ) in tilde(O)(epsilon)
-$
-can be satisfied if $t = dim / (delta_min sqrt(epsilon tilde(lambda_star)))$. and then we are done.
 
 == Single Qubit and Truncated Harmonic Oscillator <sec_tsp_oscillator>
 
@@ -1020,7 +1007,7 @@ Our work extends these procedures to quantum algorithms. For Hamiltonian Monte C
 
 One benefit of our thermalization procedure is that it can be compiled all the way down to the circuit level with minimal overhead in complexity. The elements of the channel that need to be compiled are: the ancilla qubit state preparation, the initial state preparation for the system, the time evolution of $H + alpha G$, and the partial trace. The ancilla state preparation can be done starting from the ground state with a Pauli-$X$ rotation. The initial system state can be any state that commutes with $H_S$, the two leading choices are the maximally mixed state or a Haar random pure state. The maximally mixed state can be prepared using just CNOT gates at a cost of higher qubit count and a Haar random pure state can be prepared with no additional qubit overhead by applying a deep enough random circuit @choi2023preparing.
 
-The time evolution of $H + alpha G$ can be broken down into simulation of $H_S$ and then $alpha G$ by one application of Trotter. The simulation of $H_S$ can be implemented in two different ways depending on the access model for the system Hamiltonian $H_S$. If $H_S$ is provided as a block-encoding then there exist optimal simulation techniques that add only a single extra ancilla qubit @low2019hamiltonian. If $H_S$ is provided as a sum of $k$-local Pauli strings or as a sparse matrix then product formula techniques can be used @childs2021theory at zero extra overhead in ancilla qubits. To simulate the time evolution of $alpha G$ we can use the following breakdown $e^(i alpha G t) = e^(i alpha U_("haar") D U_("haar")^dagger t) = U_("haar") e^(i alpha D t)U_("haar")^dagger$. This unitary can be implemented with a 2-design to approximate the $U_("haar")$, this is due to the fact that we only expand the channel to second order in $alpha$. Random Clifford circuits \cite{webb2015clifford} are sufficient for this purpose. To simulate $e^(i alpha D t)$ random $Z$ rotations and controlled-$Z$ rotations should be sufficient, as we only ever rely on the eigenvalues being pairwise independent in our analysis. In the worst case the number of random gates in the $Z$ basis that would need to be applied would scale with the dimension of the system, adding an overall factor of $dim_S$ to the preparation. In the product formula case we further remark that $H + alpha G$ could be simulated in total with a composite technique of using Trotter for $H$ and randomized compilation for $alpha G$ @hagan2023composite.
+The time evolution of $H + alpha G$ can be broken down into simulation of $H_S$ and then $alpha G$ by one application of Trotter. The simulation of $H_S$ can be implemented in two different ways depending on the access model for the system Hamiltonian $H_S$. If $H_S$ is provided as a block-encoding then there exist optimal simulation techniques that add only a single extra ancilla qubit @low2019hamiltonian. If $H_S$ is provided as a sum of $k$-local Pauli strings or as a sparse matrix then product formula techniques can be used @childs2021theory at zero extra overhead in ancilla qubits. To simulate the time evolution of $alpha G$ we can use the following breakdown $e^(i alpha G t) = e^(i alpha U_(G) D U_(G)^dagger t) = U_(G) e^(i alpha D t)U_(G)^dagger$. This unitary can be implemented with a 2-design to approximate the $U_(G)$, this is due to the fact that we only expand the channel to second order in $alpha$. Random Clifford circuits \cite{webb2015clifford} are sufficient for this purpose. To simulate $e^(i alpha D t)$ random $Z$ rotations and controlled-$Z$ rotations should be sufficient, as we only ever rely on the eigenvalues being pairwise independent in our analysis. In the worst case the number of random gates in the $Z$ basis that would need to be applied would scale with the dimension of the system, adding an overall factor of $dim_S$ to the preparation. In the product formula case we further remark that $H + alpha G$ could be simulated in total with a composite technique of using Trotter for $H$ and randomized compilation for $alpha G$ @hagan2023composite.
 
 In classical Hamiltonian Monte Carlo it is well known that sharp gradients in the Hamiltonian require longer simulation time and more samples to converge. Our quantum routine has a much more subtle dependence on the structure of the Hamiltonian. As our single ancilla qubit only has one energy difference $gamma$, we have to tune this energy difference to allow for energy to be siphoned off from the system into the ancilla. This would present a conundrum, as knowing spectral gaps is as difficult or harder than preparing ground states of arbitrary quantum Hamiltonians, but we are able to prove that our routine is robust to complete ignorance of these differences. We show that this ignorance comes at an asymptotic cost in the amount of resources needed to prepare the thermal state. We numerically verify that knowledge of the eigenvalue differences can be used to speed up the total simulation time, as demonstrated in @fig_h_chain_error. We posit that this behavior serves as a crucial entry point for heuristics about Hamiltonian spectra into thermal state preparation algorithms. No prior thermal state preparation routines have had such an explicit demonstration of the utility of such knowledge. It was our hope to analytically quantify the speedups gained as a function of the relative entropy between a heuristic guess for the eigenvalue differences and the true spectra, but our numeric evidence will have to suffice until future work can clarify this dependence.
 
