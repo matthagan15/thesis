@@ -89,11 +89,45 @@ $ <eq_phi_g_definition>
 giving us $Phi (rho\; alpha, beta, t) = tr_(hilb_E) bb(E)_G Phi_G (rho tp rho_E (beta); alpha, t)$. Another alternative notation for $Phi$ that we will use is whenever $hilb_E$ is a single qubit with energy gap $gamma$ we will use $Phi_gamma$ to draw attention to this specific energy gap. We will also make frequent use of indicator functions, denoted $II[P]$, which is 1 if the predicate $P$ is true and 0 if $P$ is false.
 
 === Implementation
-In this section we discuss how to implement the channel $Phi$. First, to prepare the environment thermal state we simply start in the ground state $ketbra(0, 0)$ and then with probability $q1$ we apply an $X$ gate. Next we need to perform the time evolution $e^(i (H +alpha G)t) rho e^(-i(H + alpha G )t)$. For this we will essentially perform a Composite channel, with $H$ being simulated with Trotter and $G$ with QDrift with the number of samples $N_B$ set to 1. Let $cal(U)_H (t)$
-denote the time evolution channel by $H$ for time $t$ and $cal(U)_G (t)$ the same for $G$. The composite theorem tells us
+In this section we discuss how to implement the channel $Phi$ for a fixed value of $gamma$. First, to prepare the environment thermal state we simply start in the ground state $ketbra(0, 0)$ and then with probability $q1$ we apply an $X$ gate. This gives the mixed state $(1 - q1) ketbra(0, 0) + q1 ketbra(1, 1) = rho_E (beta; gamma)$. Next we need to perform the time evolution $e^(i (H +alpha G)t) rho e^(-i(H + alpha G )t)$. For this we will essentially perform a Composite channel, with $H$ being simulated with Trotter and $G$ with QDrift with the number of samples $N_B$ set to 1. Let $cal(U)_H (t)$
+denote the time evolution channel by $H$ for time $t$ and $cal(U)_G (t)$ the same for $G$.
+We are going to implement the channel
 $
-    norm(cal(U) (t) - cal(U)_(G)(t) compose cal(U)_(H)(t))_dmd <=
+    tilde(Phi)(t) := EE_G cal(U)_G (t) compose cal(U)_H (t).
 $
+Our goal is to show that this can be repeated
+$
+    norm(Phi^(compose L)(t) - tilde(Phi)^(compose r L)(t / r))_dmd <= epsilon.
+$
+First we can do the following:
+$
+    norm(Phi^(compose L) (t) - tilde(Phi)^(compose r L) (t / r))_dmd <= L norm(Phi (t) - tilde(Phi)^(compose r ) (t / r))_dmd,
+$
+so we prove $norm(Phi (t) - tilde(Phi)^(compose r ) (t / r))_dmd <= epsilon \/ L$. But this actually doesn't really make sense because we can't really time slice over the expectation value. So how do we prove this?
+
+Since our goal is only to provide an implementation of the thermalizing channel and we are not concerned with minimizing the asymptotic scaling we will use the simpler first-order composite channel given in @lem:composite_error_first_order
+$
+    norm(cal(U) (t) - cal(U)_(G)(t) compose cal(U)_(H)(t))_dmd <= t^2 (sum_(i,j) h_i h_j norm([H_i, H_j]) + sum_(i, k) h_i g_k norm([H_i, G_k]) + 4 norm(g)^2 / N_B).
+$
+
+Now for our interaction we note that it is sufficient to sample a Clifford gate $C$ for $G$ as opposed to a Haar random unitary. This is because all of our results hold for $U_G$ being a $"Haar"(n + 1)$ 2-design. As the Cliffords are a finite subgroup of the unitaries we can enumerate them $C_i$, let $|C|$ denote the number of Clifford gates on $n + 1$ qubits, which is $2^(O(n^2))$. For the eigenvalues $Lambda_G$ we have $2^(n + 2)$ possible choices. Enumerate all of these via an index $k$. The spectral norm of a given interaction $G_k$ is 1 as the eigenvalues $Lambda_(G_k)$ are all $plus.minus 1$, which implies the spectral norm of $alpha G_k$ is $alpha$. This gives the norm $norm(g)$ as $sum_k norm(g_k) = 2^(O(n^2)) alpha$.
+
+We further will ignore the commutator structure between the Hamiltonian and the interaction and upper bound
+$
+    sum_(i,k) h_i g_k norm([H_i, G_k]) <= norm(h) norm(g).
+$
+
+First let's do an outer loop
+$
+    EE_G e^(i (H + alpha G)t) rho e^(-i (H + alpha G)t) &= EE_G [ e^(i alpha G t) e^(i H t) rho e^(-i H t) e^(-i alpha G t) + E_(H, alpha G) ] \
+    &= EE_G cal(U)_G compose cal(U)_H (rho) + EE_G E_(H, alpha G)
+$
+Using the triangle inequality allows us to write
+$
+    norm(EE_G E_(H, alpha G)) &<= EE_G norm(E_(H,alpha G)) <= EE_G alpha t^2 / 2 norm([H, G]) <= alpha norm(h) t^2,
+$
+because $norm(G) = 1$ for all $G$ and we can upper bound the commutator $norm([H, G]) <= 2 norm(H) norm(G)$.
+
 === First and Second Order Expansion <sec_tsp_expansion_series>
 
 In order to understand our thermalizing channel $Phi$ we will compute a Taylor Series for the output of the channel with respect to the coupling constant $alpha$. We will perform the $alpha$ expansion about $alpha = 0$ and we will use the mean value form of the remainder, in which we are guaranteed a special value $alpha_(star) in (0, infinity)$ such that the final derivative evaluated at $alpha_(star)$ is the exact amount needed. We use a second-order expansion and will need to explicitly compute terms up to order $alpha^2$, which will give the following expansion
@@ -267,7 +301,7 @@ We will now use these definitions to prove @thm_tsp_second_order_expansion.
 Now that we have fully computed the significant contributors to the output of our channel $Phi$, we move on to characterize the behavior of the channel as a Markov chain with noise.
 A Markov chain is a random process that involves a walker transitioning to vertices on a graph wherein the probability of transition does not depend on the history of the walker. Specifically, in this context we view the vertices in this graph as the eigenstates of the Hamiltonian. The repeated interaction model because of the lack of coherences in the weak coupling limit can be interpreted as a Markov process over these eigenstates with transitions probabilities given by the above analysis.
 
-Specifically, the Markov chain is dictated by the $Phi (rho; 0)$ and $cal(T)_"on"$ terms in the weak-coupling expansion, for $[rho, H_S] = 0$ we showed that $Phi (rho; 0) = id (\ho)$, so from now on we will specifically only deal with such density matrices and characterize the zeroth order term as an identity map. As for the Markov chain, we will use normal font to denote matrices, such as $I$ for the identity matrix and $T$ for the transition term added on. We use $e_i$ to denote the basis vector associated with the quantum state $ketbra(i, i)$ and $p$ to denote the probability vector for $rho$ associated with its eigenvalues.
+Specifically, the Markov chain is dictated by the $Phi (rho; 0)$ and $cal(T)_"on"$ terms in the weak-coupling expansion, for $[rho, H_S] = 0$ we showed that $Phi (rho; 0) = id (\ho)$, so from now on we will specifically only deal with such density matrices and characterize the zeroth order term as an identity map. As for the Markov chain, we will use normal font to denote matrices, such as $I$ for the identity matrix and $T$ for the transition term added on. We use $arrow(e)_i$ to denote the basis vector associated with the quantum state $ketbra(i, i)$ and $p$ to denote the probability vector for $rho$ associated with its eigenvalues.
 
 #lemma([Quantum Dynamics to Classical Markov Chain])[
     Let $T$ be the matrix defined by
@@ -333,49 +367,49 @@ Since we will be effectively reducing our quantum dynamics to classical dynamics
         forall arrow(x) " s.t. " x_i >= 0 " and " sum_i x_i = 1, quad norm(arrow(pi) - M^L arrow(x))_1 <= epsilon.
     $
     We use $arrow(pi)$ to denote the unique eigenvector of eigenvalue 1 for $M$.
-]<thm_markov_chain_bound>
+] <thm_markov_chain_bound>
 
 #h(5mm) Now that we have an idea of how long it takes for our Markov chain to converge to the fixed points we need to show which states are actually fixed points. We demonstrate that for finite $beta$ any fixed point must satisfy a summation of detailed-balance terms. This fixed point is unique if the Markov chain is ergodic, which we do not argue in this lemma as an arbitrary thermalization channel $Phi$ may not be ergodic. For the ground state limit of $beta -> oo$ we show that the Markov matrix $I + T$ is upper triangular, which is crucial to our analysis of the spectral gap of the Markov chain in later results. We also demonstrate that the ground state is a fixed point in this limit nearly trivially.
 #lemma([Markov Chain Fixed Points])[
-    Let $T$ be the transition matrix with sum zero columns $sum_j e_j^tpose T e_i$ for all $i$, negative diagonal entries $e_i^tpose T e_i <= 0$, and off-diagonals smaller than 1 $e_j^tpose T e_i <= 1$ for $j != i$, associated with the on-resonance term $cal(T)_(on)$ of an arbitrary thermalizing channel $Phi$. A vector $arrow(p)$ is a fixed point of the Markovian dynamics $I + T$ if and only if it is in the kernel of $T$. This holds for finite $beta$ if the following is satisfied for all $j$
+    Let $T$ be the transition matrix with sum zero columns $sum_j arrow(e)_j^tpose T arrow(e)_i$ for all $i$, negative diagonal entries $arrow(e)_i^tpose T arrow(e)_i <= 0$, and off-diagonals smaller than 1 $arrow(e)_j^tpose T arrow(e)_i <= 1$ for $j != i$, associated with the on-resonance term $cal(T)_(on)$ of an arbitrary thermalizing channel $Phi$. A vector $arrow(p)$ is a fixed point of the Markovian dynamics $I + T$ if and only if it is in the kernel of $T$. This holds for finite $beta$ if the following is satisfied for all $j$
     $
-        sum_(i != j) (e^(-beta lambda_S (i))) / (partfun_S (beta)) e_j^tpose T e_i - (e^(-beta lambda_S (j))) / (partfun_S (beta)) e_i^tpose T e_j = 0.
+        sum_(i != j) (e^(-beta lambda_S (i))) / (partfun_S (beta)) arrow(e)_j^tpose T arrow(e)_i - (e^(-beta lambda_S (j))) / (partfun_S (beta)) arrow(e)_i^tpose T arrow(e)_j = 0.
     $<eq_tsp_detailed_balance>
-    In the $beta -> infinity$ limit the ground state $e_1$ is a fixed point and $T$ is upper triangular
+    In the $beta -> infinity$ limit the ground state $arrow(e)_1$ is a fixed point and $T$ is upper triangular
     $
-        lim_(beta -> infinity) (I + T) e_1 = e_1 " and " i > j ==> lim_(beta -> infinity) e_i^tpose T e_j = 0.
+        lim_(beta -> infinity) (I + T) arrow(e)_1 = arrow(e)_1 " and " i > j ==> lim_(beta -> infinity) arrow(e)_i^tpose T arrow(e)_j = 0.
     $
 ]<lem_fixed_points>
 #proof()[
     To show that the thermal state is the fixed point of the zero knowledge thermalizing channel we need to show that
     $T arrow(p)_(beta) = 0$ and that the Markov chain is ergodic. Ergodicity will be easy to prove so we focus on showing that $T arrow(p)_(beta) = 0$. This condition can be expressed as
     $
-        e_j^tpose T arrow(p)_(beta) = sum_i (e^(-beta lambda_S (i))) / (partfun_S (beta)) e_j^tpose T e_i = 0.
+        arrow(e)_j^tpose T arrow(p)_(beta) = sum_i (e^(-beta lambda_S (i))) / (partfun_S (beta)) arrow(e)_j^tpose T arrow(e)_i = 0.
     $<eq_tsp_thermal_state_tmp_1>
     We can make a quick substitution as we know the diagonal elements must equal the sum of the remainder of the column
     $
-        e_i^tpose T e_i = - sum_(j != i) e_j^tpose T e_i,
+        arrow(e)_i^tpose T arrow(e)_i = - sum_(j != i) arrow(e)_j^tpose T arrow(e)_i,
     $
     which we can then pull out the $i = j$ term from the sum in @eq_tsp_thermal_state_tmp_1
     $
-        e_j^tpose T arrow(p)_(beta) &= sum_(i != j) (e^(-beta lambda_S (i))) / (partfun_S (beta)) e_j^tpose T e_i - (e^(-beta lambda_S (j))) / (partfun_S (beta)) sum_(k != j) e_k^tpose T e_j,
+        arrow(e)_j^tpose T arrow(p)_(beta) &= sum_(i != j) (e^(-beta lambda_S (i))) / (partfun_S (beta)) arrow(e)_j^tpose T arrow(e)_i - (e^(-beta lambda_S (j))) / (partfun_S (beta)) sum_(k != j) arrow(e)_k^tpose T arrow(e)_j,
     $
     which is 0 if and only if $arrow(p)_(beta)$ is a fixed point of $I + T$.
 
     We now show the $beta -> infinity$ case. We can show that $T$ is upper triangular using @thm_tsp_second_order_expansion which gives us the on-resonance transition amplitude. We assume $i < j$, which implies $Delta_S (i,j) <= 0$, and get
     $
-        lim_(beta -> infinity) e_j^tpose T e_i &= lim_(beta -> infinity) bra(j) cal(T)_(on)(ketbra(i, i)) ket(j) \
+        lim_(beta -> infinity) arrow(e)_j^tpose T arrow(e)_i &= lim_(beta -> infinity) bra(j) cal(T)_(on)(ketbra(i, i)) ket(j) \
         &= tilde(alpha)^2 lim_(beta -> infinity) [ (e^(-beta gamma)) / (1 + e^(-beta gamma)) II[ |Delta_S (i,j) + gamma| <= delta_(min)] sinc^2 ((Delta_S (i, j) + gamma) t / (2) ) ] \
         &= tilde(alpha)^2 II[ |Delta_S (i,j) + gamma| <= delta_(min)] sinc^2 ((Delta_S (i, j) + gamma) t / 2 ) lim_(beta -> infinity) (e^(-beta gamma)) / (1 + e^(-beta gamma)) \
         &= 0.
     $
     This further shows that the ground state is a fixed point, as every other eigenvector must have higher energy and therefore all on-resonance transitions _from_ the ground state must be 0
     $
-        lim_(beta -> infinity) e_1^tpose T e_1 &= lim_(beta -> infinity) bra(1) cal(T)_(on)(ketbra(1, 1)) ket(1) = - sum_(j > 1) lim_(beta -> infinity) bra(j) cal(T)_(on)(ketbra(1, 1)) ket(j) = 0.
+        lim_(beta -> infinity) arrow(e)_1^tpose T arrow(e)_1 &= lim_(beta -> infinity) bra(1) cal(T)_(on)(ketbra(1, 1)) ket(1) = - sum_(j > 1) lim_(beta -> infinity) bra(j) cal(T)_(on)(ketbra(1, 1)) ket(j) = 0.
     $
     This then shows that the ground state is fixed
     $
-        (I + T) e_1 = e_1,
+        (I + T) arrow(e)_1 = arrow(e)_1,
     $
     and completes the proof.
 ]

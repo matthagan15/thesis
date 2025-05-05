@@ -109,17 +109,17 @@
         #outline(title: "List of Tables", target: figure.where(kind: table))
     ]
 
-    page[
-        #show <the-outline>: it => {
-            it
-            context for (el, meta) in query(figure.where(kind: "thmenv")).zip(query(<meta:thmenvcounter>)) {
-                if meta.value == "lemma" {
-                    outline.entry(1, el)
-                }
-            }
-        }
-        #outline(target: figure.where(kind: "non existent")) <the-outline>
-    ]
+    // page[
+    //     #show <the-outline>: it => {
+    //         it
+    //         context for (el, meta) in query(figure.where(kind: "thmenv")).zip(query(<meta:thmenvcounter>)) {
+    //             if meta.value == "lemma" {
+    //                 outline.entry(1, el)
+    //             }
+    //         }
+    //     }
+    //     #outline(target: figure.where(kind: "non existent")) <the-outline>
+    // ]
 
 
     counter(page).update(1)
