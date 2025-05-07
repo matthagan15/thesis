@@ -86,7 +86,7 @@
     ]
 
     page[
-        #place(horizon + right, [_This thesis is dedicated to \ my brother JT and my sisters \ Veronica and Brittany._])
+        #place(horizon + right, [_This thesis is dedicated to \ my brother JT and my sisters \ Brittany and Veronica._])
     ]
 
     page[
