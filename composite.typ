@@ -1,13 +1,9 @@
 // #import "macros.typ": *
-
-
 #set math.equation(number-align: bottom)
 
 #import "@preview/ctheorems:1.1.3": *
 
 #import "conf.typ": *
-
-
 #show: thmrules.with(qed-symbol: $square$)
 
 #heading("Composite Simulations", level: 1, supplement: [Chapter]) <ch:composite_simulations>
@@ -24,12 +20,10 @@ term to implement next in the product formula according to an importance samplin
 downside to QDrift is that it has the same asymptotic scaling with $t / epsilon$ as a first-order Trotter formula, meaning it is outperformed at large
 $t / epsilon$ by even a second-order Trotter formula.
 
-In this paper we present a framework for combining simulation channels in a way that allows one to flexibly interpolate the gate cost tradeoffs between the individual channels. The primary example we study is the composition of Trotter-Suzuki and QDrift channels. This is motivated in some part as an effort to extend
+In this chapter we present a framework for combining simulation channels in a way that allows one to flexibly interpolate the gate cost tradeoffs between the individual channels. The primary example we study is the composition of Trotter-Suzuki and QDrift channels. This is motivated in some part as an effort to extend
 randomized compilers to include conditional probabilities and in some part to encapsulate progress in chemistry simulations of dropping small
 weight terms or shuffling terms around different time steps @bucket_sim. This latter concept was first developed with the idea of "coalescing" terms into
-"buckets" by Wecker et al. @bucket_sim and further explored by Poulin et al. @coalescing_con_wiebe. They showed that grouping terms of similar sizes together to be skipped during certain Trotter steps led to negligible increases in error and reduced gate counts by about a factor of 10. Similar improvements are also seen in the randomized setting of @kivlichan2019phase. In this work we extend on these ideas by placing a specific set of terms into a Trotter partition and the rest in a QDrift partition. This simple division can then be studied analytically and we are able to provide sufficient conditions on asymptotic improvements over completely Trotter or completely QDrift channels. Although we are not able to develop the idea of conditional samples in QDrift protocols, our
-procedure can be viewed as a specific subset of what a generic Markovian QDrift would look like. We briefly mention these generalizations in
-Section .
+"buckets" by Wecker et al. @bucket_sim and further explored by Poulin et al. @coalescing_con_wiebe. They showed that grouping terms of similar sizes together to be skipped during certain Trotter steps led to negligible increases in error and reduced gate counts by about a factor of 10. Similar improvements are also seen in the randomized setting of @kivlichan2019phase. In this work we extend on these ideas by placing a specific set of terms into a Trotter partition and the rest in a QDrift partition. This simple division can then be studied analytically and we are able to provide sufficient conditions on asymptotic improvements over completely Trotter or completely QDrift channels. Although we are not able to develop the idea of conditional samples in QDrift protocols, our procedure can be viewed as a specific subset of what a generic Markovian QDrift would look like.
 
 == Related Work
 
