@@ -305,7 +305,7 @@ In this section we present the more technical work needed to state our results i
 #lemma()[
     Given two Heisenberg evolved random interactions $G(x)$ and $G(y)$ we can compute their action on the outer product $ketbra(i\, j, k\, l)$ as
     $
-        &EE_(G) [ G(x) ketbra(i\, j, k\, l) G(y) d G] \
+        &EE_(G) [ G(x) ketbra(i\, j, k\, l) G(y)] \
         &= 1 / (dim + 1) (ketbra(i\, j, k\, l) + braket(i\, j, k\, l) sum_(m,n) e^(Delta (m,n | i,j) (x - y)) ketbra(m\, n, m\, n)).
     $
 ] <lem_sandwiched_interaction>
@@ -534,22 +534,22 @@ In this section we present the more technical work needed to state our results i
     $
 ]
 
-= Scratch
+// = Scratch
 
-== Template Thermal State Prep Proof
-I'm thinking of including a "template" theorem that can be used to simplify the 4 proofs contained in the following section. Let $rho_"fix"$ denote the unique fixed point for a channel $EE_gamma [id + cal(T)_"on"^((gamma))]$ and $tilde(lambda_star)$ the spectral gap of the scaled transition matrix, so $tilde(alpha)^2 tilde(lambda_star) = lambda_star$. Then we have
-$
-    norm(rho_"fix" - (EE_gamma Phi_gamma)^(compose L) (rho))_1 &<= norm(rho_"fix" - (id + EE_gamma cal(T)_"on"^((gamma)))^(compose L))_1 + L norm(EE_gamma cal(T)_"off"^((gamma)) + R_Phi)_1 \
-    &<= norm(rho_"fix" - (id + EE_gamma cal(T)_"on"^((gamma)))^(compose L))_1 + L (norm(EE_gamma cal(T)_"off"^((gamma)))_1 + norm(R_Phi)_1) \
-    &<= norm(rho_"fix" - (id + EE_gamma cal(T)_"on"^((gamma)))^(compose L))_1 + L ((8 alpha^2) / delta_min^2 + (16 sqrt(2)) / sqrt(pi) dim_S (alpha t)^3).
-$
-So now in order to balance these terms we can set $alpha = 1\/(dim_S delta_min^2 t^3 )$ and the expression on the right becomes $L alpha^2 / delta_min^2 (8 + 16 sqrt(2 / pi)).$ Now using Jerison's theorem we can argue that
-$
-    L >= dim^2 / (alpha^2 t^2 tilde(lambda_star)) J
-$
-is sufficient to guarantee that the distance to the fixed point is $tilde(O)(epsilon)$.
-Now we note that the right hand side forces us to require $L alpha^2 / delta_min^2 in tilde(O)(epsilon)$ holds only if
-$
-    (dim^2) / (delta_min^2 t^2 tilde(lambda_star) ) in tilde(O)(epsilon)
-$
-can be satisfied if $t = dim / (delta_min sqrt(epsilon tilde(lambda_star)))$. and then we are done.
+// == Template Thermal State Prep Proof
+// I'm thinking of including a "template" theorem that can be used to simplify the 4 proofs contained in the following section. Let $rho_"fix"$ denote the unique fixed point for a channel $EE_gamma [id + cal(T)_"on"^((gamma))]$ and $tilde(lambda_star)$ the spectral gap of the scaled transition matrix, so $tilde(alpha)^2 tilde(lambda_star) = lambda_star$. Then we have
+// $
+//     norm(rho_"fix" - (EE_gamma Phi_gamma)^(compose L) (rho))_1 &<= norm(rho_"fix" - (id + EE_gamma cal(T)_"on"^((gamma)))^(compose L))_1 + L norm(EE_gamma cal(T)_"off"^((gamma)) + R_Phi)_1 \
+//     &<= norm(rho_"fix" - (id + EE_gamma cal(T)_"on"^((gamma)))^(compose L))_1 + L (norm(EE_gamma cal(T)_"off"^((gamma)))_1 + norm(R_Phi)_1) \
+//     &<= norm(rho_"fix" - (id + EE_gamma cal(T)_"on"^((gamma)))^(compose L))_1 + L ((8 alpha^2) / delta_min^2 + (16 sqrt(2)) / sqrt(pi) dim_S (alpha t)^3).
+// $
+// So now in order to balance these terms we can set $alpha = 1\/(dim_S delta_min^2 t^3 )$ and the expression on the right becomes $L alpha^2 / delta_min^2 (8 + 16 sqrt(2 / pi)).$ Now using Jerison's theorem we can argue that
+// $
+//     L >= dim^2 / (alpha^2 t^2 tilde(lambda_star)) J
+// $
+// is sufficient to guarantee that the distance to the fixed point is $tilde(O)(epsilon)$.
+// Now we note that the right hand side forces us to require $L alpha^2 / delta_min^2 in tilde(O)(epsilon)$ holds only if
+// $
+//     (dim^2) / (delta_min^2 t^2 tilde(lambda_star) ) in tilde(O)(epsilon)
+// $
+// can be satisfied if $t = dim / (delta_min sqrt(epsilon tilde(lambda_star)))$. and then we are done.

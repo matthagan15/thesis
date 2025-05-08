@@ -152,12 +152,7 @@ We now introduce QDrift @qdriftCampbell, one of the first randomized compilers f
     $
 ] <thm:qdrift_cost>
 
-#proof([@thm:qdrift_cost])[
-    This one is also a Taylor's Series
-    $
-        cal(U)_"QD" (t)
-    $
-]
+#todo[Either prove or cite.]
 
 == First Order Composite Channels <sec:composite_first_order>
 We now turn towards combining the two product formulas given in @sec:composite_prelim in a Composite channel. We first will assume that the Hamiltonian has already been partitioned into two pieces $H = A + B$, where $A$ will be simulated with a first order Trotter formula and $B$ with QDrift. Given a fixed partitioning allows for us to compute the diamond distance error in the resulting channel, which then allows us to bound the number of operator exponentials needed to implement the channel. The resulting cost function will then be parametrized by the partitioning, which we can then use to determine an optimal partitioning algorithm. Finally, we give a specific instance in which a Composite channel can offer asymptotic improvements in query complexity over either a purely Trotter or QDrift channel.

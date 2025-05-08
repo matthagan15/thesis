@@ -62,9 +62,9 @@ Note that nothing in this definition prevents one of the summands, say $Delta_S 
 Currently our dynamics involved a system separated from the environment, so we need to fix this by adding an interaction term $G : hilb_S := hilb_E -> hilb_S tp hilb_E$. We will choose $G$ randomly via the eigendecomposition
 
 $
-    G = U_(G) Lambda_G U_(G)^dagger, U_(G) tilde "Haar"(hilb_S tp hilb_E) text(" and ") Lambda_G = (-1)^(z_0) Z_1^(z_1) tp ... tp Z_n^(z_n),
+    G = U_(G) Lambda_G U_(G)^dagger, " where " U_(G) tilde "Haar"(hilb_S tp hilb_E) text(", ") Lambda_G = (-1)^(z_0) Z_1^(z_1) tp ... tp Z_n^(z_n),
 $ <eq_interaction_def>
-where the coefficients $z_i$ are sampled I.I.D via the distribution $"Pr"[z_i = 0] = "Pr"[z_i = 1] = 1 / 2$. We then add this random interaction term to our system-environment dynamics with a coupling constant $alpha$, yielding a total dynamics governed by $H_S + H_E + alpha G$. We define the following rescaled coupling constant
+and the coefficients $z_i$ are sampled I.I.D via the distribution $"Pr"[z_i = 0] = "Pr"[z_i = 1] = 1 / 2$. We then add this random interaction term to our system-environment dynamics with a coupling constant $alpha$, yielding a total dynamics governed by $H_S + H_E + alpha G$. We define the following rescaled coupling constant
 
 $ tilde(alpha) := frac(alpha t, sqrt(dim + 1)), $ <eq_a_tilde_def>
 
@@ -109,24 +109,34 @@ Since our goal is only to provide an implementation of the thermalizing channel 
 $
     norm(cal(U) (t) - cal(U)_(G)(t) compose cal(U)_(H)(t))_dmd <= t^2 (sum_(i,j) h_i h_j norm([H_i, H_j]) + sum_(i, k) h_i g_k norm([H_i, G_k]) + 4 norm(g)^2 / N_B).
 $
+But now there is kind of an issue with doing time slicing, because normally we take $t = (t / r) r$ and just repeat the channel $r$ times. But we have an issue where
+$
+    cal(U)(t) != cal(U)(t / r)^(compose r) " for " cal(U)(t)(rho) = EE_G e^(i (H + alpha G)t) rho e^(-i(H + alpha G) t).
+$
+What is the deviation
+$
+    EE_G e^(i (H + alpha G ) t) rho e^(-i (H + alpha G ) t) " from " e^(i (H + alpha EE_G G ) t) rho e^(i (H + alpha EE_G G ) t) = e^(i H t) rho e^(- i H t)?
+$
 
-Now for our interaction we note that it is sufficient to sample a Clifford gate $C$ for $G$ as opposed to a Haar random unitary. This is because all of our results hold for $U_G$ being a $"Haar"(n + 1)$ 2-design. As the Cliffords are a finite subgroup of the unitaries we can enumerate them $C_i$, let $|C|$ denote the number of Clifford gates on $n + 1$ qubits, which is $2^(O(n^2))$. For the eigenvalues $Lambda_G$ we have $2^(n + 2)$ possible choices. Enumerate all of these via an index $k$. The spectral norm of a given interaction $G_k$ is 1 as the eigenvalues $Lambda_(G_k)$ are all $plus.minus 1$, which implies the spectral norm of $alpha G_k$ is $alpha$. This gives the norm $norm(g)$ as $sum_k norm(g_k) = 2^(O(n^2)) alpha$.
+// Now for our interaction we note that it is sufficient to sample a Clifford gate $C$ for $G$ as opposed to a Haar random unitary. This is because all of our results hold for $U_G$ being a $"Haar"(n + 1)$ 2-design. As the Cliffords are a finite subgroup of the unitaries we can enumerate them $C_i$, let $|C|$ denote the number of Clifford gates on $n + 1$ qubits, which is $2^(O(n^2))$. For the eigenvalues $Lambda_G$ we have $2^(n + 2)$ possible choices. Enumerate all of these via an index $k$. The spectral norm of a given interaction $G_k$ is 1 as the eigenvalues $Lambda_(G_k)$ are all $plus.minus 1$, which implies the spectral norm of $alpha G_k$ is $alpha$. This gives the norm $norm(g)$ as $sum_k norm(g_k) = 2^(O(n^2)) alpha$.
 
-We further will ignore the commutator structure between the Hamiltonian and the interaction and upper bound
-$
-    sum_(i,k) h_i g_k norm([H_i, G_k]) <= norm(h) norm(g).
-$
+// We further will ignore the commutator structure between the Hamiltonian and the interaction and upper bound
+// $
+//     sum_(i,k) h_i g_k norm([H_i, G_k]) <= norm(h) norm(g).
+// $
 
-First let's do an outer loop
-$
-    EE_G e^(i (H + alpha G)t) rho e^(-i (H + alpha G)t) &= EE_G [ e^(i alpha G t) e^(i H t) rho e^(-i H t) e^(-i alpha G t) + E_(H, alpha G) ] \
-    &= EE_G cal(U)_G compose cal(U)_H (rho) + EE_G E_(H, alpha G)
-$
-Using the triangle inequality allows us to write
-$
-    norm(EE_G E_(H, alpha G)) &<= EE_G norm(E_(H,alpha G)) <= EE_G alpha t^2 / 2 norm([H, G]) <= alpha norm(h) t^2,
-$
-because $norm(G) = 1$ for all $G$ and we can upper bound the commutator $norm([H, G]) <= 2 norm(H) norm(G)$.
+// First let's do an outer loop
+// $
+//     EE_G e^(i (H + alpha G)t) rho e^(-i (H + alpha G)t) &= EE_G [ e^(i alpha G t) e^(i H t) rho e^(-i H t) e^(-i alpha G t) + E_(H, alpha G) ] \
+//     &= EE_G cal(U)_G compose cal(U)_H (rho) + EE_G E_(H, alpha G)
+// $
+// Using the triangle inequality allows us to write
+// $
+//     norm(EE_G E_(H, alpha G)) &<= EE_G norm(E_(H,alpha G)) <= EE_G alpha t^2 / 2 norm([H, G]) <= alpha norm(h) t^2,
+// $
+// because $norm(G) = 1$ for all $G$ and we can upper bound the commutator $norm([H, G]) <= 2 norm(H) norm(G)$.
+
+We use the time evolution channel $EE_G e^(i (H + alpha G) t) rho e^(-i(H + alpha G) t)$ and I need to construct an approximation to this using the composition $EE_G e^(i alpha G t) e^(i H t) rho e^(- i H t) e^(-i alpha G t)$. But this seems weird?
 
 === First and Second Order Expansion <sec_tsp_expansion_series>
 
