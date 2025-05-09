@@ -209,7 +209,7 @@
     stroke: 1pt,
     base_level: 1,
     bodyfmt: x => text(x, style: "italic"),
-    fill: rgb("e8887377"),
+    // fill: rgb("e8887377"),
 )
 
 #let theorem = thmbox(
@@ -218,7 +218,7 @@
     stroke: 1pt,
     base_level: 1,
     bodyfmt: x => text(x, style: "italic"),
-    fill: rgb("#c8f6ad"),
+    // fill: rgb("#c8f6ad"),
 )
 
 #let definition = thmbox(
@@ -227,7 +227,7 @@
     stroke: 1pt,
     base_level: 1,
     bodyfmt: x => text(x, style: "italic"),
-    fill: rgb("#62b6cb44"),
+    // fill: rgb("#62b6cb44"),
 )
 
 #let corollary = thmbox(
@@ -235,5 +235,5 @@
     "Corollary",
     stroke: 1pt,
     bodyfmt: x => text(x, style: "italic"),
-    fill: rgb("#c4c67d"),
+    // fill: rgb("#c4c67d"),
 )
