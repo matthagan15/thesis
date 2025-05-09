@@ -1,8 +1,7 @@
 #import "conf.typ": ut-thesis, is-chapter-page
-// #import("conf.typ")
+
 #import "@preview/hydra:0.6.1": hydra
 
-// Example Usage
 #show: ut-thesis.with(
     title: "Preparing Thermal States on a Digital Quantum Computer",
     author: "Matthew Hagan",
