@@ -3,7 +3,8 @@
 #import "@preview/hydra:0.6.1": hydra
 
 #show: ut-thesis.with(
-    title: "Preparing Thermal States on a Digital Quantum Computer",
+    title: "A Quantum Mechanical Analog of Hamiltonian Monte Carlo",
+    // title: "Preparing Thermal States on a Digital Quantum Computer",
     author: "Matthew Hagan",
     degree: "Doctor of Philosophy",
     department: "Physics",
