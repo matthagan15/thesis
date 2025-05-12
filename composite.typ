@@ -8,7 +8,6 @@
 
 #heading("Composite Simulations", level: 1, supplement: [Chapter]) <ch:composite_simulations>
 
-The simulation of time-independent Hamiltonian dynamics is a fundamental primitive in quantum computing. To start, the computational problem of approximating the time dynamics of even $k$-local Hamiltonians (where $k$ is a small constant) is BQP-Complete. This means that any computational problem that can be solved efficiently on a quantum computer can be efficiently reduced to a simulation problem.
 
 The simulation of quantum systems remains one of the most compelling applications for future digital quantum computers @whitfield2011simulation @jordan2012quantum @reiher2017elucidating @babbush2019quantum @su2021fault @o2021efficient.
 As such, there are a plethora of algorithm options for compiling a unitary evolution operator $U(t) = e^{-i H t}$ to circuit gates @aharonov2003adiabatic @berry2007efficient @berry2015simulating @childs2019faster @low2019hamiltonian @low2019well @low2018hamiltonian @qdriftCampbell. Some of the simplest such algorithms are product formulas in which each term in a Hamiltonian $H = sum_i h_i H_i$ is implemented as $e^(i H_i t)$. A product formula is then a particular sequence
@@ -105,22 +104,10 @@ This allows us to give the error associated with a a Trotter-Suzuki formula in t
         C_"Trot"^((2k))(H, t, epsilon)&= Upsilon L ceil((Upsilon t)^(1 + 1\/2k) / epsilon^(1\/2k) (4 alpha_"comm" (H, 2k)^(1\/2k) / (2k + 1)))
     $
 ] <thm_trotter_error>
-The complete proof of the above theorem is very nontrivial and beyond the scope of this thesis. See @childs2021theory for complete details, the proof of the higher order bounds can be found in Appendix E and the first order expression is found in Proposition 9 in Section V. Instead, we provide a heuristic proof for the first order error for completeness.
+The complete proof of the above theorem is very nontrivial and beyond the scope of this thesis. See @childs2021theory for complete details, the proof of the higher order bounds can be found in Appendix E of @childs2021theory and the first order expression is found in Proposition 9 of Section V.
 
 #todo()[Probably should include a proof that spectral norm bounds on a unitary channel imply a diamond distance bound that is different only by a factor of 2.]
 
-#todo[Also probably should do a bit better proof below, can use a heuristic that all Taylor series of the exponential have the same special time t? or maybe just produce a bound?]
-#proof("Heuristic First Order")[
-    Compute a Taylor Series for the Trotter formula and the ideal evolution. First the ideal evolution:
-    $
-        U(t\/r) &= e^(i H t / r) = id + (i t) / r H + O((t\/r)^2).
-    $
-    Then the Trotter terms:
-    $
-        product_(i = 1)^L e^(i h_i H_i t') = product_(i = 1)^L (id + i h_i t' H_i + O(t'^2)) = id + i t' sum_(i = 1)^L h_i H_i + O(t'^2 ).
-    $
-    Pretty clear to see that in the difference $U(t\/r) - S^((1))(t\/r)$ the zeroth and first order terms vanish, leaving only the second order.
-]
 
 === Randomized Product Formulas
 We now introduce QDrift @qdriftCampbell, one of the first randomized compilers for quantum simulation. The main idea of QDrift is that instead of iterating through each term in the Hamiltonian to construct a product formula, or even a random ordering of terms as in @childs2019faster, each exponential is chosen randomly from the list of terms in $H$. Each term is selected with probability proportional to it's spectral weight, the probability of choosing $H_i$ is $h_i / (sum_j h_j) =: h_i / norm(h)$, and then simulated for a time $tau = norm(h) t$. This is the protocol for a single sample. As we will denote the portion of the Hamiltonian that we simulate with QDrift in later sections as $B$ we let $N_B$ denote the number of samples used.
@@ -134,9 +121,9 @@ We now introduce QDrift @qdriftCampbell, one of the first randomized compilers f
         cal(Q) (t, N_B) := cal(Q) (t \/ N_B, 1)^(compose N_B).
     $
 ] <def:qdrift>
-#h(1cm) Once we have the channel defined we can then state the main results of @qdriftCampbell.
-#theorem("QDrift Cost")[
-    Given a Hamiltonian $H$, time $t$, and error bound $epsilon$, the ideal time evolution channel $cal(U)(t)$ can be approximated using $N_B = (4 t^2 norm(h)^2) / epsilon$ samples of a QDrift channel. This approximation is given by the diamond distance
+Now that the channel defined we can use one of the main results of @qdriftCampbell.
+#theorem([QDrift Cost])[
+    Given a Hamiltonian $H$, time $t$, and error bound $epsilon <= norm(h) t ln (2) \/2$, the ideal time evolution channel $cal(U)(t)$ can be approximated using $N_B = (4 t^2 norm(h)^2) / epsilon$ samples of a QDrift channel. This approximation is given by the diamond distance
     $
         norm(cal(U)(t) - cal(Q) (t, N_B))_(dmd) <= (4 t^2 norm(h)^2) / N_B .
     $
@@ -146,7 +133,6 @@ We now introduce QDrift @qdriftCampbell, one of the first randomized compilers f
     $
 ] <thm:qdrift_cost>
 
-#todo[Either prove or cite.]
 
 == First Order Composite Channels <sec:composite_first_order>
 We now turn towards combining the two product formulas given in @sec:composite_prelim in a Composite channel. We first will assume that the Hamiltonian has already been partitioned into two pieces $H = A + B$, where $A$ will be simulated with a first order Trotter formula and $B$ with QDrift. Given a fixed partitioning allows for us to compute the diamond distance error in the resulting channel, which then allows us to bound the number of operator exponentials needed to implement the channel. The resulting cost function will then be parametrized by the partitioning, which we can then use to determine an optimal partitioning algorithm. Finally, we give a specific instance in which a Composite channel can offer asymptotic improvements in query complexity over either a purely Trotter or QDrift channel.
