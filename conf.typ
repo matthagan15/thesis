@@ -79,10 +79,10 @@
             #text(size: 14pt, weight: "bold")[Abstract]
         ]
 
-        #set par(leading: 2em) // Double-spaced
+        #set par(leading: 1.5em) // Double-spaced
         // Placeholder for abstract content
         // Actual content should be added by the user
-        The simulation of quantum systems is the most promising candidate for economic advantages of large scale, fault tolerant quantum computers over classical computers. The development of Markov Chain Monte Carlo techniques is one of the central tools for studying quantum systems on classical methods. We adapt modern techniques from classical Monte Carlo algorithms, specifically the Hamiltonian Monte Carlo (HMC) algorithm, to an algorithm for preparing thermal states of quantum systems on digital quantum computers. The simulation of time dynamics is a crucial subroutine for preparing thermal states using HMC, and to this end we provide new techniques for combining existing product formulas to achieve lower costs for overall simulations. These methods provide an avenue for extending the Repeated Interactions framework for studying quantum thermodynamics to arbitrary systems.
+        The simulation of quantum systems is the most promising candidate for economic advantages of large scale, fault tolerant quantum computers over classical computers. The development of Markov Chain Monte Carlo techniques is one of the central tools for studying quantum systems on classical computers. We adapt modern techniques from classical Monte Carlo algorithms, specifically the Hamiltonian Monte Carlo (HMC) algorithm, to an algorithm for preparing thermal states of quantum systems on digital quantum computers. The simulation of time dynamics is a crucial subroutine for preparing thermal states using HMC, and to this end we provide new techniques for combining existing product formulas to achieve lower costs for overall simulations. These methods provide an avenue for extending the Repeated Interactions framework for studying quantum thermodynamics to arbitrary systems.
     ]
 
     page[
@@ -90,10 +90,12 @@
     ]
 
     page[
+        #set par(leading: 1.5em, justify: true)
         #align(
             center,
             text(size: 14pt, weight: "bold", [Acknowledgements]),
         )
+        The ideas for this thesis began in the spring of 2016, when my roommate Michael Traub introduced me to an algorithm known as Hamiltonian Monte Carlo.
     ]
 
     page[
@@ -108,18 +110,6 @@
     page[
         #outline(title: "List of Tables", target: figure.where(kind: table))
     ]
-
-    // page[
-    //     #show <the-outline>: it => {
-    //         it
-    //         context for (el, meta) in query(figure.where(kind: "thmenv")).zip(query(<meta:thmenvcounter>)) {
-    //             if meta.value == "lemma" {
-    //                 outline.entry(1, el)
-    //             }
-    //         }
-    //     }
-    //     #outline(target: figure.where(kind: "non existent")) <the-outline>
-    // ]
 
 
     counter(page).update(1)

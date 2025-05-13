@@ -8,10 +8,8 @@
 
 #heading("Composite Simulations", level: 1, supplement: [Chapter]) <ch:composite_simulations>
 
-
-The simulation of quantum systems remains one of the most compelling applications for future digital quantum computers @whitfield2011simulation @jordan2012quantum @reiher2017elucidating @babbush2019quantum @su2021fault @o2021efficient.
-As such, there are a plethora of algorithm options for compiling a unitary evolution operator $U(t) = e^{-i H t}$ to circuit gates @aharonov2003adiabatic @berry2007efficient @berry2015simulating @childs2019faster @low2019hamiltonian @low2019well @low2018hamiltonian @qdriftCampbell. Some of the simplest such algorithms are product formulas in which each term in a Hamiltonian $H = sum_i h_i H_i$ is implemented as $e^(i H_i t)$. A product formula is then a particular sequence
-of these gates that approximates the overall operator $U(t)$. Two of the most well known product formula include Trotter-Suzuki Formulas @berry2007efficient @wiebe2010higher @childs2019faster @childs2021theory and the QDrift protocol in which terms are sampled randomly @qdriftCampbell @berry2020time. These two approaches are perhaps the most popular ancilla-free simulation methods yet discovered.
+There are a plethora of algorithm options for compiling a unitary evolution operator $U(t) = e^{-i H t}$ to circuit gates @aharonov2003adiabatic @berry2007efficient @berry2015simulating @childs2019faster @low2019hamiltonian @low2019well @low2018hamiltonian @qdriftCampbell. Some of the simplest such algorithms are product formulas in which each term in a Hamiltonian $H = sum_i h_i H_i$ is implemented separately, for example if $H = A + B$ then a simple decomposition could be $e^(i(A + B)t) = lim_(r -> oo) (e^(i A t / r) e^(i B t / r))^r$. A product formula is a particular sequence
+of gates $e^(i H_i theta)$ that approximates the overall operator $U(t)$. Two of the most well known product formula include Trotter-Suzuki Formulas @berry2007efficient @wiebe2010higher @childs2019faster @childs2021theory and the QDrift protocol in which terms are sampled randomly @qdriftCampbell @berry2020time. These two approaches are perhaps the most popular ancilla-free simulation methods yet discovered.
 
 One of the main drawbacks of Trotter-Suzuki formulas is that each term in the Hamiltonian has to be included in the product formula regardless of the magnitude of the term. This leads
 to a circuit with a depth that scales at least linearly with the number of terms in $H$, typically denoted $L$. QDrift avoids this by randomly choosing which
@@ -47,10 +45,10 @@ Although much of the literature for Trotter-Suzuki formulas is written in terms 
 
 === Product Formulas
 
-We now show how to implement basic product formulas, namely Trotter-Suzuki or just Trotter formulas as well as QDrift, assuming access to arbitrary single qubit unitaries and controlled NOT gates. We will first show how to implement an arbitrary Pauli rotation $e^(i P t)$ for some Pauli string $P$ using no additional ancilla qubits. Then we will define the Trotter-Suzuki construction and give heuristic evidence for the first order scaling. We avoid giving a rigorous proof and instead refer the reader to the canonical paper by Childs et. al @childs2021theory. Lastly, we will present the construction of QDrift by Campbell @qdriftCampbell, providing a heuristic proof of correctness.
+We now show how to implement basic product formulas, namely Trotter-Suzuki or just Trotter formulas as well as QDrift, assuming access to arbitrary single qubit unitaries and controlled NOT gates. Then we will define the Trotter-Suzuki construction and give heuristic evidence for the first order scaling. We avoid giving a rigorous proof and instead refer the reader to the canonical paper by Childs et. al @childs2021theory. Lastly, we will present the construction of QDrift by Campbell @qdriftCampbell, providing a heuristic proof of correctness.
 
 #definition("Trotter-Suzuki Formulae")[
-    Given a Hamiltonian $H$, let $S^((1))(t)$ denote the first-order Trotter-Suzuki time evolution operator and channel as
+    Given a Hamiltonian $H$, let $S^((1))(t)$ denote the first-order Trotter-Suzuki time evolution operator and $cal(S)^((1))$ the corresponding channel as
     $
         S^((1))(t) &:= e^(i h_L H_L t) dots e^(i h_1 H_1 t) = product_(i = 1)^(L) e^(i h_i H_i t), \
         cal(S)^((1))(rho; t) &:= S^((1))(t) dot rho dot S^((1))(t)^dagger.
@@ -100,14 +98,22 @@ This allows us to give the error associated with a a Trotter-Suzuki formula in t
     $
     The associated operator exponential cost can be computed via standard time-slicing arguments as
     $
-        C_"Trot"^((1))(H, t, epsilon) &= L ceil(t^2 / (2 epsilon) sum_(i,j) norm([H_i, H_j])) \
+        C_"Trot"^((1))(H, t, epsilon) &= L ceil(t^2 / (2 epsilon) sum_(i,j) norm([H_i, H_j])_oo) \
         C_"Trot"^((2k))(H, t, epsilon)&= Upsilon L ceil((Upsilon t)^(1 + 1\/2k) / epsilon^(1\/2k) (4 alpha_"comm" (H, 2k)^(1\/2k) / (2k + 1)))
     $
 ] <thm_trotter_error>
 The complete proof of the above theorem is very nontrivial and beyond the scope of this thesis. See @childs2021theory for complete details, the proof of the higher order bounds can be found in Appendix E of @childs2021theory and the first order expression is found in Proposition 9 of Section V.
-
-#todo()[Probably should include a proof that spectral norm bounds on a unitary channel imply a diamond distance bound that is different only by a factor of 2.]
-
+We can convert these spectral norm bounds into a bound on the diamond distance of the corresponding channels using standard norm inequalities
+$
+    &norm(cal(U)(t) - cal(S)^((2k))(t))_dmd := norm((cal(U)(t) - cal(S)^((2k))) tp id)_1 \
+    &= max_(rho : norm(rho)_1 <= 1) norm((e^(i H t) tp id ) rho (e^(-i H t) tp id ) - (S^((2k)) tp id) rho (S^((2k)) tp id)^dagger) \
+    &<= max_(rho : norm(rho)_1 <= 1) norm((e^(i H t) tp id ) rho (e^(-i H t) tp id ) - (S^((2k)) tp id) rho (e^(-i H t) tp id ))_1 \
+    &+ max_(rho : norm(rho)_1 <= 1) norm((S^((2k)) tp id) rho (e^(-i H t) tp id ) - (S^((2k)) tp id) rho (S^((2k)) tp id)^dagger)_1 \
+    &= max_(rho : norm(rho)_1 <= 1) norm(( e^(i H t) - S^((2k)) ) tp id dot rho)_1 + max_(rho : norm(rho)_1 <= 1) norm(rho (e^(-i H t) - S^((2k))^dagger) tp id)_1 \
+    &= 2 max_(rho : norm(rho)_1 <= 1) norm(( e^(i H t) - S^((2k)) ) tp id dot rho)_1 \
+    &<= 2 norm(e^(i H t) - S^((2k)))_oo max_(rho : norm(rho)_1 <= 1) norm(rho)_1 \
+    &= 2 norm(e^(i H t) - S^((2k)))_oo.
+$
 
 === Randomized Product Formulas
 We now introduce QDrift @qdriftCampbell, one of the first randomized compilers for quantum simulation. The main idea of QDrift is that instead of iterating through each term in the Hamiltonian to construct a product formula, or even a random ordering of terms as in @childs2019faster, each exponential is chosen randomly from the list of terms in $H$. Each term is selected with probability proportional to it's spectral weight, the probability of choosing $H_i$ is $h_i / (sum_j h_j) =: h_i / norm(h)$, and then simulated for a time $tau = norm(h) t$. This is the protocol for a single sample. As we will denote the portion of the Hamiltonian that we simulate with QDrift in later sections as $B$ we let $N_B$ denote the number of samples used.
@@ -538,7 +544,6 @@ where we use $II [ "Proposition"]$ to denote the standard indicator function whe
 
 `chop` will prove to be a very useful partitioning scheme both analytically and numerically. Analytically we will be able to show that it satisfies the conditions outlined in @thm_composite_higher_order_improvements for specific Hamiltonians. Numerically, it is very simple to create a specified partition from a Hamiltonian and further it is straightforward to optimize as the partition can be adjusted with a a single parameter $h_"chop"$. This still leaves open the problem of choosing the right number of QDrift samples $N_B$, but we did not find this parameter an issue to optimize analytically or numerically. In @hagan2023composite we provided a proababilistic partitioning scheme that is tuned solely through $N_B$. This scheme was very flexble, we were able to show that it saturates to the Trotter and QDrift costs in the appropriate limits as well as asymptotic cost improvements for very specific scenarios with high probability, but it's complicated analysis makes it an unfit candidate for inclusion in this thesis. Instead, we will focus on showing how `chop` can outperform Trotter or QDrift with rapidly decaying Hamiltonians in the theorem below.
 
-#todo[Make sure that the conditions below are not flipped. ]
 #theorem("Simulation Improvements for Exponentially Decaying Hamiltonians")[
     Let $H$ be a Hamiltonian $H = sum_i h_i H_i$ such that the spectral norms decay exponentially $h_i = 2^(-i)$. Then the `chop` partitioning scheme that places the largest $log L$ terms into Trotter and the remaining terms into QDrift, which corresponds to a norm cutoff of $h_"chop" = 1 / L$, satisfy the conditions for asymptotic improvement outlined in @thm_composite_higher_order_improvements whenever the following hold.
     + $N_B = L_A = log(L)$.
@@ -557,13 +562,13 @@ where we use $II [ "Proposition"]$ to denote the standard indicator function whe
     $
     Now we just need to check the conditions on each parameter. We will analyze the requirements for $xi$ for each parameter instead of doing a case by case analysis for the two regimes of $xi$.
 
-    Starting with $N_B$, we find that $N_B = L_A in Omega(L_A)$ trivially and that $N_B = log(L) in o(L / (1 - q_B)^(1\/2k))$ along with $N_B = L_A in O(L_A)$ guarantee that $N_B$ meets the conditions in @thm_composite_higher_order_improvements straightforwardly.
+    Starting with $N_B$, we find that $N_B = L_A in Omega(L_A)$ trivially and that $N_B = log(L) in o(L / (1 - q_B)^(1\/2k))$ along with $N_B = L_A in O(L_A)$ guarantee that $N_B$ meets the conditions in @thm_composite_higher_order_improvements.
 
-    We then turn to the next simplest parameter $norm(h_B)$. For $xi >= 1$ we require $norm(h_B) in norm(h)$, and since we computed that $norm(h_B) in Theta(L^(-1))$ and $norm(h) in Theta(1)$ this condition holds. For $xi >= 1$ we require $norm(h_B) in o(norm(h)^xi (sqrt(epsilon) / t)^(1 - xi))$. This can be propagated to a condition on $t$ as
+    We then turn to the next simplest parameter $norm(h_B)$. For $xi >= 1$ we require $norm(h_B) in norm(h)$, and since we computed that $norm(h_B) in Theta(L^(-1))$ and $norm(h) in Theta(1)$ this condition holds. For $0 < xi < 1$ we require $norm(h_B) in o(norm(h)^xi (sqrt(epsilon) / t)^(1 - xi))$. This can be propagated to a condition on $t$ as
     $
         norm(h_B) = Theta(L^(-1)) in o( (sqrt(epsilon) / t )^(1 - xi)) <==> t in o(L^(1 / (1-xi)) sqrt(epsilon)).
     $
-    This makes intuitive sense, as $xi -> 1$ we have $L^(1 / (1 - xi)) -> oo$ and our requirement then holds for all $t$. This follows from the fact that the original requirement, in this limit, boils down to $norm(h_B) in o(norm(h))$ which is true.
+    We note that as $xi -> 1$ we have $L^(1 / (1 - xi)) -> oo$ and our requirement then holds for all $t$.
 
     The last term we will need to address is $L_A$. For $0 < xi < 1$ we require $L_A in o(L)$, which is trivially satisfied. For $xi >= 1$ we need a couple results. The first will be a simplification of the requirements, if we assume that $t^(1 + 1\/2k) >= epsilon^(1\/2k)$, which should be true for simulations of interest, then we have
     $
@@ -584,7 +589,7 @@ where we use $II [ "Proposition"]$ to denote the standard indicator function whe
     $
         L_A in o(L^xi alpha_"C" (H)^(xi \/ 2k))
     $ <tmp_composite_7>
-    is sufficient to satisfy the asymptotic improvement conditions. Once we have this form we are pretty much done, as the following implication follows directly from the definition of $o(dot)$ and $omega(dot)$, and this guarantees @tmp_composite_7
+    is sufficient to satisfy the asymptotic improvement conditions. Once we have this form we are pretty much done, as the following implication follows directly from the definition of $o(dot)$ and $omega(dot)$, and guarantees @tmp_composite_7
     $
         alpha_"C" (H)^(1\/2k) in omega(log(L)^(1\/xi) / L) <==> log(L) in o(L^xi alpha_"C" (H)^(xi \/ 2k)).
     $ <eq_composite_chop_alpha_c_requirement>
@@ -694,7 +699,7 @@ where $h_(i,j)$ is a site-dependent coupling constant and $h_k$ is a site-depend
 ) <fig_composite_spin_chains>
 
 === Imaginary Time Evolutions
-In this section we briefly discuss the application of our Composite simulation approach to implementing imaginary time evolution channels, the results of which are contained below in @fig_composite_sim_imaginary_time. At a high level we see that the results for imaginary time are comparable to the real time evolutions explored above. We see crossover advantages of similar rates as well, with Composite channels for Jellium outperforming Trotter and QDrift by a factor of $approx 19$, $"H"_3$ Composite channels using $approx 2.3$ times less gates, and advantages for a 8 Spin Heisenberg Model are around $approx 3$. The one major distinction we noticed between real and imaginary time simulations came from the 6 site Jellium model at large $beta$, or low-temperature. In this regime we noticed that even the first order Composite channel outperformed a second order Trotter implementation. These simulations suggest that randomized and Composite techniques could be useful in speeding up classical techniques, such as Quantum Monte Carlo @foulkes2001quantum, which are predominantly based on a Trotter-Suzuki decomposition.
+In this section we briefly discuss the application of our Composite simulation approach to implementing imaginary time evolution channels, the results of which are contained below in @fig_composite_sim_imaginary_time. At a high level we see that the results for imaginary time are comparable to the real time evolutions explored above. We see crossover advantages of similar rates as well, with Composite channels for Jellium outperforming Trotter and QDrift by a factor of $approx 19$, $"H"_3$ Composite channels using $approx 2.3$ times less gates, and advantages for a 8 Spin Heisenberg Model are around $approx 3$. The one major distinction we noticed between real and imaginary time simulations came from the 6 site Jellium model at large $beta$, or low-temperature. In this regime we noticed that even the first order Composite channel outperformed a second order Trotter implementation. These simulations suggest that randomized and Composite techniques could be useful in speeding up classical techniques, such as Quantum Monte Carlo @foulkes2001quantum and Path Integral Monte Carlo @herman1982path @yan2017path @ceperley1995path, which are predominantly based on a Trotter-Suzuki decomposition.
 
 #figure(
     grid(

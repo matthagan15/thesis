@@ -40,85 +40,107 @@
 )
 
 #set math.equation(number-align: bottom)
-= Alternative Randomized interactions
 
-For this section I want to show that the following random matrix should satisfy the thermal state prep conditions that I need. The random matrix is a randomly chosen string of Pauli $Z$ operators and a random phase
-$
-    Z = (-1)^(z_0) Z_1^(z_1) tp ... tp Z_n^(z_n).
-$
-Where $"Pr"[z_i = 0] = "Pr"[z_i = 1] = 1 / 2$. Then we need
-$
-    EE_Z Z = 0
-$
-and
-$
-    EE_Z bra(i) Z ket(i) bra(j) Z ket(j) = delta_(i,j).
-$
-First the expectation.
-$
-    EE_Z Z &= EE_(z_0) (-1)^(z_0) product_(i=1)^n EE_(z_i) tp Z_i^(z_i) = 1 / 2 dot (+1) product_(i=1)^n EE_(z_i) tp Z_i^(z_i) + 1 / 2 dot (-1) product_(i=1)^n EE_(z_i) tp Z_i^(z_i) = 0. "    "
-$
-Now the correlation. First we let $z dot k = z_0 + z_1 k_1 + ... + z_n k_n$. Then
-$
-    EE_Z bra(i) Z ket(i) bra(j) Z ket(j) &= EE_Z (-1)^(z dot i) (-1)^(z dot j) \
-    &= EE_Z (-1)^(z dot (i + j)) \
-    &= EE_(z_0) (-1)^(2 z_0) product_(k = 1)^n EE_(z_k) (-1)^(z_k (i_k + j_k)) \
-    &= product_(k = 1)^n EE_(z_k) (-1)^(z_k (i_k + j_k)).
-$
-Now we just need to compute a single one:
-$
-    EE_(z_k) (-1)^(z_k (i_k + j_k)) &= 1 / 2 dot (1) + 1 / 2 dot (-1)^(i_k + j_k) \
-    &= cases(
-        1 " if " i_k = 0\, j_k = 0,
-        0 " if " i_k = 0 \, j_k =1,
-        0 " if " i_k = 1 \, j_k =0,
-        1 " if " i_k = 1\, j_k = 1,
-    ) \
-    &= delta_(i_k , j_k).
-$
-Then we have that the total product is
-$
-    EE_Z bra(i) Z ket(i) bra(j) Z ket(j) = product_(k = 1)^n delta_(i_k , j_k) = delta_(i,j).
-$
+= Sinc Approximation <sec_appendix_sinc>
 
-The absolute last thing I would need is that $EE_Z |lambda_k (Z)|^3 = 1$, which is trivial.
+#lemma([Sinc Function Bounds])[
+    For $sinc^2(x t / 2)$ and $delta_min$ as defined in @eq_delta_min_def, we will make significant use of the following Bounds
+    $
+        |x| >= delta_"min" ==> sinc^2 ( frac(x t, 2) ) &<= frac(4, delta_"min"^2 t^2) \
+        |x| <= frac(sqrt(2), t) ==> sinc^2(frac(x t, 2) ) &>= 1 - frac(|x|^2 t^2, 2).
+    $ <eq_sinc_bounds>
+] <lem_sinc_poly_approx>
+#proof()[
+    The first inequality is rather trivial
+    $
+        "sinc"^2 ((x t) / 2) = (sin^2((x t) / 2) ) / ((x t) / 2)^2 <= 4 / (x^2 t^2) <= frac(4, delta_"min"^2 t^2).
+    $
+
+    The second involves a Taylor Series for $"sinc"^2$, which we compute using the expression of $"sinc"$ as $"sinc"((x t) / 2) = ("sin" (x t) / 2) / ((x t) / 2) = integral_0^1 "cos"(s (x t) / 2) d s$. The first two derivatives can then be computed easily
+    $
+        frac(d "sinc"^2((x t) / 2), d x) &= - t integral_0^1 "sin"(s x) s " "d s integral_0^1 "cos"(s x) d s \
+        frac(d^2 "sinc"^2((x t) / 2), d x^2) &= -t^2 / 2 integral_0^1 "cos"(s x) s^2 d s integral_0^1 "cos"(s x) d s + t^2 / 2 integral_0^1 "sin"(s x) s d s integral_0^1 "sin"(s x) s d s.
+    $
+
+    We can evaluate each of these derivatives about the origin using continuity of the derivatives along with the limits $lim_(x -> 0) "cos"(s x) = 1$ and $lim_(x -> 0) "sin"(s x) = 0$. We can now compute the mean-value version Taylor series as
+
+    $
+        "sinc"^2 (frac(x t, 2)) &= "sinc"^2(0) + x frac(d, d x) "sinc"^2 (frac(x t, 2)) |_(x = 0) + frac(x^2, 2!) frac(d^2, d x^2) "sinc"^2 (frac(x t, 2)) |_(x = x_star),
+    $
+
+    where $x_star in [0,1]$.
+    Plugging in $"sinc"^2(0) = 1$ and $frac(d"sinc"^2(x t / 2), d x)|_(x = 0) = 0$ then yields
+    $
+        abs("sinc"^2((x t) / 2) - 1) = frac(|x|^2, 2) abs((d^2"sinc"^2(x t / 2)) / (d x^2) |_(x = x_star)).
+    $
+    We make use of the rather simplistic bound
+
+    $
+        abs(frac(d^2"sinc"^2(s x t / 2), d x^2)|_(x = x_star)) &<= t^2 / 2 abs(integral_0^1 "cos"(s x_star t / 2) s^2 d s integral_0^1 "cos"(s x_star t / 2) d s) + t^2 / 2 abs(integral_0^1 "sin"(s x_star t / 2) s d s integral_0^1 "sin"(s x_star t / 2) s d s) \
+        &<= t^2 / 2 integral_0^1 abs("cos"(s x_star t / 2)) s^2 d s integral_0^1 abs("cos"(s x_star t / 2 )) d s + t^2 / 2 (integral_0^1 abs("sin"(s x_star t / 2)) |s| d s)^2 \
+        &<= t^2 / 2 integral_0^1 s^2 d s + t^2 / 2 (integral_0^1 s d s)^2 \
+        &<= t^2.
+    $
+
+    This yields the final inequality $|"sinc"^2((x t) / 2 ) - 1| <= frac(|x|^2 t^2, 2)$ which yields @eq_sinc_bounds.
+]
+
+= Random Interaction Model <sec_appendix_random_interaction>
+In this appendix we show that the random interaction model $G$ satisfies the conditions needed in @thm_tsp_first_order_phi and .
+#lemma()[
+    Let $G = U_G Lambda_G U_G^dagger$ be given as described in @sec_tsp_prelims, specifically let $lambda_G(i) = bra(i) Lambda_G ket(i)$ denote the $i^"th"$ eigenvalue. Then the following expectation values hold
+    $
+        EE_G [G] = 0 " and " EE_(Lambda_G) [lambda_G (i) lambda_G (j)] = delta_(i, j).
+    $
+] <lem_tsp_interaction_expectations>
+#proof()[
+    The random interaction $Lambda_G$ is a collection of Pauli $Z$ strings and an overall phase of $plus.minus 1$ as
+    $
+        Lambda_G = (-1)^(z_0) Z_1^(z_1) tp ... tp Z_n^(z_n),
+    $
+    where $"Pr"[z_i = 0] = "Pr"[z_i = 1] = 1 / 2$. We first show that $EE_(Lambda_G) [Lambda_G] = 0$, which ultimately comes from the expectation over the phase. This can be computed as the $z_i$ are independent and the expectation therefore factors
+    $
+        EE_(Lambda_G) [Lambda_G] &= EE_(z_0) (-1)^(z_0) product_(i=1)^n EE_(z_i) tp Z_i^(z_i) \
+        &= 1 / 2 dot (+1) product_(i=1)^n EE_(z_i) tp Z_i^(z_i) + 1 / 2 dot (-1) product_(i=1)^n EE_(z_i) tp Z_i^(z_i) \
+        &= 0.
+    $
+    This implies that the overall interaction has a zero first moment via $EE_G [G] = EE_(U_G) [ U EE_(Lambda_G )[Lambda_G] U_G^dagger]$.
+
+    Next we need to show that the eigenvalues are independent and have variance 1. First we let $z dot k = z_0 + z_1 k_1 + ... + z_n k_n$. First we show how this gives the eigenvalues of $Lambda_G$ as
+    $
+        Lambda_G ket(i) &= (-1)^(z_0) Z_1^(z_1) tp ... tp Z_n^(z_n) ket(i_1) tp ... tp ket(i_n) \
+        &= (-1)^(z_0) (-1)^(z_1) ... (-1)^(z_n) ket(i_1) tp ... tp ket(i_n) \
+        &= (-1)^(z dot i) ket(i).
+    $
+    This allows us to compute the covariance as
+    $
+        EE_(Lambda_G) bra(i) Lambda_G ket(i) bra(j) Lambda_G ket(j) &= EE_(Lambda_G) (-1)^(z dot i) (-1)^(z dot j) \
+        &= EE_(Lambda_G) (-1)^(z dot (i + j)) \
+        &= EE_(z_0) (-1)^(2 z_0) product_(k = 1)^n EE_(z_k) (-1)^(z_k (i_k + j_k)) \
+        &= product_(k = 1)^n EE_(z_k) (-1)^(z_k (i_k + j_k)).
+    $
+    Now we just need to compute a single one:
+    $
+        EE_(z_k) (-1)^(z_k (i_k + j_k)) &= 1 / 2 dot (1) + 1 / 2 dot (-1)^(i_k + j_k) \
+        &= cases(
+            1 " if " i_k = 0\, j_k = 0,
+            0 " if " i_k = 0 \, j_k =1,
+            0 " if " i_k = 1 \, j_k =0,
+            1 " if " i_k = 1\, j_k = 1,
+        ) \
+        &= delta_(i_k , j_k).
+    $
+    Then we have that the total product is
+    $
+        EE_(Lambda_G) bra(i) Lambda_G ket(i) bra(j) Lambda_G ket(j) = product_(k = 1)^n delta_(i_k , j_k) = delta_(i,j).
+    $
+]
 
 
 - The first moment calculation, @thm_tsp_first_order_phi but that follows from $EE_R Lambda_R = 0$.
 - The heisenberg evolution @lem_two_heisenberg_interactions
 - The sandwiched evolution @lem_sandwiched_interaction
 - The remainder bound @thm_remainder_bound.
-
-#theorem([First Order $Phi$])[
-    Let $Phi$ be the thermalizing quantum channel given by @eq:PhiDef and $G$ the randomly chosen interaction term as given by @eq_interaction_def. The $O(alpha)$ term in the weak-coupling expansion in @eq_tsp_phi_taylor_series vanishes
-    $ frac(partial, partial alpha) Phi (rho; alpha) |_(alpha = 0) = 0. $
-]
-#proof()[
-    We start by moving the $alpha$ derivative through the linear operations of partial tracing and integrals so that it can act on the fixed interaction map $Phi_G$
-    $
-        frac(partial, partial alpha) Phi (rho) |_(alpha = 0) &= frac(partial, partial alpha) tr_(cal(H)_E)(integral Phi_G (rho) d G) |_(alpha = 0) \
-        &= tr_(cal(H)_E)(integral frac(partial, partial alpha) Phi_G(rho) d G |_(alpha = 0)) .
-    $
-    Now we use the expression for $Phi_G$ in Eq. @eq_phi_g_definition to compute the derivatives,
-    $
-        frac(partial, partial alpha) Phi_G (rho) =& (frac(partial, partial alpha) e^(+ i (H + alpha G)t)) rho tp rho_E e^(-i (H + alpha G) t) + e^(+i (H + alpha G)t) rho tp rho_E (frac(partial, partial alpha) e^(- i (H + alpha G)t)) \
-        =& (integral_(0)^(1) e^(i s (H+alpha G)t) (i t G) e^(i (1-s) (H+alpha G)t) d s) rho tp rho_E e^(-i(H+alpha G)t) \
-        &+ e^(i(H+alpha G)t) rho tp rho_E (integral_(0)^1 e^(-i s (H+alpha G) t) (- i t G) e^(-i (1-s) (H+alpha G)t) d s).
-    $
-    We can set $alpha = 0$ in the above and introduce the expectation over $G$ that will be required
-    $
-        EE_G [ frac(partial, partial alpha) Phi_G(rho) |_(alpha = 0)] &= i t bb(E)_G integral_0^1 e^(i s H t) G e^(-i s H t) d s e^(i H t) rho tp rho_E e^(-i H t) \
-        &- i t e^(+i H t) rho tp rho_E bb(E)_G integral_0^1 e^(-i s H t) G e^(-i(1-s) H t) d s \
-        &= i t integral_0^1 e^(i s H t) bb(E)_G [G] e^(-i s H t) d s e^(i H t) rho tp rho_E e^(-i H t) \
-        &- i t e^(+i H t) rho tp rho_E integral_0^1 e^(-i s H t) bb(E)_G [G] e^(-i(1-s) H t) d s.
-    $
-    Since our eigenvalues, $D_(i i)$, are mean zero ($EE_D D = 0$) we can compute $bb(E)_G [G]$ and arrive at the lemma statement
-    $
-        EE_G [G] = EE_"haar" EE_D [U_G D U_G^dagger] = EE_"haar" [U_G EE_D [D] U_G^dagger] = 0.
-    $
-]
-
-Ok so this proof follows trivially. Now the next one might be harder, but it actually also just follows from the fact that $EE_R lambda_R (i) lambda_R (j) = delta_(i,j)$.
 
 #lemma()[
     Let $G(t)$ denote the Heisenberg evolved random interaction $G(t) = e^(i H t) G e^(-i H t)$ for a total Hamiltonian $H$. After averaging over the interaction measure the product $G(x) G(y)$ can be computed as
@@ -212,48 +234,6 @@ Wait, why not just use $G ~ U_G Z U_G^dagger$?
 
 = Haar Integrals <sec_tsp_appendix>
 
-#lemma([Sinc Function Bounds])[
-    For $sinc^2(x t / 2)$ and $delta_min$ as defined in @eq_delta_min_def, we will make significant use of the following Bounds
-    $
-        |x| >= delta_"min" ==> sinc^2 ( frac(x t, 2) ) &<= frac(4, delta_"min"^2 t^2) \
-        |x| <= frac(sqrt(2), t) ==> sinc^2(frac(x t, 2) ) &>= 1 - frac(|x|^2 t^2, 2).
-    $ <eq_sinc_bounds>
-] <lem_sinc_poly_approx>
-#proof()[
-    The first inequality is rather trivial
-    $
-        "sinc"^2 ((x t) / 2) = (sin^2((x t) / 2) ) / ((x t) / 2)^2 <= 4 / (x^2 t^2) <= frac(4, delta_"min"^2 t^2).
-    $
-
-    The second involves a Taylor Series for $"sinc"^2$, which we compute using the expression of $"sinc"$ as $"sinc"((x t) / 2) = ("sin" (x t) / 2) / ((x t) / 2) = integral_0^1 "cos"(s (x t) / 2) d s$. The first two derivatives can then be computed easily
-    $
-        frac(d "sinc"^2((x t) / 2), d x) &= - t integral_0^1 "sin"(s x) s " "d s integral_0^1 "cos"(s x) d s \
-        frac(d^2 "sinc"^2((x t) / 2), d x^2) &= -t^2 / 2 integral_0^1 "cos"(s x) s^2 d s integral_0^1 "cos"(s x) d s + t^2 / 2 integral_0^1 "sin"(s x) s d s integral_0^1 "sin"(s x) s d s.
-    $
-
-    We can evaluate each of these derivatives about the origin using continuity of the derivatives along with the limits $lim_(x -> 0) "cos"(s x) = 1$ and $lim_(x -> 0) "sin"(s x) = 0$. We can now compute the mean-value version Taylor series as
-
-    $
-        "sinc"^2 (frac(x t, 2)) &= "sinc"^2(0) + x frac(d, d x) "sinc"^2 (frac(x t, 2)) |_(x = 0) + frac(x^2, 2!) frac(d^2, d x^2) "sinc"^2 (frac(x t, 2)) |_(x = x_star),
-    $
-
-    where $x_star in [0,1]$.
-    Plugging in $"sinc"^2(0) = 1$ and $frac(d"sinc"^2(x t / 2), d x)|_(x = 0) = 0$ then yields
-    $
-        abs("sinc"^2((x t) / 2) - 1) = frac(|x|^2, 2) abs((d^2"sinc"^2(x t / 2)) / (d x^2) |_(x = x_star)).
-    $
-    We make use of the rather simplistic bound
-
-    $
-        abs(frac(d^2"sinc"^2(s x t / 2), d x^2)|_(x = x_star)) &<= t^2 / 2 abs(integral_0^1 "cos"(s x_star t / 2) s^2 d s integral_0^1 "cos"(s x_star t / 2) d s) + t^2 / 2 abs(integral_0^1 "sin"(s x_star t / 2) s d s integral_0^1 "sin"(s x_star t / 2) s d s) \
-        &<= t^2 / 2 integral_0^1 abs("cos"(s x_star t / 2)) s^2 d s integral_0^1 abs("cos"(s x_star t / 2 )) d s + t^2 / 2 (integral_0^1 abs("sin"(s x_star t / 2)) |s| d s)^2 \
-        &<= t^2 / 2 integral_0^1 s^2 d s + t^2 / 2 (integral_0^1 s d s)^2 \
-        &<= t^2.
-    $
-
-    This yields the final inequality $|"sinc"^2((x t) / 2 ) - 1| <= frac(|x|^2 t^2, 2)$ which yields @eq_sinc_bounds.
-]
-
 == Haar Integral Proofs <sec_appendix_haar>
 
 In this section we present the more technical work needed to state our results in @sec_tsp_weak_coupling. @lem_two_heisenberg_interactions and @lem_sandwiched_interaction are used to compute the effects of the randomized interactions in a form that are usable in the main result of @lem_tsp_transitions. @lem_haar_two_moment can be derived from Appendix C in @brandao2021complexity.
@@ -283,14 +263,13 @@ In this section we present the more technical work needed to state our results i
         &quad times EE_(U_G) [ bra(a) U_G ket(b) bra(c) U_G ket(d) bra(b) U_G^(dagger) ket(c) bra(d) U_G^dagger ket(e) ] EE_(Lambda_G) [ Lambda_G (b) Lambda_G (d) ] \
         &= sum_(a, b, c, d, e) delta_(b d) ket(a) bra(e) e^(-i (lambda(c) - lambda(a))x) e^(-i (lambda(e) - lambda(c))y) \
         &quad times EE_(U_G) [ bra(a) U_G ket(b) bra(c) U_G ket(d) bra(b) U_G^(dagger) ket(c) bra(d) U_G^dagger ket(e) ].
+    $ <eq_appendix_tmp_1>
+    We used the fact that the eigenvalues of $G$ are I.I.D with variance 1 to make the substitution $EE_(Lambda_G) [Lambda_G (b) Lambda_G (d)] = delta_(b, d)$. This allows us to reduce the sum over $d$ to the condition when $d=b$, which greatly simplifies the Haar expectation we have to take. As our eigenvectors are chosen from the Clifford group, which forms a 2-design, we can use @lem_haar_two_moment to write
     $
-    We used the fact that the eigenvalues of $G$ are I.I.D with variance 1 to make the substitution $EE_(Lambda_G) [Lambda_G (b) Lambda_G (d)] = delta_(a,b)$. This allows us to reduce the sum over $d$ to the condition when $d=b$, which greatly simplifies the Haar expectation we have to take. Using @lem_haar_two_moment we have
+        EE_(U_G) [bra(a) U_G ket(b) bra(c) U_G ket(b) bra(b) U_G^(dagger) ket(c) bra(b) U_G^dagger ket(e) ] &= EE_U [bra(a) U ket(b) bra(c) U ket(b) bra(b) U^(dagger) ket(c) bra(b) U^dagger ket(e) ] \
+        &=1 / (dim^2 - 1) (delta_(a c) delta_(c e) + delta_(a e) - frac(1, "dim") (delta_(a c) delta_(c e) + delta_(a e))). "      "
     $
-        &EE_(U_G) [bra(a) U_G ket(b) bra(c) U_G ket(b) bra(b) U_G^(dagger) ket(c) bra(b) U_G^dagger ket(e) ] = 1 / (dim^2 - 1) (delta_(a c) delta_(c e) + delta_(a e) - frac(1, "dim") (delta_(a c) delta_(c e) + delta_(a e))). "      "
-    $
-
-    and we use @lem_haar_two_moment to compute the Haar integral, which simplifies greatly due to the repeated $b$ index. Plugging the result into the above yields the following
-
+    Plugging this into @eq_appendix_tmp_1 above yields the following
     $
         &= frac(1, "dim"^2 - 1) sum_(a, b, c, e) ket(a) bra(e) e^(-i (lambda(c) - lambda(a))x) e^(-i (lambda(e) - lambda(c))y) (delta_(a c) delta_(c e) + delta_(a e) - frac(1, "dim") (delta_(a c) delta_(c e) + delta_(a e))) \
         &= frac(1, "dim"^2 - 1) (1 - frac(1, "dim")) sum_(a, b, c, e) ket(a) bra(e) e^(-i (lambda(c) - lambda(a))x) e^(-i (lambda(e) - lambda(c))y) delta_(a e) (1 + delta_(a c)) \
@@ -324,29 +303,11 @@ In this section we present the more technical work needed to state our results i
         &= frac(1, "dim" + 1) sum_(c,f) e^(i (lambda(c) - lambda(a))x) e^(i (lambda(b) - lambda(f))y) ket(c) bra(f) (delta_(c a) delta_(b f) + delta_(c f) delta_(a b)) \
         &= frac(1, "dim" + 1) (ket(a) bra(b) + delta_(a b) sum_(c) e^(i(lambda(c) - lambda(a))(x-y)) ket(c) bra(c)).
     $
-    We used the fact that $EE_(Lambda_G) [Lambda_G (d) Lambda_G (e)] = delta_(d, e)$ to eliminate the sum over $e$. Re-indexing by $a |-> (i,j)$, $b |-> (k,l)$ and $c |-> (m,n)$ results in the expression given in the statement of the lemma.
+    We used the fact that $EE_(Lambda_G) [Lambda_G (d) Lambda_G (e)] = delta_(d, e)$ to eliminate the sum over $e$. We used the same Haar 2-design argument to compute the expectation value $EE_(U_G) [dot]$. Re-indexing by $a |-> (i,j)$, $b |-> (k,l)$ and $c |-> (m,n)$ results in the expression given in the statement of the lemma.
 ]
 
-#todo[Need to update the lemma number for this to essentially be a manual "restatable."]
-#lemma()[
-    Given a system Hamiltonian $H_S$, an environment Hamiltonian $H_E$, a simulation time $t$, and coupling coefficient $alpha$, let $Phi_G$ denote the time evolution channel under a fixed interaction term $G$ as given in @eq_phi_g_definition, let $chi$ denote the following coherence prefactor
-    $
-        chi(i, j) := sum_(a,b: Delta (i,j,|a,b) != 0) (1 - i Delta (i,j|a,b)t - e^(-i Delta (i,j|a,b) t)) / (Delta (i,j|a,b)^2),
-    $
-    and let $eta(i, j)$ denote the degeneracy of the $(i,j)^"th"$ eigenvalue of $H = H_S + H_E$. Then the $O(alpha^2)$ term of $Phi_G$ in a weak-coupling expansion is given by
-    $
-        &alpha^2 / 2 EE_G [diff^2 / (diff alpha^2) Phi_G (ketbra(i \,j, k \,l))|_(alpha = 0) ] \
-        =& - (alpha^2 e^(i Delta (i,j|k,l) t)) / (dim + 1) (chi(i, j) + chi(k, l)^* + t^2 / 2 (eta(i, j) + eta(k, l)) )ketbra(i\,j, k\,l) \
-        &+ angle.l i,j|k,l angle.r (alpha^2 t^2) / (dim + 1) sum_(a,b) sinc^2 ( Delta(i, j|a, b) t / 2) ketbra(a\,b, a\,b)
-    $
-    For $ket(i \, j) = ket(k \, l)$ the above expression simplifies to
-    $
-        &alpha^2 / 2 EE_G [diff^2 / (diff alpha^2) Phi_G (ketbra(i \,j, i \,j))|_(alpha = 0) ] \
-        &= tilde(alpha)^2 sum_((a,b) != (i,j)) sinc^2 (Delta (i,j|a,b) t / 2) (ketbra(a\, b, a\, b) - ketbra(i\, j, i \,j))
-    $
-    which also demonstrates that $tr cal(T)(rho) = 0$ for $rho$ such that $[rho, H_S] = 0$.
-]
-#proof()[
+Now that we have computed the expected Heisenberg evolution of a two-body interaction term we can compute the second order transition amplitudes. We will not restate the lemma here for brevity.
+#proof([of @lem_tsp_transitions])[
     To start we would like to note that we will use a single index notation to refer to the joint system-environment eigenbasis during this proof to help shorten the already lengthy expressions. We will convert back to a double index notation to match the statement of the theorem. We start from the expression for the first derivative of the channel $frac(diff, partial alpha) Phi_G (rho_S)$ given by @eq_first_order_alpha_derivative. To take the second derivative there are six factors involving $alpha$, so we will end up with six terms. We repeat @eq_first_order_alpha_derivative below, add a derivative, and label each factor containing an $alpha$ for easier computation
     $
         frac(partial^2, partial alpha^2) Phi_G (rho_S) &= frac(partial, partial alpha) (integral_(0)^(1) underbrace(e^(i s (H+alpha G)t), "(A)") (i t G) underbrace(e^(i (1-s) (H+alpha G)t), "(B)") d s " " rho " " underbrace(e^(-i(H+alpha G)t), "(C)") ) \
@@ -428,7 +389,7 @@ In this section we present the more technical work needed to state our results i
         &= frac(- t^2, dim + 1) rho(t) (sum_(i) sum_(j : lambda(i) != lambda(j)) frac(1 + i (lambda(i) - lambda(j))t - e^(i (lambda(i) - lambda(j))t), t^2 (lambda(i) - lambda(j))^2) ket(i)bra(i) +frac(1, 2) sum_(i) (eta(i) + 1) ket(i)bra(i)) \
         &= frac(- 1, dim + 1) rho(t) (sum_i sum_(j: (Delta_(i j) != 0)) frac(1 + i Delta_(i j)t - e^(i Delta_(i j)t), Delta_(i j)^2) ket(i)bra(i) + frac(t^2, 2)sum_i (eta(i) + 1) ket(i)bra(i))
     $
-    which is identical to $integral (E) d G$.
+    which is identical to $EE_G (E)$.
 
     The last two terms $(C) = (D)$ are computed as follows:
     #set math.equation(number-align: top)
@@ -474,14 +435,13 @@ In this section we present the more technical work needed to state our results i
         &= sum_(a,b: Delta(i, j| a, b) != 0) frac(2 - e^(-i Delta(i, j| a, b) t) - e^(+i Delta(i, j| a, b) t), Delta(i, j|a, b)^2) \
         &= sum_(a,b: Delta(i, j| a, b) != 0) t^2 sinc^2 ( frac(Delta(i, j| a, b) t, 2) ),
     $
-    where the last step follows from a trigonometric identity (see @eq_trig_end in @sec_appendix_haar for details). Since $sinc(0) = 1$ the $eta(i, j)$ term can be expressed as $eta(i, j) = sum_(a,b : Delta(i, j|a, b) = 0) sinc^2 ( frac(Delta(i, j| a, b) t, 2) )$. Plugging this into Eq. @eq_el_gigante gives
+    where the last step follows from a trigonometric identity (see @eq_trig_end). Since $sinc(0) = 1$ the $eta(i, j)$ term can be expressed as $eta(i, j) = sum_(a,b : Delta(i, j|a, b) = 0) sinc^2 ( frac(Delta(i, j| a, b) t, 2) )$. Plugging this into Eq. @eq_el_gigante gives
     $
         &EE_G [ bra(i\,j) cal(T) (ket(i\,j)bra(i\,j)) ket(i\,j) ] \
         &= bra(i\,j) (-frac(alpha^2 t^2, dim + 1) sum_(a,b) sinc^2 ( frac(Delta(i, j| a, b) t, 2) ) ket(i\,j)bra(i\,j) + sum_(a,b) sinc^2( frac(Delta(i, j | a, b)t, 2) ) ket(a\,b)bra(a\,b) ) ket(i\,j) \
         &= -frac(alpha^2 t^2, dim + 1) sum_((a,b) != (i,j)) sinc^2 ( frac(Delta(i, j| a, b) t, 2) ).
     $
     As a by-product of this computation we have also shown that $tr(cal(T)(rho)) = 0$ and that our mapping is trace preserving to $O(alpha^2)$.
-
 ]
 
 #proof([of @thm_remainder_bound])[
