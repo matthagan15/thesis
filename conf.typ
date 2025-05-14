@@ -90,12 +90,16 @@
     ]
 
     page[
-        #set par(leading: 1.5em, justify: true)
+        #set par(leading: 1.5em, justify: true, first-line-indent: 5mm)
         #align(
             center,
             text(size: 14pt, weight: "bold", [Acknowledgements]),
         )
-        The ideas for this thesis began in the spring of 2016, when my roommate Michael Traub introduced me to an algorithm known as Hamiltonian Monte Carlo.
+        There are many people I would like to thank for helping me through my Ph.D. First and foremost is my family, including but not certainly not limited to, my parents, Frank, Rhonda, Brittany, Veronica, JT, and my Grandfather. You all serve as my compass, and I cannot remember how many times I have had a difficult problem or decision to make and I talk to all of y'all to figure out what I should do. You all have taught me what the right priorities to have in life are and, most importantly, how to stay grounded while pursuing my dreams.
+
+        I would like to also thank all of the friends throughout my graduate school journey. Starting with the cohort at the University of Washington who made our first year hallway sheer entertainment, despite the constant pressure of assignments and teaching. A special thanks is in order to my friends in Seattle, JT, Bailey, Diego, Caitlin, and Ann, for all the talks, hikes, parties, and Super Smash Brothers. I would also like to thank the friends I have made in Toronto for helping me adjust to moving to a new city and new country. To Nick, my drumming and life mentor. To Aaron, Luke, Robyn, Julian, Griffin, Asenia, Deepanshu, and Joscelyn for making the neighborhood a fun place to be. To Alisha, for trying new things with me and making my last year in graduate school the best it could be. And lastly to my abhi Burak. I have routinely wondered how someone raised on the other side of the world could value the same things in life that I do, the same way I do. You have been a (literal) constant in my life and have picked me up from rock bottoms with nothing but a sense of brotherhood and compassion. You have made the everyday worthwhile, and I hope I have returned the favor even half as much.
+
+        Before I even applied to graduate school I did not think I was capable of even being accepted for, and much less completing, a Ph.D, so a special thank you to Maya Sathaye and Ibrahim Cisse for believing in me strongly enough to change my mind. began in the Spring of 2016, when my roommate Michael Traub introduced me to an algorithm known as Hamiltonian Monte Carlo. There are many other things to thank you for, but a special thanks for planting the seeds of an idea that became this thesis.
     ]
 
     page[
