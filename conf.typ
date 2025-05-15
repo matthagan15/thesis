@@ -103,7 +103,7 @@
 
         There are a number of people at the University of Toronto I would like to thank. To the members of my research group, thank you for putting up with my hare-brained ideas and claims that every algorithm is ultimately a thermal state preparation routine. To Juan Castañeda, Matt Pocrnic, Serene Shum, Sophia Simon, Abhinav Muraleedharan, Hokiat Lim, and Raghav Banka for being friends first and foremost. I would also like to thank Dvira Segal, for somehow finding the time meet and discuss issues that sometimes came up while I developed these ideas further and to Stephen Julian for providing valuable feedback during our meetings.
 
-        And lastly I would like to thank Nathan. I am incredibly grateful I decided to skip the remaining "dog and pony" sessions to chat science with someone who had seriously presented on simulating quantum mechanics in Minecraft. Thank you for your commitment to teaching me your craft, for giving me the freedom to pursue my own crazy ideas, for supporting these ambitions to your best abilities, and for pushing me just a bit when I was on the verge of giving up. Your tireless devotion to your collaborators, students, and friends has surely made their lives all the better.
+        And lastly I would like to thank Nathan. I am incredibly grateful I decided to skip the remaining "dog and pony" sessions to chat science with someone who had seriously presented on simulating quantum mechanics in Minecraft. Thank you for your commitment to teaching me your craft, for pushing me when I needed it, for giving me the freedom to pursue my own crazy ideas, and for supporting these ambitions however possible.
     ]
     page[
         #quote(
