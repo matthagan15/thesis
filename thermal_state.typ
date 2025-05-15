@@ -158,7 +158,7 @@ We then see that if $[ rho, H] = 0$ then $Phi (rho; 0) = id (rho)$, and as we re
     $ <eq_el_gigante_dos>
     which also demonstrates that $tr cal(T)(rho) = 0$ for $rho$ such that $[rho, H_S] = 0$.
 ] <lem_tsp_transitions>
-The proof of this lemma uses similar techniques to the proof of @thm_tsp_first_order_phi but is significantly more technical and can be found in @sec_appendix_haar.
+The proof of this lemma uses similar techniques to the proof of @thm_tsp_first_order_phi but is significantly more technical and can be found in @sec_tsp_appendix.
 
 
 Next we will compute the effects of the channel on just the system alone which involves computing the partial trace $tr_(hilb_E)$. We can either do this for a generic environment, which results in summations over $hilb_E$ floating around, or specialize to a specific choice of $hilb_E$ and compute the summation. For the remainder of this paper we will choose the latter option with a single qubit environment $hilb_E = CC^2$ and denote the Hamiltonian $H_E = mat(0, 0; 0, gamma)$. Our environment input states then become
@@ -387,7 +387,7 @@ Since we will be effectively reducing our quantum dynamics to classical dynamics
     $
 ]<cor_tsp_t_off_norm>
 #proof()[
-    This result follows from applying bounds on the sinc function from @lem_sinc_poly_approx (given in @sec_appendix_haar) to the worst-case scenario off-resonance terms given in @eq_off_resonance.
+    This result follows from applying bounds on the sinc function from @lem_sinc_poly_approx (given in @sec_tsp_appendix) to the worst-case scenario off-resonance terms given in @eq_off_resonance.
     $
         i != j ==> abs(bra(j)cal(T)_("off")(ketbra(i, i))ket(j)) &<= tilde(alpha)^2 (4) / (delta_(min)^2 t^2) ( 1 + q(0) + q(1) ) = (8 alpha^2) / (delta_(min)^2(dim + 1)).
     $
@@ -415,7 +415,7 @@ Since we will be effectively reducing our quantum dynamics to classical dynamics
         norm(R_(Phi) (rho ; alpha))_1 <= 4 dim (alpha t)^3.
     $
 ]<thm_remainder_bound>
-The proof of the remainder bound follows from the triangle inequality and remainder bounds on Taylor series and is given in @sec_appendix_haar.
+The proof of the remainder bound follows from the triangle inequality and remainder bounds on Taylor series and is given in @sec_tsp_appendix.
 
 == Single Qubit and Truncated Harmonic Oscillator <sec_tsp_oscillator>
 
@@ -673,7 +673,7 @@ This system also represents a transition from the single qubit to more general s
 === Numerics <sec_specific_numerics>
 Now that we have rigorous bounds on each of the parameters $alpha, t$ and $L$ needed to prepare thermal states of simple systems, we turn to numerics to test these bounds. The first question we explore is how the total simulation time $L dot t$ behaves as a function of $alpha$ and $t$. After, we examine the dependence of the total simulation time on the inverse temperature $beta$ and we observe a Mpemba-like effect where we find higher temperature states can cool faster than lower temperature ones @auerbach1995supercooling. Finally, we demonstrate how our proof techniques could be leading to worse $epsilon$ scaling than appears numerically necessary. Throughout these experiments we have the same numeric method of starting with the maximally mixed state $rho_S (0)$ and performing a search on the minimal number of interactions needed for the mean trace distance over all samples to be less than the target $epsilon$. The number of samples is increased until the variance in the trace distance is less than an order of magnitude below the mean.
 
-In @fig_tot_time_vs_single_time we explore the total simulation time needed to prepare a thermal state with $beta = 2.0$ and $epsilon = 0.05$ for a single qubit system. We plot the total simulation time $L dot t$ needed as a function of $t$ for various settings of $alpha$. We find that increasing both parameters tends to decrease the overall cost until a saturation point is reached, which is at a value of $t$ slightly larger $1 / alpha$. For a fixed value of $alpha$ this initial decrease in $L dot t$ is inverse with $t$, in agreement with our finding of $L in tilde(O)(t^(-2))$ in Eq. \eqref{eq:single_qubit_l_bound_2} for $sigma = 0$. However, this process of decreasing the cost by increasing $t$ can only scale so far and appears to run into a minimum number of interactions $L$ required to thermalize. After this saturation point $L dot t$ scales linearly with $t$, indicating that the number of interactions $L$ has reached a minimum.
+In @fig_tot_time_vs_single_time we explore the total simulation time needed to prepare a thermal state with $beta = 2.0$ and $epsilon = 0.05$ for a single qubit system. We plot the total simulation time $L dot t$ needed as a function of $t$ for various settings of $alpha$. We find that increasing both parameters tends to decrease the overall cost until a saturation point is reached, which is at a value of $t$ slightly larger $1 / alpha$. For a fixed value of $alpha$ this initial decrease in $L dot t$ is inverse with $t$, in agreement with our finding of $L in tilde(O)(t^(-2))$ in @thm_single_qubit for $sigma = 0$. However, this process of decreasing the cost by increasing $t$ can only scale so far and appears to run into a minimum number of interactions $L$ required to thermalize. After this saturation point $L dot t$ scales linearly with $t$, indicating that the number of interactions $L$ has reached a minimum.
 
 Another major take away from @fig_tot_time_vs_single_time is that it demonstrates that our thermalizing channel is exceptionally robust beyond the weak-coupling expansion in which we can theoretically analyze it. The values of $alpha t$ used in the far right of the plot completely break our weak-coupling expansion, as we have values of $tilde(alpha)$ that reach up to 500. One interesting phenomenon that we do not have an explanation for is the ``clumping" of various settings of $alpha$ in the large $t$ limit. As $alpha t$ dictates the amount of time that the random interaction term $G$ is simulated for, it could be that once a minimum amount of randomness is added via this interaction it is no longer beneficial in causing transitions among system eigenstates.
 
