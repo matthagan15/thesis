@@ -633,15 +633,15 @@ Using OpenFermion @mcclean2020openfermion and PySCF @pyscf we were able to compu
 
 The results of the simulations we conducted are found in @fig_composite_hchain_1. Details of the partitioning schemes determined by the
 #figure(
-    image("composite_numerics/H3update.png"),
-    caption: [Hydrogen 3 simulation. The crossover time for first order Trotter is around $norm(H) t approx 0.15$ with a crossover ratio of $approx 2.3$. For second order Trotter the crossover time is $approx 0.2$ with a crossover ratio of $approx 2$. Note that the simulation methods with a tilde denote a GBRT optimized partition and the unmarked method is a hand-tuned `chop` partitioning scheme. #todo[Replace the $cal(X)$ in the legend with $cal(C)$. ]],
+    image("composite_numerics/H3update_new_legend.png"),
+    caption: [Hydrogen 3 simulation. The crossover time for first order Trotter is around $norm(H) t approx 0.15$ with a crossover ratio of $approx 2.3$. For second order Trotter the crossover time is $approx 0.2$ with a crossover ratio of $approx 2$. Note that the simulation methods with a tilde denote a GBRT optimized partition and the unmarked method is a hand-tuned `chop` partitioning scheme.],
 ) <fig_composite_hchain_1>
 
 #figure(
     grid(
         columns: 2,
         row-gutter: 5mm,
-        image("composite_numerics/H3_nb.png"), image("composite_numerics/H3_w.png"),
+        image("composite_numerics/H3_nb_new_legend.png"), image("composite_numerics/H3_w_new_legend.png"),
         "(a)", "(b)",
     ),
     caption: [(a) Optimal number of QDrift samples $N_B$ for $"H"_3$ as determined by GBRT. (b) Spectral weight of the Trotter partition $norm(h_A)$ computed by GBRT applied to $h_"chop"$, normalized by the total spectral weight of $"H"_3$ as a function of simulation time $t$.],
@@ -672,14 +672,14 @@ In @fig_composite_jelly_sims below we show how the cost of simulating Jellium fo
 #figure(
     grid(
         columns: 2, row-gutter: 3mm,
-        image("composite_numerics/Jellium5.png"), image("composite_numerics/Jellium6.png"),
+        image("composite_numerics/Jellium5_new_legend.png"), image("composite_numerics/Jellium6_new_legend.png"),
         "(a) Jellium 5", "(b) Jellium 6",
-        grid.cell(colspan: 2, image("composite_numerics/Jellium7.png", width: 50%)), grid.cell(
+        grid.cell(colspan: 2, image("composite_numerics/Jellium7_new_legend.png", width: 50%)), grid.cell(
             colspan: 2,
             "(c) Jellium 7",
         )
     ),
-    caption: [Query costs associated with exact implementation of various product formulas for different Jellium models.],
+    caption: [Query costs associated with exact implementation $cal(C)^((2,2))$ of various product formulas for different Jellium models.],
 ) <fig_composite_jelly_sims>
 
 === Spin Graphs
@@ -692,26 +692,29 @@ where $h_(i,j)$ is a site-dependent coupling constant and $h_k$ is a site-depend
     grid(
         columns: 2,
         row-gutter: 3mm,
-        image("composite_numerics/graph7.png"), image("composite_numerics/graph8.png"),
+        image("composite_numerics/graph7_new_legend.png"), image("composite_numerics/graph8_new_legend.png"),
         [(a) 7 Spin $H_"graph"$], [(b) 8 Spin $H_"graph"$],
     ),
     caption: [Operator query cost plots for 7 spin model (a) and 8 spin model (b), which have crossover ratios of $r_"cross" = 4.1$ and $r_"cross" = 3.9$ respectively.],
 ) <fig_composite_spin_chains>
 
 === Imaginary Time Evolutions
+$
+    cal(C)^((1,2))
+$
+
 In this section we briefly discuss the application of our Composite simulation approach to implementing imaginary time evolution channels, the results of which are contained below in @fig_composite_sim_imaginary_time. At a high level we see that the results for imaginary time are comparable to the real time evolutions explored above. We see crossover advantages of similar rates as well, with Composite channels for Jellium outperforming Trotter and QDrift by a factor of $approx 19$, $"H"_3$ Composite channels using $approx 2.3$ times less gates, and advantages for a 8 Spin Heisenberg Model are around $approx 3$. The one major distinction we noticed between real and imaginary time simulations came from the 6 site Jellium model at large $beta$, or low-temperature. In this regime we noticed that even the first order Composite channel outperformed a second order Trotter implementation. These simulations suggest that randomized and Composite techniques could be useful in speeding up classical techniques, such as Quantum Monte Carlo @foulkes2001quantum and Path Integral Monte Carlo @herman1982path @yan2017path @ceperley1995path, which are predominantly based on a Trotter-Suzuki decomposition.
 
 #figure(
     grid(
         columns: 2, row-gutter: 5mm,
-        image("composite_numerics/iH3.png"), image("composite_numerics/iHeisenberg8.png"),
+        image("composite_numerics/iH3_new_legend.png"), image("composite_numerics/iHeisenberg8_new_legend.png"),
         [(a) $"H"_3$], [(b) 8 Spin Heisenberg],
-        grid.cell(image("composite_numerics/iJellium6.png", width: 50%), colspan: 2),
+        grid.cell(image("composite_numerics/iJellium6_new_legend.png", width: 50%), colspan: 2),
         grid.cell(colspan: 2, "(c) 6 Site Jellium")
     ),
     caption: [Operator exponential costs for imaginary time simulations. In (a) the crossover advantage is $r_"cross" = 2.3$, in (b) $r_"cross" = 3.1$, and in (c) $r_"cross" = 18.8$.],
 ) <fig_composite_sim_imaginary_time>
 
 == Discussion <sec:composite_discussion>
-
 In this chapter we rigorously showed how to simulate the time evolution of a time-independent Hamiltonian using product formulas. These product formulas are easily implementable on a quantum computer using only single qubit rotations and CNOTs for Hamiltonians that are given as a sum of Pauli operators. We showed how various chemical systems, such as Hydrogen chains and the UEG (Jellium) are naturally expressed in these forms via Jordan-Wigner encodings. The main contribution of this chapter however is the demonstration that splitting these resulting Hamiltonians into two pieces and simulating these two partitions using different product formulas can lead to provably better perfomance. We showed this analytically for systems in which the spectral norm decays exponentially (i.e. $h_i = 2^(-i)$) and gave an explicit partitioning of the terms based on spectral weight, which we denoted `chop`. We verified that these results are not just analytic musings and provided concrete numeric comparisons between each of the methods, Trotter-Suzuki, QDrift, and Composite, on standard quantum chemistry benchmark systems. We found a range of cost improvements ranging from $2 - 18$ fold reductions in the number of operator exponentials required.
