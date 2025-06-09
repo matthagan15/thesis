@@ -73,14 +73,18 @@
                 University of Toronto\
                 #graduation-year
             ] \
-            #text(size: 14pt, weight: "bold")[Abstract]
+            #text(size: 14pt, weight: "bold", font: "New Computer Modern")[Abstract]
         ]
-        #set par(leading: 1.5em)
-        The simulation of quantum systems is the most promising candidate for economic advantages of large scale, fault tolerant quantum computers over classical computers. The development of Markov Chain Monte Carlo techniques is one of the central tools for studying quantum systems on classical computers. We adapt modern techniques from classical Monte Carlo algorithms, specifically the Hamiltonian Monte Carlo (HMC) algorithm, to an algorithm for preparing thermal states of quantum systems on digital quantum computers. The simulation of time dynamics is a crucial subroutine for preparing thermal states using HMC, and to this end we provide new techniques for combining existing product formulas to achieve lower costs for overall simulations. These methods provide an avenue for extending the Repeated Interactions framework for studying quantum thermodynamics to arbitrary systems.
+        #set par(leading: 1.5em, justify: true)
+        #set text(font: "New Computer Modern")
+        The simulation of quantum systems is the most promising candidate for computational advantages of large scale, fault tolerant quantum computers over classical computers. Two fundamental problems that appear when simulating quantum systems on quantum computers are the preparation of good input states to the simulation and the problem of decomposing the time evolution operator $e^(i H t)$ into primitive gates that are available on the quantum computer. This thesis presents two new algorithms for solving these problems. The first is a time evolution algorithm that approximates the time evolution operator by combining two previously developed techniques. We bound the error of this composite approach and determine analytic conditions on when this approach can lead to cost savings of the overall simulation. These savings are then verified through extensive numerics. This simulation algorithm can then be used to prepare thermal states, which are typical input states that have a high overlap with the ground state. Our algorithm is inspired by Hamiltonian Monte Carlo, which is a classical sampling algorithm that utilizes Hamiltonian dynamics to sample from probability distributions. We bound the cost of our quantum thermal state preparation algorithm in terms of the total amount of time needed to simulate the Hamiltonian of the system in four scenarios: single qubit systems, truncated harmonic oscillators, non-degenerate systems where one knows the eigenvalues, and non-degenerate systems where no eigenvalue knowledge is present. We numerically demonstrate that this algorithm works as guaranteed and can outperform analytic worst-case bounds.
+
+
+        //   We adapt modern techniques from classical Monte Carlo algorithms, specifically the Hamiltonian Monte Carlo (HMC) algorithm, to an algorithm for preparing thermal states of quantum systems on digital quantum computers. The simulation of time dynamics is a crucial subroutine for preparing thermal states using HMC, and to this end we provide new techniques for combining existing product formulas to achieve lower costs for overall simulations. These methods provide an avenue for extending the Repeated Interactions framework for studying quantum thermodynamics to arbitrary systems.
     ]
 
     page[
-        #place(horizon + right, [_This thesis is dedicated to \ my brother JT and my sisters \ Brittany and Veronica._])
+        #place(horizon + right, [_This thesis is dedicated to\ my brother JT and my sisters\ Brittany and Veronica._])
     ]
 
     page[
