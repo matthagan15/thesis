@@ -114,7 +114,7 @@ We now introduce QDrift @qdriftCampbell, one of the first randomized compilers f
 #definition("QDrift Channel")[
     Let $N_B$ denote the number of samples, $norm(h) = sum_(i = 1)^L h_i$, and $tau := (norm(h) t) / N_B$. The QDrift channel for a single sample is given as
     $
-        cal(Q) (rho; t, 1) := sum_(i = 1)^L h_i / norm(h) e^(- i H_i norm(h) t) dot rho dot e^(+ i H_i norm(h) t),
+        cal(Q) (rho; t, 1) := sum_(i = 1)^L h_i / norm(h) e^(i H_i norm(h) t) dot rho dot e^(- i H_i norm(h) t),
     $
     and the QDrift channel for $N_B$ samples is
     $
