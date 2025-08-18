@@ -44,8 +44,8 @@ We now show how to implement basic product formulas, namely Trotter-Suzuki or ju
 #definition("Trotter-Suzuki Formulae")[
     Given a Hamiltonian $H$, let $S^((1))(t)$ denote the first-order Trotter-Suzuki time evolution operator and $cal(S)^((1))$ the corresponding channel as
     $
-        S^((1))(t) &:= e^(i h_L H_L t) dots e^(i h_1 H_1 t) = product_(i = 1)^(L) e^(i h_i H_i t), \
-        cal(S)^((1))(rho; t) &:= S^((1))(t) dot rho dot S^((1))(t)^dagger.
+                  S^((1))(t) & := e^(i h_L H_L t) dots e^(i h_1 H_1 t) = product_(i = 1)^(L) e^(i h_i H_i t), \
+        cal(S)^((1))(rho; t) & := S^((1))(t) dot rho dot S^((1))(t)^dagger.
     $ <eq:trotter_first_order>
     This first order formula serves as the base case for the recursively defined higher-order formulas
     #set math.equation(number-align: bottom)
@@ -77,18 +77,18 @@ $
 $ <eq_alpha_comm_upper_bound>
 Similar arguments show the following
 $
-    alpha_"C" (A, 2k) &<= 2^(2k) norm(h_A)^(2k + 1)
+    alpha_"C" (A, 2k) & <= 2^(2k) norm(h_A)^(2k + 1)
 $ <eq_alpha_comm_upper_bound_2>
 $
-    alpha_"C" ({A, B}, 2k) &<= 2^(2k) sum_(i = 1)^(2k) norm(h_A)^l norm(h_B)^(2k + 1 - l) <= 2^(2k) norm(h_A)^(2k + 1).
+    alpha_"C" ({A, B}, 2k) & <= 2^(2k) sum_(i = 1)^(2k) norm(h_A)^l norm(h_B)^(2k + 1 - l) <= 2^(2k) norm(h_A)^(2k + 1).
 $ <eq_alpha_comm_upper_bound_3>
 
 This allows us to give the error associated with a a Trotter-Suzuki formula in the following theorem.
 #theorem([Trotter-Suzuki @childs2021theory])[
     Let $S^((2k))$ be the Trotter-Suzuki unitary as given in @def:trotter_suzuki for the Hamiltonian $H = sum_(i =1)^L h_i H_i$. Then the spectral norm of the difference between the Trotter-Suzuki formulas $S^((1))(t\/r)$ and $S^((2k))(t\/r)$ and the ideal evolution $U(t\/r)$ is given by
     $
-        norm(U(t\/r) - S^((1))(t\/r))_oo &<= t^2 / (2 r^2) " " alpha_"comm" (H,1), \
-        norm(U(t\/r) - S^((2k))(t\/r))_oo &<= (( Upsilon t )^(2k + 1) ) / (r^(2k + 1)(k + 1\/2)) alpha_"comm" (H, 2k).
+         norm(U(t\/r) - S^((1))(t\/r))_oo & <= t^2 / (2 r^2) " " alpha_"comm" (H,1), \
+        norm(U(t\/r) - S^((2k))(t\/r))_oo & <= (( Upsilon t )^(2k + 1) ) / (r^(2k + 1)(k + 1\/2)) alpha_"comm" (H, 2k).
     $
     The associated operator exponential cost can be computed via standard time-slicing arguments as
     $
@@ -144,7 +144,7 @@ $
 $
 We use the phrase "outer-loop" as this decomposition is done before any simulation channels are implemented. This gives the first order Composite channel $cal(C)$ as
 $
-    cal(C)^((1))(t) &:= cal(Q)_B (t, N_B) compose cal(S)_A^((1))(t).
+    cal(C)^((1))(t) & := cal(Q)_B (t, N_B) compose cal(S)_A^((1))(t).
 $
 We will first bound the error of this approximation to the ideal evolution. This error bound will then allow us to bound the number of exponentials needed to approximate the ideal dynamics.
 #lemma("First-Order Composite Error")[
@@ -276,10 +276,10 @@ $
 $
 For QDrift we can use @thm:qdrift_cost to compute
 $
-    C_"QD" &in O(t^2 / epsilon (L_A a_"max" + norm(h_B))^2) \
-    &in O((t^2 L_A^2 a_"max"^2) / epsilon (1 + (N_"nz" / L_A)^2)) \
-    &in O((t^2 L_A^2 a_"max"^2) / epsilon) \
-    &in omega(C_"Comp"^((1))).
+    C_"QD" & in O(t^2 / epsilon (L_A a_"max" + norm(h_B))^2) \
+           & in O((t^2 L_A^2 a_"max"^2) / epsilon (1 + (N_"nz" / L_A)^2)) \
+           & in O((t^2 L_A^2 a_"max"^2) / epsilon) \
+           & in omega(C_"Comp"^((1))).
 $
 This shows that the Composite channel has asymptotically better cost over the methods it composes, i.e. $C_"Comp"^((1)) in o(min(C_"Trot"^((1)), C_"QD"))$.
 
@@ -310,8 +310,8 @@ In order to determine the number of queries needed for a Composite channel to ap
     $
     We will use the following definitions for brevity
     $
-        P(t) &:= t^(2k + 1) (2 Upsilon^(2k + 1)) / (k + 1\/2) (alpha_"comm" ({A, B}, 2k) + alpha_"comm" (A, 2k)) \
-        Q(t) &:= t^2 (4 Upsilon norm(h_B)^2) / N_B.
+        P(t) & := t^(2k + 1) (2 Upsilon^(2k + 1)) / (k + 1\/2) (alpha_"comm" ({A, B}, 2k) + alpha_"comm" (A, 2k)) \
+        Q(t) & := t^2 (4 Upsilon norm(h_B)^2) / N_B.
     $ <eq_composite_p_n_q_def>
 ] <lem_composite_higher_order_error>
 #proof([of @lem_composite_higher_order_error])[
@@ -333,17 +333,17 @@ In order to determine the number of queries needed for a Composite channel to ap
         <=& 2 norm(cal(U)_A (t\/2) - S_A^((2)) (t\/2))_dmd + 2 norm(cal(U)_B (t\/2) - cal(Q)_B (t\/2))_dmd. $ Since $Upsilon_1 = 2$ this matches the induction hypothesis.
     - *Inductive Step: * In this scenario we assume that the hypothesis in @tmp_composite_4 holds for $2l - 2$ and we would like to show it holds for $2l$. We do so via the recursive structure given in @eq_composite_higher_order_def and @def:trotter_suzuki, which allows us to express the hypothesis as
     $
-        &norm(cal(C)^((2k, 2l))(t) - cal(S)^((2l))({A,B}, t))_dmd \
-        =& norm(
-            cal(C)^((2k, 2l - 2)) (u_l t)^(compose 2) compose cal(C)^((2k, 2l-2))((1-4 u_l) t) compose cal(C)^((2k, 2l - 2)) (u_l t)^(compose 2) \
-            & - cal(S)^((2l - 2))({A,B}, u_l t)^(compose 2) compose cal(S)^((2l -2))({A, B}, (1 - 4 u_l) t) compose cal(S)^((2l - 2))({A,B}, u_l t)^(compose 2)
-        ) #place($diamond.small$, dy: +1mm, dx: -0mm) \
-        <=& 4 norm(cal(C)^((2k, 2l -2))(u_l t) - cal(S)^((2l - 2))({A,B}, u_l t))_dmd \
-        &" " +norm(cal(C)^((2k, 2l -2))((1 - 4 u_l) t) - cal(S)^((2l - 2))({A,B}, (1 - 4 u_l) t))_dmd \
-        <=& 4 Upsilon_(l - 1) (norm(cal(U)_A (t) - cal(S)_A^((2k))(t))_dmd + norm(cal(U)_B (t) - cal(Q)_B (t))_dmd) \
-        &+ Upsilon_(l - 1) (norm(cal(U)_A (t) - cal(S)_A^((2k))(t))_dmd + norm(cal(U)_B (t) - cal(Q)_B (t))_dmd) \
-        &= 5 Upsilon_(l - 1) (norm(cal(U)_A (t) - cal(S)_A^((2k))(t))_dmd + norm(cal(U)_B (t) - cal(Q)_B (t))_dmd) \
-        =& Upsilon_l (norm(cal(U)_A (t) - cal(S)_A^((2k))(t))_dmd + norm(cal(U)_B (t) - cal(Q)_B (t))_dmd).
+           & norm(cal(C)^((2k, 2l))(t) - cal(S)^((2l))({A,B}, t))_dmd \
+         = & norm(
+                 cal(C)^((2k, 2l - 2)) (u_l t)^(compose 2) compose cal(C)^((2k, 2l-2))((1-4 u_l) t) compose cal(C)^((2k, 2l - 2)) (u_l t)^(compose 2) \
+                 & - cal(S)^((2l - 2))({A,B}, u_l t)^(compose 2) compose cal(S)^((2l -2))({A, B}, (1 - 4 u_l) t) compose cal(S)^((2l - 2))({A,B}, u_l t)^(compose 2)
+             ) #place($diamond.small$, dy: +1mm, dx: -0mm) \
+        <= & 4 norm(cal(C)^((2k, 2l -2))(u_l t) - cal(S)^((2l - 2))({A,B}, u_l t))_dmd \
+           & " " +norm(cal(C)^((2k, 2l -2))((1 - 4 u_l) t) - cal(S)^((2l - 2))({A,B}, (1 - 4 u_l) t))_dmd \
+        <= & 4 Upsilon_(l - 1) (norm(cal(U)_A (t) - cal(S)_A^((2k))(t))_dmd + norm(cal(U)_B (t) - cal(Q)_B (t))_dmd) \
+           & + Upsilon_(l - 1) (norm(cal(U)_A (t) - cal(S)_A^((2k))(t))_dmd + norm(cal(U)_B (t) - cal(Q)_B (t))_dmd) \
+           & = 5 Upsilon_(l - 1) (norm(cal(U)_A (t) - cal(S)_A^((2k))(t))_dmd + norm(cal(U)_B (t) - cal(Q)_B (t))_dmd) \
+         = & Upsilon_l (norm(cal(U)_A (t) - cal(S)_A^((2k))(t))_dmd + norm(cal(U)_B (t) - cal(Q)_B (t))_dmd).
     $
     Therefore the inductive step holds.
 
@@ -405,9 +405,9 @@ In order to determine the number of queries needed for a Composite channel to ap
     $ <tmp_composite_5>
     Our final inequality then comes from using only powers of $r_"min"$ and noting the fact that $Q(t) > 0$ for all $t$. We have
     $
-        P(t) / r_"min"^(2k + 1) &< P(t) / r_"min"^(2k + 1) + Q(t) / r_"min"^2 <= epsilon / r_"min" \
-        P(t) / epsilon &< r_"min"^(2k ) \
-        (P(t) / epsilon)^(1\/ 2k) &< r_"min",
+          P(t) / r_"min"^(2k + 1) & < P(t) / r_"min"^(2k + 1) + Q(t) / r_"min"^2 <= epsilon / r_"min" \
+                   P(t) / epsilon & < r_"min"^(2k ) \
+        (P(t) / epsilon)^(1\/ 2k) & < r_"min",
     $ <tmp_composite_6>
     therefore achieving our bound on $r$, which can be thought of as simply taking $r$ large enough to ensure the Trotterized error is sufficiently small.
 
@@ -421,8 +421,8 @@ In order to determine the number of queries needed for a Composite channel to ap
     $
     plugging in the definitions of $P(t)$ and $Q(t)$ from @eq_composite_p_n_q_def yields @eq_composite_higher_order_cost in the theorem statement. @eq_composite_higher_order_cost_constituents is derived from the following inequalities
     $
-        P(t)^(1\/2k) / epsilon^(1\/2k) &<= (C_"Trot"^((2k)) (H, t, epsilon)) / L (1 - q_B)^(1\/2k) / Upsilon^(1 - 1\/ 2k) \
-        Q(t) / epsilon &= Upsilon (C_"QD" (H, t, epsilon) ) / N_B (norm(h_B) / norm(h))^2.
+        P(t)^(1\/2k) / epsilon^(1\/2k) & <= (C_"Trot"^((2k)) (H, t, epsilon)) / L (1 - q_B)^(1\/2k) / Upsilon^(1 - 1\/ 2k) \
+                        Q(t) / epsilon & = Upsilon (C_"QD" (H, t, epsilon) ) / N_B (norm(h_B) / norm(h))^2.
     $
     These two inequalities are straightforward substitutions by plugging in results from the product formula costs in @thm_trotter_error and @thm:qdrift_cost into @eq_composite_p_n_q_def, along with the definition of $q_B$.
 ]
@@ -491,8 +491,8 @@ Now that we have bounded the Composite channel error and computed the query cost
     $
     where the last inclusion was shown for the previous term. The last two terms in the expansion involving the spectral norms are as follows
     $
-        norm(h_B) in o(norm(h)) &==> Upsilon^2 (norm(h_B) / norm(h))^2 in o(1) \
-        norm(h_B) in o(norm(h)) " and " N_B in Theta(L_A) &==> Upsilon L_A / N_B (norm(h_B) / norm(h))^2 in o(1).
+                                  norm(h_B) in o(norm(h)) & ==> Upsilon^2 (norm(h_B) / norm(h))^2 in o(1) \
+        norm(h_B) in o(norm(h)) " and " N_B in Theta(L_A) & ==> Upsilon L_A / N_B (norm(h_B) / norm(h))^2 in o(1).
     $
     As we have shown all four terms in the expansion are $o(1)$ we have that $C_"Comp"^((2k)) in o(C_"QD") = o(min{C_"QD", C_"Trot"^((2k))})$ for $0 < xi < 1$ which completes the proof.
 ]
@@ -623,12 +623,11 @@ We then study the performance of this crossover ratio as a function of the parti
 ) <table_composite_numerics>
 
 === Hydrogen Chain
-Using OpenFermion @mcclean2020openfermion and PySCF @pyscf we were able to compute the Hamiltonian for a chain of 3 Hydrogen atoms equally spaced in a line. OpenFermion is a package for managing electronic structure Hamiltonians, it not only generates the required fermionic creation and annihilation operators but can utilize Jordan-Wigner encodings to make the results amenable to simulation on quantum computers. PySCF is a library used to compute the required molecular orbital integrals that give the actual constants in the final Hamiltonian. We used an active space which was given by the minimal basis and is a byproduct of our minimal spin configuration.
+Using OpenFermion @mcclean2020openfermion and PySCF @pyscf we were able to compute the Hamiltonian for a chain of 3 Hydrogen atoms equally spaced in a line. OpenFermion is a package for managing electronic structure Hamiltonians, it not only generates the required fermionic creation and annihilation operators but can utilize Jordan-Wigner encodings to make the results amenable to simulation on quantum computers. PySCF is a library used to compute the required molecular orbital integrals that give the actual constants in the final Hamiltonian. We used an active space which was given by the minimal basis and is a byproduct of our minimal spin configuration. The partitioning used is either a fixed `chop` partition with a hand-tuned threshold and number of QDrift samples $N_B$ or we determined both the `chop` theshold and $N_B$ using the Gradient Boosted Regression Trees (GBRT) optimizer in scikit-learn @pedregosa2011scikit.
 
-The results of the simulations we conducted are found in @fig_composite_hchain_1. Details of the partitioning schemes determined by the
 #figure(
     image("composite_numerics/H3update_new_legend.png"),
-    caption: [Hydrogen 3 simulation. The crossover time for first order Trotter is around $norm(H) t approx 0.15$ with a crossover ratio of $approx 2.3$. For second order Trotter the crossover time is $approx 0.2$ with a crossover ratio of $approx 2$. Note that the simulation methods with a tilde denote a GBRT optimized partition and the unmarked method is a hand-tuned `chop` partitioning scheme.],
+    caption: [Hydrogen 3 simulation. The crossover time for first order Trotter is around $norm(H) t approx 0.15$ with a crossover ratio of $approx 2.3$. For second order Trotter the crossover time is $approx 0.2$ with a crossover ratio of $approx 2$. $cal(C)^((1))_(N_B)$ utilizes a hand-tuned `chop` partition and the others utilize a GBRT optimization to tune both the spectral norm theshold and number of QDrift samples. ],
 ) <fig_composite_hchain_1>
 
 #figure(
@@ -645,7 +644,7 @@ The results of the simulations we conducted are found in @fig_composite_hchain_1
 Another standard chemistry benchmark system, the Uniform Electron Gas (UEG) which is also known as Jellium, is a collection of free electrons in a solid with a uniform positive potential to serve as nuclei. The Hamiltonian we used is given below
 $
     H_"Jelly" =& 1 / 2 sum_(p, sigma) k_p^2 a^dagger_(p, sigma) a_(p, sigma) - (4 pi) / Omega sum_(p != q, j, sigma) (zeta_j e^(i k_(q - p) dot R_j) / k^2_(p - q)) a_(p, sigma)^dagger a_(q, sigma) \
-    &+ (2 pi) / Omega sum_((p,sigma) != (q, sigma'), nu != 0) a^dagger_(p, sigma) a^dagger_(q, sigma') a_(q + nu, sigma') a_(p - nu, sigma) / k_nu^2,
+    &+ (2 pi) / Omega sum_((p,sigma) != (q, sigma'), nu != 0) 1/ k_nu^2 a^dagger_(p, sigma) a^dagger_(q, sigma') a_(q + nu, sigma') a_(p - nu, sigma) ,
 $ <eq_composite_jellium_ham>
 where $sigma$ represents a spin, $p, q$ denote momentum eigenvalues, $R_j$ the position of the $j^"th"$ nuclei, $zeta_j$ the atomic number, $k_nu = 2 pi nu \/ Omega^(1 / 3)$, and $Omega$ denotes the cell volume. We then use the Jordan-Wigner encoding to represent the creation and annihilation operators as Pauli strings on qubits. For a derivation of this Hamiltonian see Appendix B of @babbush2018low.
 
@@ -665,13 +664,15 @@ In @fig_composite_jelly_sims below we show how the cost of simulating Jellium fo
 
 #figure(
     grid(
-        columns: 2, row-gutter: 3mm,
+        columns: 2,
+        row-gutter: 3mm,
         image("composite_numerics/Jellium5_new_legend.png"), image("composite_numerics/Jellium6_new_legend.png"),
         "(a) Jellium 5", "(b) Jellium 6",
-        grid.cell(colspan: 2, image("composite_numerics/Jellium7_new_legend.png", width: 50%)), grid.cell(
+        grid.cell(colspan: 2, image("composite_numerics/Jellium7_new_legend.png", width: 50%)),
+        grid.cell(
             colspan: 2,
             "(c) Jellium 7",
-        )
+        ),
     ),
     caption: [Query costs associated with exact implementation $cal(C)^((2,2))$ of various product formulas for different Jellium models.],
 ) <fig_composite_jelly_sims>
@@ -693,19 +694,17 @@ where $h_(i,j)$ is a site-dependent coupling constant and $h_k$ is a site-depend
 ) <fig_composite_spin_chains>
 
 === Imaginary Time Evolutions
-$
-    cal(C)^((1,2))
-$
 
 In this section we briefly discuss the application of our Composite simulation approach to implementing imaginary time evolution channels, the results of which are contained below in @fig_composite_sim_imaginary_time. At a high level we see that the results for imaginary time are comparable to the real time evolutions explored above. We see crossover advantages of similar rates as well, with Composite channels for Jellium outperforming Trotter and QDrift by a factor of $approx 19$, $"H"_3$ Composite channels using $approx 2.3$ times less gates, and advantages for a 8 Spin Heisenberg Model are around $approx 3$. The one major distinction we noticed between real and imaginary time simulations came from the 6 site Jellium model at large $beta$, or low-temperature. In this regime we noticed that even the first order Composite channel outperformed a second order Trotter implementation. These simulations suggest that randomized and Composite techniques could be useful in speeding up classical techniques, such as Quantum Monte Carlo @foulkes2001quantum and Path Integral Monte Carlo @herman1982path @yan2017path @ceperley1995path, which are predominantly based on a Trotter-Suzuki decomposition.
 
 #figure(
     grid(
-        columns: 2, row-gutter: 5mm,
+        columns: 2,
+        row-gutter: 5mm,
         image("composite_numerics/iH3_new_legend.png"), image("composite_numerics/iHeisenberg8_new_legend.png"),
         [(a) $"H"_3$], [(b) 8 Spin Heisenberg],
         grid.cell(image("composite_numerics/iJellium6_new_legend.png", width: 50%), colspan: 2),
-        grid.cell(colspan: 2, "(c) 6 Site Jellium")
+        grid.cell(colspan: 2, "(c) 6 Site Jellium"),
     ),
     caption: [Operator exponential costs for imaginary time simulations. In (a) the crossover advantage is $r_"cross" = 2.3$, in (b) $r_"cross" = 3.1$, and in (c) $r_"cross" = 18.8$.],
 ) <fig_composite_sim_imaginary_time>

@@ -51,11 +51,11 @@ $
 
 where $lambda(i, j) = lambda_S (i) + lambda_E(j)$ and we will sort the eigenvalues in nondecreasing order such that $i > j => lambda_S (i) >= lambda_S (j)$. We note that the ground state in our 1-indexed notation is therefore $ketbra(1, 1)$. We also make use of the following notation for the energy differences of the system-environment Hamiltonian and just the system
 
-$ Delta(i, j|k, l) := lambda(i, j) - lambda(k, l), quad Delta_S(i,i') = lambda_S (i) - lambda_S (i'), $ <eq_delta_def>
+$ Delta(i, j|k, l) := lambda(i, j) - lambda(k, l), quad Delta_S (i,i') = lambda_S (i) - lambda_S (i'), $ <eq_delta_def>
 
-and because our eigenvalues are sorted $i > j => Delta_S(i,j) >= 0$. We will need a few other notations for eigenvalue differences. First we denote the degeneracy of an eigenvalue $lambda(i, j)$ using $eta(i, j)$ and the number of times a system eigenvalue _difference_ is present as $eta_Delta (i,j)$. For example, in a truncated harmonic oscillator with 4 energy levels the lowest gap $Delta$ is present 3 times, so $eta_Delta (1, 2) = 3$. The second is that we will need to eventually analyze interferences between eigenvalue differences of the system, so we define
+and because our eigenvalues are sorted $i > j => Delta_S (i,j) >= 0$. We will need a few other notations for eigenvalue differences. First we denote the degeneracy of an eigenvalue $lambda(i, j)$ using $eta(i, j)$ and the number of times a system eigenvalue _difference_ is present as $eta_Delta (i,j)$. For example, in a truncated harmonic oscillator with 4 energy levels the lowest gap $Delta$ is present 3 times, so $eta_Delta (1, 2) = 3$. The second is that we will need to eventually analyze interferences between eigenvalue differences of the system, so we define
 
-$ delta_(min) := min_(Delta_S(i,j) != Delta_S(k,l)) lr(| Delta_S(i,j) - Delta_S(k, l) |). $ <eq_delta_min_def>
+$ delta_(min) := min_(Delta_S (i,j) != Delta_S (k,l)) lr(| Delta_S (i,j) - Delta_S (k, l) |). $ <eq_delta_min_def>
 
 Note that nothing in this definition prevents one of the summands, say $Delta_S (k,l)$, from being 0. This implies that $delta_(min) <= Delta_S (i,j)$ for all $i$ and $j$.
 
@@ -151,8 +151,8 @@ We then see that if $[ rho, H] = 0$ then $Phi (rho; 0) = id (rho)$, and as we re
     $ <eq_el_gigante>
     For $ket(i \, j) = ket(k \, l)$ the above expression simplifies to
     $
-        &alpha^2 / 2 EE_G [diff^2 / (diff alpha^2) Phi_G (ketbra(i \,j, i \,j))|_(alpha = 0) ] \
-        &= tilde(alpha)^2 sum_((a,b) != (i,j)) sinc^2 (Delta (i,j|a,b) t / 2) (ketbra(a\, b, a\, b) - ketbra(i\, j, i \,j))
+        & alpha^2 / 2 EE_G [diff^2 / (diff alpha^2) Phi_G (ketbra(i \,j, i \,j))|_(alpha = 0) ] \
+        & = tilde(alpha)^2 sum_((a,b) != (i,j)) sinc^2 (Delta (i,j|a,b) t / 2) (ketbra(a\, b, a\, b) - ketbra(i\, j, i \,j))
     $ <eq_el_gigante_dos>
     which also demonstrates that $tr cal(T)(rho) = 0$ for $rho$ such that $[rho, H_S] = 0$.
 ] <lem_tsp_transitions>
@@ -186,8 +186,8 @@ Before we prove this result we will introduce the concept of on- and off-resonan
     $ <eq_off_resonance>
     For the same-state transitions $ketbra(i, i)$ to $ketbra(i, i)$ the on- and off-resonance transitions are equal to
     $
-        bra(i) cal(T)_"on" (ketbra(i, i)) ket(i) &= - sum_(j != i) bra(j) cal(T)_"on" (ketbra(i, i)) ket(j) \
-        " and " bra(i) cal(T)_"off" (ketbra(i, i)) ket(i) &= - sum_(j != i) bra(j) cal(T)_"off" (ketbra(i, i)) ket(j).
+                 bra(i) cal(T)_"on" (ketbra(i, i)) ket(i) & = - sum_(j != i) bra(j) cal(T)_"on" (ketbra(i, i)) ket(j) \
+        " and " bra(i) cal(T)_"off" (ketbra(i, i)) ket(i) & = - sum_(j != i) bra(j) cal(T)_"off" (ketbra(i, i)) ket(j).
     $ <eq_same_state_transition_resonances>
 ] <def_transition>
 We will now use these definitions to prove @thm_tsp_second_order_expansion.
@@ -214,11 +214,11 @@ We will now use these definitions to prove @thm_tsp_second_order_expansion.
         &= tilde(alpha)^2 (q(0) sinc^2 (frac(Delta_S (i,j) t, 2)) + q(0) sinc^2 (frac((Delta_S (i,j) - gamma) t, 2))) \
         & quad + tilde(alpha)^2 (q(1) sinc^2 (frac((Delta_S (i, j) + gamma) t, 2)) + q(1) sinc^2 (frac(Delta_S (i,j) t, 2))),
     $
-    where we see that combining the terms with $sinc^2 (Delta_S(i,j) t / 2)$, as $q(0) + q(1) = 1$, we immediately get @eq_transition_terms_total.
+    where we see that combining the terms with $sinc^2 (Delta_S (i,j) t / 2)$, as $q(0) + q(1) = 1$, we immediately get @eq_transition_terms_total.
 
-    To classify these terms as on-resonance or off-resonance we will focus on the argument to the sinc function, which is of the form $Delta_S(i,j) t / 2$ or $(Delta_S(i,j) plus.minus gamma) t / 2$. The idea is that we will take $t$ large enough so that only the energy differences that are less than $delta_"min"$, as defined in @eq_delta_min_def, will be non-negligible. Clearly the term $tilde(alpha)^2 sinc^2 ( frac(Delta_S (i,j)t, 2) )$ will always be off-resonance, as $delta_"min" <= Delta_S (i,j)$.
+    To classify these terms as on-resonance or off-resonance we will focus on the argument to the sinc function, which is of the form $Delta_S (i,j) t / 2$ or $(Delta_S (i,j) plus.minus gamma) t / 2$. The idea is that we will take $t$ large enough so that only the energy differences that are less than $delta_"min"$, as defined in @eq_delta_min_def, will be non-negligible. Clearly the term $tilde(alpha)^2 sinc^2 ( frac(Delta_S (i,j)t, 2) )$ will always be off-resonance, as $delta_"min" <= Delta_S (i,j)$.
 
-    Now we have three terms to classify as either on-resonance or off-resonance, we refer to each term by their argument to the $sinc$ function. The first we can categorically declare as being off-resonance is the $Delta_S(i,j)$ term. By [??] we know $sinc^2(Delta_S(i,j) t / 2) <= 4 / (delta_"min"^2 t^2)$, which we will make arbitrarily small in later sections. The other two can only be classified as on or off resonance depending if $Delta_S(i,j)$ is positive or negative. If $i > j$ then we know that $Delta_S(i,j) >= 0$ and therefore $sinc^2((Delta_S(i,j) - gamma)t / 2)$ term can be close to 1 if $gamma approx Delta_S(i,j)$, which also shows the $Delta_S(i,j) + gamma$ term is off-resonance for all $gamma$. We say that the $Delta_S(i,j) - gamma$ term in this scenario is on-resonance if $|Delta_S(i,j) - gamma| <= delta_"min"$. This classification is best described symbolically as
+    Now we have three terms to classify as either on-resonance or off-resonance, we refer to each term by their argument to the $sinc$ function. The first we can categorically declare as being off-resonance is the $Delta_S (i,j)$ term. By @eq_sinc_bounds we know $sinc^2(Delta_S (i,j) t / 2) <= 4 / (delta_"min"^2 t^2)$, which we will make arbitrarily small in later sections. The other two can only be classified as on or off resonance depending if $Delta_S (i,j)$ is positive or negative. If $i > j$ then we know that $Delta_S (i,j) >= 0$ and therefore $sinc^2((Delta_S (i,j) - gamma)t / 2)$ term can be close to 1 if $gamma approx Delta_S (i,j)$, which also shows the $Delta_S (i,j) + gamma$ term is off-resonance for all $gamma$. We say that the $Delta_S (i,j) - gamma$ term in this scenario is on-resonance if $|Delta_S (i,j) - gamma| <= delta_"min"$. This classification is best described symbolically as
     $
         i > j "and" |Delta(i, j) - gamma| <= delta_("min") ==>
         bra(j) cal(T)_"on" (ketbra(i, i)) ket(j) =
@@ -548,7 +548,7 @@ This system also represents a transition from the single qubit to more general s
     $
 ] <thm_harmonic_oscillator>
 #proof()[
-    We first show that the thermal state is the unique fixed point for finite $beta$. This will be done by computing the nonzero on-resonance transitions and plugging in to @lem_fixed_points. As $gamma = Delta$, $Delta_S(i,j) = (i - j) Delta$, and $delta_min = Delta$, we can deduce that the on-resonance transitions will only be nonzero for adjacent states $ketbra(i, i)$ and $ketbra(i plus.minus 1, i plus.minus 1)$. This can be seen explicitly for $i != j$ by evaluating the transition elements given by @def_transition.
+    We first show that the thermal state is the unique fixed point for finite $beta$. This will be done by computing the nonzero on-resonance transitions and plugging in to @lem_fixed_points. As $gamma = Delta$, $Delta_S (i,j) = (i - j) Delta$, and $delta_min = Delta$, we can deduce that the on-resonance transitions will only be nonzero for adjacent states $ketbra(i, i)$ and $ketbra(i plus.minus 1, i plus.minus 1)$. This can be seen explicitly for $i != j$ by evaluating the transition elements given by @def_transition.
     $
         bra(j) cal(T)_"on" (ketbra(i, i)) ket(j)
         &= tilde(alpha)^2 q0 II[ abs(Delta_S (i,j) - gamma) <= delta_min] sinc^2((Delta_S (i,j) - gamma)t / 2) \
@@ -587,11 +587,11 @@ This system also represents a transition from the single qubit to more general s
     $
     which is clearly greater than 0. To prove the case where $i < j$ the same inductive argument above can be repeated but this time factors of $q(1)$ accumulate as opposed to $q(0)$.
 
-    ow that we have shown that the thermal state is the fixed point we would like to bound the total simulation time needed. To do so we first decompose our error into two parts, a Markov chain error and an off-resonance and remainder error
+    Now that we have shown that the thermal state is the fixed point we would like to bound the total simulation time needed. To do so we first decompose our error into two parts, a Markov chain error and an off-resonance and remainder error
     $
         norm(rho_S (beta) - Phi^(compose L)(rho))_1 <= norm(rho_S (beta) - (id + cal(T)_"on" )^(compose L) (rho))_1 + L (norm(cal(T)_"off")_1 + norm(R_Phi)_1)
     $<eq_harmonic_oscillator_error_breakdown>
-    We first bound the number of interactions, $L$, needed for the output of the Markov chain to be $epsilon$ close to the fixed point and then use this bound on $L$ to upper bound the off-resonance and remainder error. Unfortunately in the finite $beta$ scenario we are unable to determine the spectral gap of $T$, the entries of which are given in Eq. \eqref{eq:harmonic_oscillator_t_matrix}. The spectral gap of $T$ is necessary to use Jerison's Markov Relaxation @thm_markov_chain_bound which poses a problem for our understanding of the evolution time needed. Instead, we will pull out the overall factor of $tilde(alpha)^2$ and let $tilde(lambda_star) (beta)$ denote the spectral gap of $T \/ tilde(alpha)^2$. This then allows us to use @thm_markov_chain_bound but we will have to leave the number of interactions required in terms of $tilde(lambda_star)(beta)$.
+    We first bound the number of interactions, $L$, needed for the output of the Markov chain to be $epsilon$ close to the fixed point and then use this bound on $L$ to upper bound the off-resonance and remainder error. Unfortunately in the finite $beta$ scenario we are unable to determine the spectral gap of $T$, the entries of which are given in @eq_harmonic_oscillator_t_matrix. The spectral gap of $T$ is necessary to use Jerison's Markov Relaxation @thm_markov_chain_bound which poses a problem for our understanding of the evolution time needed. Instead, we will pull out the overall factor of $tilde(alpha)^2$ and let $tilde(lambda_star) (beta)$ denote the spectral gap of $T \/ tilde(alpha)^2$. This then allows us to use @thm_markov_chain_bound but we will have to leave the number of interactions required in terms of $tilde(lambda_star)(beta)$.
 
     @thm_markov_chain_bound tells us that requiring
     $
@@ -608,8 +608,8 @@ This system also represents a transition from the single qubit to more general s
     $
     Using the sub-additivity property of the trace distance the total error scales as
     $
-        L(norm(cal(T)_"off")_1 + norm(R_Phi)_1) &<= (dim_S^2 alpha^2 J) / (alpha^2 t^2 tilde(lambda_star)(beta) Delta^2) 12 \
-        &in tilde(O)(dim_S^2 / (t^2 Delta^2 tilde(lambda_star) (beta))).
+        L(norm(cal(T)_"off")_1 + norm(R_Phi)_1) & <= (dim_S^2 alpha^2 J) / (alpha^2 t^2 tilde(lambda_star)(beta) Delta^2) 12 \
+                                                & in tilde(O)(dim_S^2 / (t^2 Delta^2 tilde(lambda_star) (beta))).
     $
     We can make this $tilde(O)(epsilon)$ by setting $t = dim_S / (Delta sqrt(epsilon tilde(lambda_star) (beta)))$. This then gives the total simulation time as
     $
@@ -618,11 +618,11 @@ This system also represents a transition from the single qubit to more general s
 
     Now that we have analyzed the finite $beta$ regime, we turn to the $beta -> oo$ limit. Our proof above fo the fixed points only works for finite $beta$, but @lem_fixed_points tells us that in the $beta -> oo$ limit the ground state is a fixed point. We will show it is the unique fixed point by directly computing the spectrum of $T$, which will be rather easy to do. @lem_fixed_points further tells us that as $beta -> oo$ the matrix $T$ is upper triangular, which means we can compute the spectrum simply by just computing the diagonal elements. We do so via @eq_harmonic_oscillator_t_matrix and @eq_env_state_def, which says that for $1 < i < dim_S$ we have
     $
-        arrow(e)_i^tpose T arrow(e)_i &= bra(i) cal(T)_"on" (ketbra(i, i)) ket(i) \
-        &= - sum_(j != i) bra(j) cal(T)_"on" (ketbra(i, i)) ket(j) \
-        &= - tilde(alpha)^2 sum_(j != i) (q(0) II[j = i - 1] + q(1) II[j = i + 1]) \
-        &= -tilde(alpha)^2 (q(0) + q(1)) \
-        &= - tilde(alpha)^2,
+        arrow(e)_i^tpose T arrow(e)_i & = bra(i) cal(T)_"on" (ketbra(i, i)) ket(i) \
+                                      & = - sum_(j != i) bra(j) cal(T)_"on" (ketbra(i, i)) ket(j) \
+                                      & = - tilde(alpha)^2 sum_(j != i) (q(0) II[j = i - 1] + q(1) II[j = i + 1]) \
+                                      & = -tilde(alpha)^2 (q(0) + q(1)) \
+                                      & = - tilde(alpha)^2,
     $
     where the summation is only nonzero for $j = i plus.minus 1$. For $i = 1$ we note that because $arrow(e)_1$ is a fixed point we have $arrow(e)_j^tpose T arrow(e)_1 = 0$, so the diagonal entry is 0. The computation for $i = dim_S$ is similar to the above but yields from @eq_env_state_def
     $
@@ -690,10 +690,11 @@ In @fig_sho_total_time_vs_beta we are able to probe the total simulation time an
         row-gutter: 3mm,
         image("tsp_numerics/sho_total_time_vs_beta_dim_4.svg"), image("tsp_numerics/spec_gap_dim_4.svg"),
         "(a) dim = 4 truncated harmonic oscillator", [(b) $dim = 4$ spectral gap vs $beta$],
-        grid.cell(colspan: 2, image("tsp_numerics/sho_total_time_vs_beta_dim_10.svg", width: 50%)), grid.cell(
+        grid.cell(colspan: 2, image("tsp_numerics/sho_total_time_vs_beta_dim_10.svg", width: 50%)),
+        grid.cell(
             colspan: 2,
             [(c) $dim = 10$ truncated harmonic oscillator],
-        )
+        ),
     ),
 
     caption: [Demonstration of $beta$ dependence of the thermalizing channel $Phi$ for the truncated harmonic oscillator. The environment gap $gamma$ was tuned to match the system gap $Delta$ exactly. The minimal number of interactions was found by binary search over values of $L$ that have an average error of less than $epsilon = 0.05$ with 100 samples.],
@@ -720,7 +721,7 @@ The assumption on non-degenerate eigenvalues is required for fairly technical co
 
 === Zero Knowledge <sec_tsp_zero_knowledge>
 
-We now move on to show how our channel performs if one has no knowledge about the eigenvalue differences $Delta_S(i,j)$ apart from a bound on the maximum value of these differences. This is represented by choosing $gamma$ uniformly from the interval $[0, 4 norm(H_S)]$, which technically constitutes an upper bound on the largest $Delta_S (i,j)$, but estimates of $norm(H_S)$ are often readily attainable from the specification of the Hamiltonian using the triangle inequality. We also assume that an input state that commutes with the Hamiltonian can be provided, the maximally mixed state is sufficient as would a random eigenstate yielded by the quantum phase estimation algorithm.
+We now move on to show how our channel performs if one has no knowledge about the eigenvalue differences $Delta_S (i,j)$ apart from a bound on the maximum value of these differences. This is represented by choosing $gamma$ uniformly from the interval $[0, 4 norm(H_S)]$, which technically constitutes an upper bound on the largest $Delta_S (i,j)$, but estimates of $norm(H_S)$ are often readily attainable from the specification of the Hamiltonian using the triangle inequality. We also assume that an input state that commutes with the Hamiltonian can be provided, the maximally mixed state is sufficient as would a random eigenstate yielded by the quantum phase estimation algorithm.
 
 #theorem([Zero Knowledge Thermal State Prep])[
     Let $H_S$ be a Hermitian matrix of dimension $"dim"_S$ with no degenerate eigenvalues, $rho$ any input state that commutes with $H_S$, and $gamma$ a random variable distributed uniformly in the interval $[0, 4 norm(H_S)]$ and let $rho_"fix"$ denote the unique fixed point of the transition dynamics $identity + EE_gamma cal(T)_"on"^((gamma))$ where $cal(T)_"on"^((gamma))$ is the on-resonance transition matrix used above with the dependence on $gamma$ made explicit. The following statements then hold.
@@ -972,7 +973,7 @@ Our first experiment conducted is to study the effects of changing $alpha$ and $
         [(a)], [(b)],
     ),
     caption: [
-        These plots show the distance to the target thermal state for Hydrogen 2 and Hydrogen 3 chains as the number of interactions $L$ increases. For both Hydrogen 2 and 3 we set $beta = 4.0$, which gives a ground state overlap of greater than 0.5 for Hydrogen 2 and 0.25 for Hydrogen 3. $gamma$ for both (a) and (b)) was generated by placing a Gaussian at the average energy $tr(H_S) / dim_S$ with a width of $norm(H_S) / 2$. We note that a variety of $tilde(alpha)^2$ values were chosen to demonstrate the faster convergence, but higher error, of strong coupling.
+        These plots show the distance to the target thermal state for Hydrogen 2 (a) and Hydrogen 3 (b) chains as the number of interactions $L$ increases. For both Hydrogen 2 and 3 we set $beta = 4.0$, which gives a ground state overlap of greater than 0.5 for Hydrogen 2 and 0.25 for Hydrogen 3. $gamma$ for both (a) and (b) was generated by placing a Gaussian at the average energy $tr(H_S) / dim_S$ with a width of $norm(H_S) / 2$. We note that a variety of $tilde(alpha)^2$ values were chosen to demonstrate the faster convergence, but higher error, of strong coupling.
     ],
 ) <fig_h_chain_error>
 
