@@ -1,4 +1,4 @@
-#import "conf.typ": ut-thesis, is-chapter-page
+#import "conf.typ": is-chapter-page, ut-thesis
 
 #import "@preview/hydra:0.6.1": hydra
 
@@ -10,6 +10,13 @@
     department: "Physics",
 )
 
+#show figure.caption: it => [
+    #set par(leading: 0em)
+
+    #it.supplement
+    #context it.counter.display(it.numbering):
+    #it.body
+]
 
 #include "intro.typ"
 #include "composite.typ"

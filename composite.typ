@@ -653,7 +653,7 @@ This Hamiltonian serves as a useful benchmark for Composite simulations as there
     grid(
         columns: 2,
         row-gutter: 5mm,
-        image("composite_numerics/J5dist.png"), image("composite_numerics/J7dist.png"),
+        image("composite_numerics/jellium_6.png"), image("composite_numerics/jellium_7.png"),
         "(a) Jellium 5", "(b) Jellium 7",
     ),
     caption: [Semi-log plots of the spectral norm of the Jellium Hamiltonian. The plots not only show the large increase in the number of terms as we increase te sites but also demonstrate the increasingly concentrated norm in the strongest few terms. The red horizontal line indicates one of the values of $h_"chop"$ used in later simulations.],
